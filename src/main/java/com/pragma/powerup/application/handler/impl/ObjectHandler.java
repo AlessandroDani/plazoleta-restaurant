@@ -5,8 +5,6 @@ import com.pragma.powerup.application.dto.response.ObjectResponseDto;
 import com.pragma.powerup.application.handler.IObjectHandler;
 import com.pragma.powerup.application.mapper.IObjectRequestMapper;
 import com.pragma.powerup.application.mapper.IObjectResponseMapper;
-import com.pragma.powerup.domain.api.IObjectServicePort;
-import com.pragma.powerup.domain.model.ObjectModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
