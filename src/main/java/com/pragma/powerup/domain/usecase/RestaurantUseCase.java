@@ -22,7 +22,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     }
 
     private void validateName(String name) {
-        if (name.matches("\\+d")) {
+        if (name.matches("^\\d+$")) {
             throw new DomainValidateException("El nombre del restaurant no puede ser solo números");
         }
     }

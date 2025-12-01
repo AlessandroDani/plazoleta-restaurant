@@ -3,16 +3,16 @@ package com.pragma.powerup.domain.model;
 import java.math.BigInteger;
 
 public class Restaurant {
-    private BigInteger id;
+    private Long id;
     private String name;
-    private Long nit;
+    private String nit;
     private String address;
     private String phoneNumber;
     private String urlLogo;
     //private User idPropietario;
 
 
-    public Restaurant(BigInteger id, String name, Long nit, String address, String phoneNumber, String urlLogo) {
+    public Restaurant(Long id, String name, String nit, String address, String phoneNumber, String urlLogo) {
         this.id = id;
         this.name = name;
         this.nit = nit;
@@ -21,11 +21,11 @@ public class Restaurant {
         this.urlLogo = urlLogo;
     }
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -37,11 +37,11 @@ public class Restaurant {
         this.name = name;
     }
 
-    public Long getNit() {
+    public String getNit() {
         return nit;
     }
 
-    public void setNit(Long nit) {
+    public void setNit(String nit) {
         this.nit = nit;
     }
 
