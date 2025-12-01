@@ -1,8 +1,5 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
-import com.pragma.powerup.application.dto.request.ObjectRequestDto;
-import com.pragma.powerup.application.dto.response.ObjectResponseDto;
-import com.pragma.powerup.application.handler.IObjectHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
