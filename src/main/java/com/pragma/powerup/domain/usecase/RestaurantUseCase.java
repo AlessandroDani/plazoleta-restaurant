@@ -2,6 +2,7 @@ package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.exception.DomainValidateException;
+import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
@@ -18,11 +19,19 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
+        if(getRestaurantByNit(restaurant.getNit()) != null){
+            throw new RestaurantAlreadyExistException();
+        }
         validateName(restaurant.getName());
         validatePhoneNumber(restaurant.getPhoneNumber());
         validateOwnerRole(restaurant.getIdOwner());
 
         restaurantPersistence.saveRestaurant(restaurant);
+    }
+
+    @Override
+    public Restaurant getRestaurantByNit(String nit) {
+        return restaurantPersistence.getRestaurantByNit(nit);
     }
 
     private void validateOwnerRole(Long ownerId) {

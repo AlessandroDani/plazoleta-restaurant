@@ -4,4 +4,5 @@ import com.pragma.powerup.domain.model.Restaurant;
 
 public interface IRestaurantServicePort {
     void saveRestaurant(Restaurant restaurant);
+    Restaurant getRestaurantByNit(String nit);
 }

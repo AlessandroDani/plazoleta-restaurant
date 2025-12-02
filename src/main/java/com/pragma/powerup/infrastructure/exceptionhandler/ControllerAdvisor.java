@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
+import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
 import com.pragma.powerup.infrastructure.exception.OwnerNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
@@ -29,6 +30,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(UserServiceCommunicationException.class)
     public ResponseEntity<Map<String, String>> handleUserServiceCommunicationException(UserServiceCommunicationException ignoredUserServiceCommunicationException) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ExceptionResponse.SERVICE_UNAVAILABLE.getMessage()));
+    }
+
+    @ExceptionHandler(RestaurantAlreadyExistException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantAlreadyExistException(RestaurantAlreadyExistException  ignoredRestaurantAlreadyExistException) {
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
     }
 
 }
