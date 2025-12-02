@@ -28,5 +28,7 @@ public class RestaurantRequestDto {
 
     @NotBlank(message = "La url del logo es obligatorio")
     private String urlLogo;
-    //private User idPropietario;
+
+    @JsonProperty("id_propietario")
+    private Long idOwner;
 }

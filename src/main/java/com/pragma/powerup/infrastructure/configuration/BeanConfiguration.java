@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.configuration;
 
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.domain.spi.IUserGatewayPort;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestaurantJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestaurantEntityMapper;
@@ -23,7 +24,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IRestaurantServicePort  restaurantServicePort() {
-        return new RestaurantUseCase(restaurantPersistencePort());
+    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort, IUserGatewayPort userGatewayPort) {
+        return new RestaurantUseCase(restaurantPersistencePort, userGatewayPort );
     }
 }

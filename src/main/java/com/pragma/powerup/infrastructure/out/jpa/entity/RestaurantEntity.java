@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 
 @Entity
 @Table(name = "RESTAURANTES")
@@ -33,4 +32,7 @@ public class RestaurantEntity {
 
     @Column(name = "urlLogo")
     private String urlLogo;
+
+    @Column(name = "id_propietario")
+    private Long idOwner;
 }

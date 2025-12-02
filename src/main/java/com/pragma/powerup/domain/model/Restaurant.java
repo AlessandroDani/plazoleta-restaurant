@@ -1,6 +1,5 @@
 package com.pragma.powerup.domain.model;
 
-import java.math.BigInteger;
 
 public class Restaurant {
     private Long id;
@@ -9,16 +8,16 @@ public class Restaurant {
     private String address;
     private String phoneNumber;
     private String urlLogo;
-    //private User idPropietario;
+    private Long idOwner;
 
-
-    public Restaurant(Long id, String name, String nit, String address, String phoneNumber, String urlLogo) {
+    public Restaurant(Long id, String name, String nit, String address, String phoneNumber, String urlLogo, Long idOwner) {
         this.id = id;
         this.name = name;
         this.nit = nit;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.urlLogo = urlLogo;
+        this.idOwner = idOwner;
     }
 
     public Long getId() {
@@ -67,5 +66,13 @@ public class Restaurant {
 
     public void setUrlLogo(String urlLogo) {
         this.urlLogo = urlLogo;
+    }
+
+    public Long getIdOwner() {
+        return idOwner;
+    }
+
+    public void setIdOwner(Long idOwner) {
+        this.idOwner = idOwner;
     }
 }

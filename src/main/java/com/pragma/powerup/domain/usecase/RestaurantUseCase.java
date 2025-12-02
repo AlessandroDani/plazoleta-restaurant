@@ -4,21 +4,32 @@ import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.exception.DomainValidateException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.domain.spi.IUserGatewayPort;
 
 
 public class RestaurantUseCase implements IRestaurantServicePort {
     private final IRestaurantPersistencePort restaurantPersistence;
+    private final IUserGatewayPort userGatewayPort;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence, IUserGatewayPort userGatewayPort) {
         this.restaurantPersistence = restaurantPersistence;
+        this.userGatewayPort = userGatewayPort;
     }
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
         validateName(restaurant.getName());
         validatePhoneNumber(restaurant.getPhoneNumber());
+        validateOwnerRole(restaurant.getIdOwner());
 
         restaurantPersistence.saveRestaurant(restaurant);
+    }
+
+    private void validateOwnerRole(Long ownerId) {
+        boolean isOwner = userGatewayPort.isUserOwner(ownerId);
+        if (!isOwner) {
+            throw new DomainValidateException("El usuario proporcionado no existe o no tiene el rol de PROPIETARIO.");
+        }
     }
 
     private void validateName(String name) {
