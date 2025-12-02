@@ -26,10 +26,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     }
 
     private void validateOwnerRole(Long ownerId) {
-        boolean isOwner = userGatewayPort.isUserOwner(ownerId);
-        if (!isOwner) {
-            throw new DomainValidateException("El usuario proporcionado no existe o no tiene el rol de PROPIETARIO.");
-        }
+        userGatewayPort.isUserOwner(ownerId);
     }
 
     private void validateName(String name) {

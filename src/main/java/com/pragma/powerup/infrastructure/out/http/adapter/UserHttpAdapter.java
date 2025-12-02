@@ -1,6 +1,9 @@
 package com.pragma.powerup.infrastructure.out.http.adapter;
 
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
+import com.pragma.powerup.infrastructure.exception.OwnerNotFoundException;
+import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
 import com.pragma.powerup.infrastructure.out.http.UserResponseDto;
 import com.pragma.powerup.infrastructure.out.http.feign.IUserFeignClient;
 import feign.FeignException;
@@ -17,13 +20,14 @@ public class UserHttpAdapter implements IUserGatewayPort {
     public boolean isUserOwner(Long userId) {
         try {
             UserResponseDto userResponse = userFeignClient.getUserById(userId);
-
-            return userResponse != null
-                    && userResponse.getRole() != null
-                    && "PROPIETARIO".equals(userResponse.getRole().getName());
-
+            if (userResponse.getRole() == null || !"PROPIETARIO".equals(userResponse.getRole().getName())) {
+                throw new InvalidRoleException();
+            }
+            return true;
         } catch (FeignException.NotFound e) {
-            return false;
+            throw new OwnerNotFoundException();
+        } catch (FeignException.FeignServerException e) {
+            throw new UserServiceCommunicationException();
         }
     }
 }
