@@ -31,4 +31,10 @@ public class RestaurantHandler implements IRestaurantHandler{
         Restaurant restaurant = restaurantServicePort.getRestaurantByNit(nit);
         return restaurantResponseMapper.toResponse(restaurant);
     }
+
+    @Override
+    public RestaurantResponseDto getRestaurantById(Long id) {
+        Restaurant restaurant = restaurantServicePort.getRestaurantById(id);
+        return restaurantResponseMapper.toResponse(restaurant);
+    }
 }

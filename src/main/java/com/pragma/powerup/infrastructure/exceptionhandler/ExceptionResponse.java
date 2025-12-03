@@ -5,9 +5,10 @@ import lombok.Getter;
 @Getter
 public enum ExceptionResponse {
     NO_DATA_FOUND("El ID del propietario no existe en el sistema de usuarios"),
-    FORBIDDEN("El usuario no tiene rol permitido para realizar esa acción"),
+    USER_DENIED_PERMISSION("El usuario no tiene rol permitido para realizar esa acción"),
     SERVICE_UNAVAILABLE("Error del servicio de Usuarios"),
-    RESTAURANT_ALREADY_EXIST("Ya existe un restaurante con ese NIT en el sistema de restaurantes");
+    RESTAURANT_ALREADY_EXIST("Ya existe un restaurante con ese NIT en el sistema de restaurantes"),
+    RESTAURANT_NOT_FOUND("El restaurante no existe con ese identificador"),;
 
     private final String message;
 
