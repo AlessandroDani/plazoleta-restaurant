@@ -26,8 +26,8 @@ class RestaurantUseCaseTest {
 
     @InjectMocks
     private RestaurantUseCase restaurantUseCase;
-
     private Restaurant testRestaurant;
+
 
     @BeforeEach
     void setUp() {

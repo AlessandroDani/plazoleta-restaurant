@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RestaurantResponseDto {
+
     @Schema(description = "Nombre del restaurante", example = "Subway")
     @JsonProperty("nombre")
     private String name;

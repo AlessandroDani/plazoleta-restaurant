@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
+import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
 import com.pragma.powerup.infrastructure.exception.OwnerNotFoundException;
@@ -43,8 +44,13 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
-    public ResponseEntity<Map<String, String>> handleUserIsNotOwnerRestaurant(UserIsNotOwnerRestaurantException  ignoredUserIsNotOwnerRestaurantException) {
+    public ResponseEntity<Map<String, String>> handleUserIsNotOwnerRestaurantException(UserIsNotOwnerRestaurantException  ignoredUserIsNotOwnerRestaurantException) {
         return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_DENIED_PERMISSION.getMessage()));
+    }
+
+    @ExceptionHandler(RestaurantNotExistException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantDoesNotExistException(RestaurantNotExistException ignoredRestaurantDoesNotExistException) {
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_FOUND.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
