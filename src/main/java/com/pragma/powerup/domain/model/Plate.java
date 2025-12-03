@@ -3,14 +3,14 @@ package com.pragma.powerup.domain.model;
 public class Plate {
     private Long id;
     private String name;
-    private String idCategory;
+    private Long idCategory;
     private String description;
     private Long price;
-    private String idRestaurante;
+    private Long idRestaurante;
     private String urlImage;
     private boolean active;
 
-    public Plate(Long id, String name, String idCategory, String description, Long price, String idRestaurante, String urlImage, boolean active) {
+    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurante, String urlImage, boolean active) {
         this.id = id;
         this.name = name;
         this.idCategory = idCategory;
@@ -37,11 +37,11 @@ public class Plate {
         this.name = name;
     }
 
-    public String getIdCategory() {
+    public Long getIdCategory() {
         return idCategory;
     }
 
-    public void setIdCategory(String idCategory) {
+    public void setIdCategory(Long idCategory) {
         this.idCategory = idCategory;
     }
 
@@ -61,11 +61,11 @@ public class Plate {
         this.price = price;
     }
 
-    public String getIdRestaurante() {
+    public Long getIdRestaurante() {
         return idRestaurante;
     }
 
-    public void setIdRestaurante(String idRestaurante) {
+    public void setIdRestaurante(Long idRestaurante) {
         this.idRestaurante = idRestaurante;
     }
 
