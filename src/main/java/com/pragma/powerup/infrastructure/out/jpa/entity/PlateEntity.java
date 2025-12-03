@@ -22,7 +22,7 @@ public class PlateEntity {
     private String name;
 
     @Column(name = "id_categoria")
-    private Long idCategoria;
+    private Long idCategory;
 
     @Column(name = "descripcion")
     private String description;

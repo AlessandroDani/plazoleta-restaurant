@@ -7,17 +7,17 @@ public class Plate {
     private String description;
     private Long price;
     private Long idRestaurant;
-    private String urlImage;
+    private String urlImagen;
     private boolean active;
 
-    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurant, String urlImage, boolean active) {
+    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurant, String urlImagen, boolean active) {
         this.id = id;
         this.name = name;
         this.idCategory = idCategory;
         this.description = description;
         this.price = price;
         this.idRestaurant = idRestaurant;
-        this.urlImage = urlImage;
+        this.urlImagen = urlImagen;
         this.active = active;
     }
 
@@ -69,12 +69,12 @@ public class Plate {
         this.idRestaurant = idRestaurant;
     }
 
-    public String getUrlImage() {
-        return urlImage;
+    public String getUrlImagen() {
+        return urlImagen;
     }
 
-    public void setUrlImage(String urlImage) {
-        this.urlImage = urlImage;
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
     }
 
     public boolean isActive() {

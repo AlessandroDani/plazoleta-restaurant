@@ -30,6 +30,11 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         return restaurantPersistence.getRestaurantByNit(nit);
     }
 
+    @Override
+    public Restaurant getRestaurantById(Long id) {
+        return null;
+    }
+
     private void validateOwnerRole(Long ownerId) {
         userGatewayPort.isUserOwner(ownerId);
     }

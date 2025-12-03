@@ -26,7 +26,7 @@ public class PlateResponseDto {
 
     @Schema(description = "Url de la imagen del plato", example = "https://img.mi-dominio.com/logo/example.png")
     @JsonProperty("url_imagen")
-    private String urlImage;
+    private String urlImagen;
 
     @Schema(description = "El estado del plato", example = "true")
     @JsonProperty("activo")

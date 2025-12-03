@@ -13,6 +13,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class PlateRequestDto {
 
+    @JsonProperty("id_usuario_solicitante")
+    private Long idRequestUser;
+
     @Schema(description = "Nombre del plato", example = "Pabellon")
     @NotBlank(message = "El nombre es obligatorio")
     @JsonProperty("nombre")
@@ -42,5 +45,5 @@ public class PlateRequestDto {
     @Schema(description = "Url de la imagen del plato", example = "https://img.mi-dominio.com/logo/example.png")
     @NotBlank(message = "La url de la imagen es obligatorio")
     @JsonProperty("url_imagen")
-    private String urlImage;
+    private String urlImagen;
 }

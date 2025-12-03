@@ -7,4 +7,5 @@ public interface IRestaurantHandler {
 
     void save(RestaurantRequestDto restaurantRequestDto);
     RestaurantResponseDto getRestaurantByNit(String nit);
+    RestaurantResponseDto getRestaurantById(Long id);
 }

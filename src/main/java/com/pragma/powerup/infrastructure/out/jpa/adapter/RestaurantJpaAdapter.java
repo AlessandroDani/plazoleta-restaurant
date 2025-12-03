@@ -21,4 +21,8 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     public Restaurant getRestaurantByNit(String nit) {
         return restaurantEntityMapper.toRestaurant(restaurantRepository.getRestaurantByNit(nit));
     }
+
+    public Restaurant getRestaurantById(Long id) {
+        return restaurantEntityMapper.toRestaurant(restaurantRepository.getRestaurantById(id));
+    }
 }

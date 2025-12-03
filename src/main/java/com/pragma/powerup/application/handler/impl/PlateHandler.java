@@ -20,6 +20,6 @@ public class PlateHandler implements IPlateHandler {
     @Override
     public void savePlate(PlateRequestDto plateRequestDto) {
         Plate plate = plateRequestMapper.toPlate(plateRequestDto);
-        plateServicePort.savePlate(plate);
+        plateServicePort.savePlate(plate, plateRequestDto.getIdRequestUser());
     }
 }
