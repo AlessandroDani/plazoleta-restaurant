@@ -41,4 +41,10 @@ public class RestaurantRestController {
         RestaurantResponseDto restaurant = restaurantHandler.getRestaurantByNit(nit);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RestaurantResponseDto> getRestaurantByNit(@PathVariable Long id) {
+        RestaurantResponseDto restaurant = restaurantHandler.getRestaurantById(id);
+        return new ResponseEntity<>(restaurant, HttpStatus.OK);
+    }
 }
