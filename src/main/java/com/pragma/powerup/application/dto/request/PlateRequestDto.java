@@ -35,9 +35,9 @@ public class PlateRequestDto {
     private Long price;
 
     @Schema(description = "Id del restaurante al cual pertenece el plato", example = "1")
-    @NotNull(message = "La id del restaurante es oligatorio")
+    @NotNull(message = "La id del restaurante es obligatorio")
     @JsonProperty("id_restaurante")
-    private Long idRestaurante;
+    private Long idRestaurant;
 
     @Schema(description = "Url de la imagen del plato", example = "https://img.mi-dominio.com/logo/example.png")
     @NotBlank(message = "La url de la imagen es obligatorio")

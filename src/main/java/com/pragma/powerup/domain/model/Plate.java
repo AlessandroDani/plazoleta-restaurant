@@ -6,17 +6,17 @@ public class Plate {
     private Long idCategory;
     private String description;
     private Long price;
-    private Long idRestaurante;
+    private Long idRestaurant;
     private String urlImage;
     private boolean active;
 
-    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurante, String urlImage, boolean active) {
+    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurant, String urlImage, boolean active) {
         this.id = id;
         this.name = name;
         this.idCategory = idCategory;
         this.description = description;
         this.price = price;
-        this.idRestaurante = idRestaurante;
+        this.idRestaurant = idRestaurant;
         this.urlImage = urlImage;
         this.active = active;
     }
@@ -61,12 +61,12 @@ public class Plate {
         this.price = price;
     }
 
-    public Long getIdRestaurante() {
-        return idRestaurante;
+    public Long getIdRestaurant() {
+        return idRestaurant;
     }
 
-    public void setIdRestaurante(Long idRestaurante) {
-        this.idRestaurante = idRestaurante;
+    public void setIdRestaurant(Long idRestaurant) {
+        this.idRestaurant = idRestaurant;
     }
 
     public String getUrlImage() {
