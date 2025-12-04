@@ -30,7 +30,7 @@ public class PlateEntity {
     @Column(name = "precio")
     private Long price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_restaurante", nullable = false)
     private RestaurantEntity restaurant;
 
@@ -39,5 +39,4 @@ public class PlateEntity {
 
     @Column(name = "activo")
     private Boolean active;
-
 }

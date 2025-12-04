@@ -9,6 +9,5 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IPlateRequestMapper {
-
     Plate toPlate(PlateRequestDto plateRequestDto);
 }

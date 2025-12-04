@@ -51,8 +51,7 @@ public class RestaurantRestController {
 
     @Operation(summary = "Obtener un restaurante por su ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Restaurante encontrado",
-                    content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "200", description = "Restaurante encontrado", content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = RestaurantResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "Restaurante no encontrado", content = @Content),
     })

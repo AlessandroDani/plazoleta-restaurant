@@ -8,6 +8,8 @@ import com.pragma.powerup.infrastructure.out.jpa.repository.IPlateRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class PlateJpaAdapter implements IPlatePersistencePort {
 
@@ -21,5 +23,17 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
         restaurantRepository.findById(plate.getIdRestaurant())
                 .ifPresent(plateEntity::setRestaurant);
         plateRepository.save(plateEntity);
+    }
+
+    @Override
+    public Plate getPlateById(Long id) {
+        Optional<PlateEntity> plateEntity = plateRepository.findById(id);
+        return plateEntity.map(plateEntityMapper::toPlate).orElse(null);
+
+    }
+
+    @Override
+    public void updatePlate(Plate plate) {
+        savePlate(plate);
     }
 }

@@ -1,6 +1,7 @@
 package com.pragma.powerup.application.handler.impl;
 
 import com.pragma.powerup.application.dto.request.PlateRequestDto;
+import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
 import com.pragma.powerup.application.mapper.IPlateRequestMapper;
 import com.pragma.powerup.domain.api.IPlateServicePort;
@@ -21,5 +22,15 @@ public class PlateHandler implements IPlateHandler {
     public void savePlate(PlateRequestDto plateRequestDto) {
         Plate plate = plateRequestMapper.toPlate(plateRequestDto);
         plateServicePort.savePlate(plate, plateRequestDto.getIdRequestUser());
+    }
+
+    @Override
+    public void updatePlate(Long id, PlateUpdateRequestDto plateUpdateRequestDto, Long idOwnerRequest) {
+        plateServicePort.updatePlate(
+                id,
+                plateUpdateRequestDto.getPrice(),
+                plateUpdateRequestDto.getDescription(),
+                idOwnerRequest
+        );
     }
 }
