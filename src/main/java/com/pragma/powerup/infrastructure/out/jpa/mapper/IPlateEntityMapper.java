@@ -12,7 +12,7 @@ import org.mapstruct.ReportingPolicy;
 public interface IPlateEntityMapper{
     PlateEntity toEntity(Plate plate);
 
-    @Mapping(source = "idRestaurant", target = "idRestaurant")
+    @Mapping(source = "restaurant.id", target = "idRestaurant")
     Plate toPlate(PlateEntity plateEntity);
 
 }

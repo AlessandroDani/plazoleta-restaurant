@@ -39,11 +39,4 @@ public class PlateEntity {
 
     @Column(name = "activo")
     private Boolean active;
-
-    public Long getIdRestaurant() {
-        if (this.restaurant != null) {
-            return this.restaurant.getId();
-        }
-        return null;
-    }
 }
