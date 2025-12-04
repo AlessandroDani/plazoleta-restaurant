@@ -1,6 +1,8 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IPlateServicePort;
+import com.pragma.powerup.domain.exception.PlateNotFoundException;
+import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
 import com.pragma.powerup.domain.model.Plate;
 import com.pragma.powerup.domain.model.Restaurant;
@@ -22,11 +24,31 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void savePlate(Plate plate, Long idOwnerRequest) {
-        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
-        if (!Objects.equals(restaurant.getIdOwner(), idOwnerRequest)){
-            throw new UserIsNotOwnerRestaurantException();
-        }
+        validateRestaurantAndRole(plate, idOwnerRequest);
         plate.setActive(true);
         platePersistencePort.savePlate(plate);
+    }
+
+    @Override
+    public void updatePlate(Long id, Long newPrice, String newDescription, Long idOwner) {
+        Plate plate =  platePersistencePort.getPlateById(id);
+        if(plate == null){
+            throw new PlateNotFoundException();
+        }
+
+        validateRestaurantAndRole(plate, idOwner);
+        plate.setPrice(newPrice);
+        plate.setDescription(newDescription);
+        platePersistencePort.updatePlate(plate);
+    }
+
+    public void validateRestaurantAndRole(Plate plate, Long idOwner) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
+        if(restaurant == null){
+            throw new RestaurantNotExistException();
+        }
+        if (!Objects.equals(restaurant.getIdOwner(), idOwner)){
+            throw new UserIsNotOwnerRestaurantException();
+        }
     }
 }

@@ -8,7 +8,8 @@ public enum ExceptionResponse {
     USER_DENIED_PERMISSION("El usuario no tiene rol permitido para realizar esa acción"),
     SERVICE_UNAVAILABLE("Error del servicio de Usuarios"),
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante con ese NIT en el sistema de restaurantes"),
-    RESTAURANT_NOT_FOUND("El restaurante no existe con ese identificador"),;
+    RESTAURANT_NOT_FOUND("El restaurante no existe con ese identificador"),
+    PLATE_NOT_FOUND("El plato no existe en el sistema"),;
 
     private final String message;
 

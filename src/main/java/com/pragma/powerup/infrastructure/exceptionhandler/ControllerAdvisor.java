@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
+import com.pragma.powerup.domain.exception.PlateNotFoundException;
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
@@ -51,6 +52,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(RestaurantNotExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantDoesNotExistException(RestaurantNotExistException ignoredRestaurantDoesNotExistException) {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_FOUND.getMessage()));
+    }
+
+    @ExceptionHandler(PlateNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handlePlateNotFoundException(PlateNotFoundException ignoredPlateNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_FOUND.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
