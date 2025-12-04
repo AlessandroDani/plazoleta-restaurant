@@ -37,8 +37,13 @@ public class PlateUseCase implements IPlateServicePort {
         }
 
         validateRestaurantAndRole(plate, idOwner);
-        plate.setPrice(newPrice);
-        plate.setDescription(newDescription);
+        if(newPrice != null){
+            plate.setPrice(newPrice);
+        }
+
+        if(newDescription != null){
+            plate.setDescription(newDescription);
+        }
         platePersistencePort.updatePlate(plate);
     }
 
