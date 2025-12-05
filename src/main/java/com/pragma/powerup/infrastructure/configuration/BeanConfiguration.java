@@ -4,7 +4,6 @@ import com.pragma.powerup.domain.api.IPlateServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.IUserGatewayPort;
 import com.pragma.powerup.domain.usecase.PlateUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.PlateJpaAdapter;
@@ -32,8 +31,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort, IUserGatewayPort userGatewayPort) {
-        return new RestaurantUseCase(restaurantPersistencePort, userGatewayPort );
+    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort) {
+        return new RestaurantUseCase(restaurantPersistencePort);
     }
 
     @Bean
