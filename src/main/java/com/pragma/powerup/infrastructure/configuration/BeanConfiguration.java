@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IPlateServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.domain.spi.ITokenPort;
 import com.pragma.powerup.domain.usecase.PlateUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.PlateJpaAdapter;
@@ -26,13 +27,18 @@ public class BeanConfiguration {
     private final IPlateEntityMapper plateEntityMapper;
 
     @Bean
+    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort) {
+        return new RestaurantUseCase(restaurantPersistencePort, tokenPort);
+    }
+
+    @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
         return new RestaurantJpaAdapter(restaurantRepository, restaurantEntityMapper);
     }
 
     @Bean
-    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort) {
-        return new RestaurantUseCase(restaurantPersistencePort);
+    public IPlateServicePort plateServicePort(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort) {
+        return new PlateUseCase(platePersistencePort, restaurantPersistencePort, tokenPort);
     }
 
     @Bean
@@ -40,8 +46,4 @@ public class BeanConfiguration {
         return new PlateJpaAdapter(plateRepository, plateEntityMapper, restaurantRepository);
     }
 
-    @Bean
-    public IPlateServicePort plateServicePort(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort) {
-        return new PlateUseCase(platePersistencePort, restaurantPersistencePort);
-    }
 }

@@ -21,16 +21,14 @@ public class PlateHandler implements IPlateHandler {
     @Override
     public void savePlate(PlateRequestDto plateRequestDto) {
         Plate plate = plateRequestMapper.toPlate(plateRequestDto);
-        plateServicePort.savePlate(plate, plateRequestDto.getIdRequestUser());
+        plateServicePort.savePlate(plate);
     }
 
     @Override
-    public void updatePlate(Long id, PlateUpdateRequestDto plateUpdateRequestDto, Long idOwnerRequest) {
+    public void updatePlate(PlateUpdateRequestDto plateUpdateRequestDto) {
         plateServicePort.updatePlate(
-                id,
                 plateUpdateRequestDto.getPrice(),
-                plateUpdateRequestDto.getDescription(),
-                idOwnerRequest
+                plateUpdateRequestDto.getDescription()
         );
     }
 }

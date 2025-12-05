@@ -8,6 +8,7 @@ import com.pragma.powerup.domain.model.Plate;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.domain.spi.ITokenPort;
 
 import java.util.Objects;
 
@@ -16,27 +17,32 @@ public class PlateUseCase implements IPlateServicePort {
 
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantPersistencePort restaurantPersistencePort;
+    private final ITokenPort tokenPort;
 
-    public PlateUseCase(IPlatePersistencePort platePersistencePort,  IRestaurantPersistencePort restaurantPersistencePort) {
+    public PlateUseCase(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort) {
         this.platePersistencePort = platePersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
+        this.tokenPort = tokenPort;
     }
 
     @Override
-    public void savePlate(Plate plate, Long idOwnerRequest) {
-        validateRestaurantAndRole(plate, idOwnerRequest);
+    public void savePlate(Plate plate) {
+        Long id = tokenPort.getUserId();
+        validateRestaurantAndRole(plate, id);
         plate.setActive(true);
         platePersistencePort.savePlate(plate);
     }
 
+
     @Override
-    public void updatePlate(Long id, Long newPrice, String newDescription, Long idOwner) {
+    public void updatePlate(Long newPrice, String newDescription) {
+        Long id = tokenPort.getUserId();
         Plate plate =  platePersistencePort.getPlateById(id);
         if(plate == null){
             throw new PlateNotFoundException();
         }
 
-        validateRestaurantAndRole(plate, idOwner);
+        validateRestaurantAndRole(plate, id);
         if(newPrice != null){
             plate.setPrice(newPrice);
         }
@@ -47,12 +53,12 @@ public class PlateUseCase implements IPlateServicePort {
         platePersistencePort.updatePlate(plate);
     }
 
-    public void validateRestaurantAndRole(Plate plate, Long idOwner) {
+    public void validateRestaurantAndRole(Plate plate, Long id) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
         if(restaurant == null){
             throw new RestaurantNotExistException();
         }
-        if (!Objects.equals(restaurant.getIdOwner(), idOwner)){
+        if (!Objects.equals(restaurant.getIdOwner(), id)){
             throw new UserIsNotOwnerRestaurantException();
         }
     }

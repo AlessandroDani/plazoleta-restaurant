@@ -44,8 +44,7 @@ public class PlateRestController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
-        Long idOwnerRequest = 1L;
-        plateHandler.updatePlate(id, plateUpdateRequestDto, idOwnerRequest);
+        plateHandler.updatePlate(plateUpdateRequestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
