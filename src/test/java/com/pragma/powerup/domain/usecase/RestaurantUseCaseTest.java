@@ -1,56 +1,69 @@
 package com.pragma.powerup.domain.usecase;
 
+import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.domain.spi.IUserGatewayPort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantUseCaseTest {
 
     @Mock
-    private IRestaurantPersistencePort restaurantPersistencePort;
+    private IRestaurantPersistencePort restaurantPersistence;
+
+    @Mock
+    private IUserGatewayPort userGateway;
 
     @InjectMocks
     private RestaurantUseCase restaurantUseCase;
-    private Restaurant testRestaurant;
+    private Restaurant validRestaurant;
 
 
     @BeforeEach
     void setUp() {
-        testRestaurant = new Restaurant();
-        testRestaurant.setName("El Rincón Criollo");
-        testRestaurant.setNit("123456789");
-        testRestaurant.setAddress("Calle 10");
-        testRestaurant.setPhoneNumber("+573001234567");
-        testRestaurant.setUrlLogo("http://logo.com/rc.png");
-        testRestaurant.setIdOwner(2L);
+        validRestaurant = new Restaurant(
+                1L,
+                "RestaurantTest",
+                "123456",
+                "address",
+                "310",
+                "logo.png",
+                5L);
     }
 
-//    @Test
-//    void saveRestaurant_Success() {
-//        when(userGatewayPort.isUserOwner(anyLong())).thenReturn(true);
-//
-//        when(restaurantPersistencePort.getRestaurantByNit(anyString())).thenReturn(null);
-//
-//        assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(testRestaurant));
-//
-//        verify(restaurantPersistencePort, times(1)).saveRestaurant(testRestaurant);
-//    }
+    @Test
+    void saveRestaurant_Success() {
+        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(null);
 
-//    @Test
-//    void saveRestaurant_UserServiceError_ThrowsException() {
-//        when(userGatewayPort.isUserOwner(anyLong()))
-//                .thenThrow(new UserServiceCommunicationException());
-//
-//        assertThrows(UserServiceCommunicationException.class, () ->
-//                restaurantUseCase.saveRestaurant(testRestaurant)
-//        );
-//
-//        verify(restaurantPersistencePort, never()).saveRestaurant(any(Restaurant.class));
-//    }
+
+        assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(validRestaurant));
+
+
+        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
+        verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
+        verify(restaurantPersistence).saveRestaurant(validRestaurant);
+    }
+
+    @Test
+    void saveRestaurant_UserServiceError_ThrowsException() {
+        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(new Restaurant());
+
+        assertThrows(RestaurantAlreadyExistException.class,
+                () -> restaurantUseCase.saveRestaurant(validRestaurant));
+
+        verify(userGateway, never()).isUserOwner(anyLong());
+        verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
+    }
 }

@@ -25,10 +25,11 @@ public class PlateHandler implements IPlateHandler {
     }
 
     @Override
-    public void updatePlate(PlateUpdateRequestDto plateUpdateRequestDto) {
+    public void updatePlate(PlateUpdateRequestDto plateUpdateRequestDto, Long idPlate) {
         plateServicePort.updatePlate(
                 plateUpdateRequestDto.getPrice(),
-                plateUpdateRequestDto.getDescription()
+                plateUpdateRequestDto.getDescription(),
+                idPlate
         );
     }
 }

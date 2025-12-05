@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + roleName)
+                new SimpleGrantedAuthority(roleName)
         );
 
         CustomUserDetails userDetails = new CustomUserDetails(

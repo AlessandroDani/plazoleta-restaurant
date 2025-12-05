@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/plate")
+@RequestMapping("/api/plate")
 @RequiredArgsConstructor
 public class PlateRestController {
     private final  IPlateHandler plateHandler;
@@ -44,7 +44,7 @@ public class PlateRestController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
-        plateHandler.updatePlate(plateUpdateRequestDto);
+        plateHandler.updatePlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

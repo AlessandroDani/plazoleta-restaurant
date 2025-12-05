@@ -6,5 +6,5 @@ import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
 
 public interface IPlateHandler {
     void savePlate(PlateRequestDto plateRequestDto);
-    void updatePlate(PlateUpdateRequestDto plateUpdateRequestDto);
+    void updatePlate(PlateUpdateRequestDto plateUpdateRequestDto, Long idPlate);
 }

@@ -26,7 +26,7 @@ public class WebSecurityConfig {
                 .cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/api/restaurant").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/restaurant").hasRole("ADMINISTRADOR")
                 .requestMatchers(HttpMethod.POST, "/api/plate").hasRole("PROPIETARIO")
                 .requestMatchers(HttpMethod.PUT, "/api/plate/**").hasRole("PROPIETARIO")
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()

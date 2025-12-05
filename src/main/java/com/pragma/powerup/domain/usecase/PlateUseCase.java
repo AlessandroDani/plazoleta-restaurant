@@ -35,14 +35,14 @@ public class PlateUseCase implements IPlateServicePort {
 
 
     @Override
-    public void updatePlate(Long newPrice, String newDescription) {
-        Long id = tokenPort.getUserId();
-        Plate plate =  platePersistencePort.getPlateById(id);
+    public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
+        Long idUser = tokenPort.getUserId();
+        Plate plate =  platePersistencePort.getPlateById(idPlate);
         if(plate == null){
             throw new PlateNotFoundException();
         }
 
-        validateRestaurantAndRole(plate, id);
+        validateRestaurantAndRole(plate, idUser);
         if(newPrice != null){
             plate.setPrice(newPrice);
         }
