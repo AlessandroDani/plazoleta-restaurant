@@ -5,17 +5,16 @@ import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.ITokenPort;
-import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
+import com.pragma.powerup.domain.spi.IUserGatewayPort;
 
 
 public class RestaurantUseCase implements IRestaurantServicePort {
     private final IRestaurantPersistencePort restaurantPersistence;
-    private final ITokenPort tokenPort;
+    private final IUserGatewayPort  userGateway;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence, ITokenPort tokenPort) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence, IUserGatewayPort userGateway) {
         this.restaurantPersistence = restaurantPersistence;
-        this.tokenPort = tokenPort;
+        this.userGateway = userGateway;
     }
 
     @Override
@@ -23,7 +22,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         if (getRestaurantByNit(restaurant.getNit()) != null) {
             throw new RestaurantAlreadyExistException();
         }
-
+        validateOwnerRole(restaurant.getIdOwner());
         restaurantPersistence.saveRestaurant(restaurant);
     }
 
@@ -39,5 +38,9 @@ public class RestaurantUseCase implements IRestaurantServicePort {
             throw new RestaurantNotExistException();
         }
         return restaurantPersistence.getRestaurantById(id);
+    }
+
+    private void validateOwnerRole(Long ownerId) {
+        userGateway.isUserOwner(ownerId);
     }
 }
