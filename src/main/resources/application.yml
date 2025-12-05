@@ -11,6 +11,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+jwt:
+  secret: dev-secret
+
 appTitle: "Microservicio de Gestión de Restaurante, Arquitectura Hexagonal"
 appDescription: "API para la creación y adminsitración de restaurante, platos y pedidos. Parte de la solución Power-up"
 appVersion: "1.0.0"
