@@ -5,6 +5,7 @@ import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,12 +45,11 @@ class RestaurantUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debería guardar el restaurante si el NIT no existe y el usuario tiene rol de Propietario")
     void saveRestaurant_Success() {
         when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(null);
 
-
         assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(validRestaurant));
-
 
         verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
         verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
@@ -57,13 +57,30 @@ class RestaurantUseCaseTest {
     }
 
     @Test
-    void saveRestaurant_UserServiceError_ThrowsException() {
+    @DisplayName("Debería lanzar RestaurantAlreadyExistException si ya existe un restaurante con el mismo NIT")
+    void saveRestaurant_ThrowsRestaurantAlreadyExistException() {
         when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(new Restaurant());
 
         assertThrows(RestaurantAlreadyExistException.class,
                 () -> restaurantUseCase.saveRestaurant(validRestaurant));
 
+        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
         verify(userGateway, never()).isUserOwner(anyLong());
+        verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
+    }
+
+    @Test
+    @DisplayName("Debería propagar la excepción si el UserGateway falla al validar el rol de Propietario")
+    void saveRestaurant_ThrowsExceptionIfOwnerRoleIsInvalid() {
+        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(null);
+
+        doThrow(new RuntimeException("El usuario no tiene el rol de propietario requerido")).when(userGateway).isUserOwner(validRestaurant.getIdOwner());
+
+        assertThrows(RuntimeException.class,
+                () -> restaurantUseCase.saveRestaurant(validRestaurant));
+
+        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
+        verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
     }
 }
