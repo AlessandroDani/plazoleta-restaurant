@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -43,7 +44,8 @@ public class RestaurantRequestDto {
     @JsonProperty("urlLogo")
     private String urlLogo;
 
-    @Schema(description = "Id del propietario del restaurante", example = "PROPIETARIO")
+    @Schema(description = "Id del propietario del restaurante", example = "1")
+    @NotNull(message = "El id del usuario al que se le asigna el restaurante es obligatorio")
     @JsonProperty("id_propietario")
     private Long idOwner;
 }
