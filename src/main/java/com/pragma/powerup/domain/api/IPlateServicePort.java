@@ -5,4 +5,5 @@ import com.pragma.powerup.domain.model.Plate;
 public interface IPlateServicePort {
     void savePlate(Plate plate);
     void updatePlate(Long newPrice, String newDescription, Long idPlate);
+    void updateActivePlate(boolean status,  Long idPlate);
 }

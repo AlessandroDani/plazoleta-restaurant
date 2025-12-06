@@ -43,7 +43,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
     public ResponseEntity<Map<String, String>> handleUserIsNotOwnerRestaurantException(UserIsNotOwnerRestaurantException  ignoredUserIsNotOwnerRestaurantException) {
-        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_DENIED_PERMISSION.getMessage()));
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_OWNER_RESTAURANT.getMessage()));
     }
 
     @ExceptionHandler(RestaurantNotExistException.class)

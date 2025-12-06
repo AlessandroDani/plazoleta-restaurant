@@ -20,6 +20,9 @@ public class WebSecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    private static final String ADMINISTRADOR = "ADMINISTRADOR";
+    private static final String PROPIETARIO = "PROPIETARIO";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -30,9 +33,10 @@ public class WebSecurityConfig {
                 .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/restaurante").hasRole("ADMINISTRADOR")
-                .antMatchers(HttpMethod.POST, "/api/plato").hasRole("PROPIETARIO")
-                .antMatchers(HttpMethod.PUT, "/api/plato/**").hasRole("PROPIETARIO")
+                .antMatchers(HttpMethod.POST, "/api/restaurante").hasRole(ADMINISTRADOR)
+                .antMatchers(HttpMethod.POST, "/api/plato").hasRole(PROPIETARIO)
+                .antMatchers(HttpMethod.PUT, "/api/plato/**").hasRole(PROPIETARIO)
+                .antMatchers(HttpMethod.PATCH, "/api/plato/habilitar/**").hasRole(PROPIETARIO)
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated()

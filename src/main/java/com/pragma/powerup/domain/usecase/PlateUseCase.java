@@ -40,30 +40,40 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
-        Long idUser = tokenPort.getUserId();
-        Plate plate =  platePersistencePort.getPlateById(idPlate);
-        if(plate == null){
-            throw new PlateNotFoundException();
+        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate));
+        if (newPrice != null) {
+            newPlate.setPrice(newPrice);
         }
 
-        validateRestaurantAndOwner(plate, idUser);
-        if(newPrice != null){
-            plate.setPrice(newPrice);
+        if (newDescription != null) {
+            newPlate.setDescription(newDescription);
         }
+        platePersistencePort.updatePlate(newPlate);
+    }
 
-        if(newDescription != null){
-            plate.setDescription(newDescription);
-        }
-        platePersistencePort.updatePlate(plate);
+    @Override
+    public void updateActivePlate(boolean status, Long idPlate) {
+        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate));
+        newPlate.setActive(status);
+        platePersistencePort.updatePlate(newPlate);
     }
 
     public void validateRestaurantAndOwner(Plate plate, Long id) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
-        if(restaurant == null){
+        if (restaurant == null) {
             throw new RestaurantNotExistException();
         }
-        if (!Objects.equals(restaurant.getIdOwner(), id)){
+        if (!Objects.equals(restaurant.getIdOwner(), id)) {
             throw new UserIsNotOwnerRestaurantException();
         }
+    }
+
+    public Plate validPlate(Plate plate) {
+        Long idUser = tokenPort.getUserId();
+        if (plate == null) {
+            throw new PlateNotFoundException();
+        }
+        validateRestaurantAndOwner(plate, idUser);
+        return plate;
     }
 }
