@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import com.pragma.powerup.application.dto.request.PlatePathActiveRequestDto;
 import com.pragma.powerup.application.dto.request.PlateRequestDto;
 import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
@@ -46,6 +47,12 @@ public class PlateRestController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
         plateHandler.updatePlate(plateUpdateRequestDto, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/habilitar/{id}")
+    public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
+        plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
