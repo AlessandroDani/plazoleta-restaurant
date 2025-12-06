@@ -29,7 +29,7 @@ public class PlateUseCase implements IPlateServicePort {
     @Override
     public void savePlate(Plate plate) {
         Long id = tokenPort.getUserId();
-        validateRestaurantAndRole(plate, id);
+        validateRestaurantAndOwner(plate, id);
         if (platePersistencePort.getPlateByName(plate.getName()) != null) {
             throw new PlateAlreadyExistException();
         }
@@ -46,7 +46,7 @@ public class PlateUseCase implements IPlateServicePort {
             throw new PlateNotFoundException();
         }
 
-        validateRestaurantAndRole(plate, idUser);
+        validateRestaurantAndOwner(plate, idUser);
         if(newPrice != null){
             plate.setPrice(newPrice);
         }
@@ -57,7 +57,7 @@ public class PlateUseCase implements IPlateServicePort {
         platePersistencePort.updatePlate(plate);
     }
 
-    public void validateRestaurantAndRole(Plate plate, Long id) {
+    public void validateRestaurantAndOwner(Plate plate, Long id) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
         if(restaurant == null){
             throw new RestaurantNotExistException();
