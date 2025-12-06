@@ -29,9 +29,6 @@ public class PlateUseCase implements IPlateServicePort {
     @Override
     public void savePlate(Plate plate) {
         Long id = tokenPort.getUserId();
-        if (platePersistencePort.getPlateByName(plate.getName()) != null) {
-            throw new PlateAlreadyExistException();
-        }
         validateRestaurantAndRole(plate, id);
         if (platePersistencePort.getPlateByName(plate.getName()) != null) {
             throw new PlateAlreadyExistException();
