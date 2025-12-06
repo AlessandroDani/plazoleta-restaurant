@@ -1,11 +1,9 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
-import com.pragma.powerup.application.dto.response.RestaurantResponseDto;
 import com.pragma.powerup.application.handler.impl.RestaurantHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -35,25 +33,5 @@ public class RestaurantRestController {
     public ResponseEntity<Void> saveRestaurant(@Valid @RequestBody RestaurantRequestDto restaurantRequestDto) {
         restaurantHandler.save(restaurantRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "Obtener un restaurante por su NIT")
-    @ApiResponse(responseCode = "200", description = "Restaurante encontrado", content = @Content(mediaType = "application/json"))
-    @GetMapping("/nit/{nit}")
-    public ResponseEntity<RestaurantResponseDto> getRestaurantByNit(@PathVariable String nit) {
-        RestaurantResponseDto restaurant = restaurantHandler.getRestaurantByNit(nit);
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Obtener un restaurante por su ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Restaurante encontrado", content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = RestaurantResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Restaurante no encontrado", content = @Content),
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<RestaurantResponseDto> getRestaurantByNit(@PathVariable Long id) {
-        RestaurantResponseDto restaurant = restaurantHandler.getRestaurantById(id);
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 }
