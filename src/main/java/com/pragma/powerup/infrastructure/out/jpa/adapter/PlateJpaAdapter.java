@@ -33,6 +33,12 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
     }
 
     @Override
+    public Plate getPlateByName(String name) {
+        Optional<PlateEntity> plateEntity = plateRepository.findByName(name);
+        return plateEntity.map(plateEntityMapper::toPlate).orElse(null);
+    }
+
+    @Override
     public void updatePlate(Plate plate) {
         savePlate(plate);
     }
