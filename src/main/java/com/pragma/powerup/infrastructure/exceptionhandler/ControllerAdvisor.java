@@ -38,7 +38,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(RestaurantAlreadyExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantAlreadyExistException(RestaurantAlreadyExistException  ignoredRestaurantAlreadyExistException) {
-        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
     }
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
@@ -58,7 +58,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(PlateAlreadyExistException.class)
     public ResponseEntity<Map<String, String>> handlePlateAlreadyExistException(PlateAlreadyExistException ignoredPlateAlreadyExistException) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_ALREADY_EXIST.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_ALREADY_EXIST.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

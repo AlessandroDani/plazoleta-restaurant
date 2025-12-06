@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/restaurant")
+@RequestMapping("/api/restaurante")
 @RequiredArgsConstructor
 public class RestaurantRestController {
 
@@ -38,11 +38,7 @@ public class RestaurantRestController {
     }
 
     @Operation(summary = "Obtener un restaurante por su NIT")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Restaurante encontrado",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantResponseDto.class))),
-    })
+    @ApiResponse(responseCode = "200", description = "Restaurante encontrado", content = @Content(mediaType = "application/json"))
     @GetMapping("/nit/{nit}")
     public ResponseEntity<RestaurantResponseDto> getRestaurantByNit(@PathVariable String nit) {
         RestaurantResponseDto restaurant = restaurantHandler.getRestaurantByNit(nit);
@@ -52,7 +48,7 @@ public class RestaurantRestController {
     @Operation(summary = "Obtener un restaurante por su ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurante encontrado", content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = RestaurantResponseDto.class))),
+                    schema = @Schema(implementation = RestaurantResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "Restaurante no encontrado", content = @Content),
     })
     @GetMapping("/{id}")

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/plate")
+@RequestMapping("/api/plato")
 @RequiredArgsConstructor
 public class PlateRestController {
     private final  IPlateHandler plateHandler;
@@ -23,9 +23,10 @@ public class PlateRestController {
     @Operation(summary = "Agregar un nuevo plato")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Plato creado con éxito"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos."),
-            @ApiResponse(responseCode = "403", description = "Usuario no autorizado o rol inválido."),
-            @ApiResponse(responseCode = "404", description = "El restaurante asociado no existe."),
+            @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
+            @ApiResponse(responseCode = "403", description = "Usuario no autorizado."),
+            @ApiResponse(responseCode = "404", description = "El restaurante no existe con ese identificador."),
+            @ApiResponse(responseCode = "409", description = "Ya existe un plato con ese nombre."),
             @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
     })
     @PostMapping
@@ -37,8 +38,8 @@ public class PlateRestController {
     @Operation(summary = "Modificar un plato (descripcion y precio)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Plato actualizado con éxito."),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos."),
-            @ApiResponse(responseCode = "403", description = "El usuario no es propietario del restaurante."),
+            @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
+            @ApiResponse(responseCode = "403", description = "El usuario no autorizado."),
             @ApiResponse(responseCode = "404", description = "El plato no existe."),
             @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
     })
