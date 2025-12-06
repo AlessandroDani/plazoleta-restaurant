@@ -21,6 +21,9 @@ public class Plate {
         this.active = active;
     }
 
+    public Plate() {
+    }
+
     public Long getId() {
         return id;
     }

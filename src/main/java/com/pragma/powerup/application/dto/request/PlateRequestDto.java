@@ -13,9 +13,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class PlateRequestDto {
 
-    @JsonProperty("id_usuario_solicitante")
-    private Long idRequestUser;
-
     @Schema(description = "Nombre del plato", example = "Pabellon")
     @NotBlank(message = "El nombre es obligatorio")
     @JsonProperty("nombre")

@@ -1,11 +1,8 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
-import com.pragma.powerup.domain.exception.PlateNotFoundException;
-import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
-import com.pragma.powerup.domain.exception.RestaurantNotExistException;
-import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
-import com.pragma.powerup.infrastructure.exception.OwnerNotFoundException;
+import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +21,8 @@ public class ControllerAdvisor {
 
     private static final String MESSAGE = "message";
 
-    @ExceptionHandler(OwnerNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleOwnerNotFoundException(OwnerNotFoundException ignoredOwnerNotFoundException) {
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleOwnerNotFoundException(RoleNotFoundException ignoredOwnerNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.NO_DATA_FOUND.getMessage()));
     }
 
@@ -41,7 +38,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(RestaurantAlreadyExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantAlreadyExistException(RestaurantAlreadyExistException  ignoredRestaurantAlreadyExistException) {
-        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
     }
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
@@ -57,6 +54,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(PlateNotFoundException.class)
     public ResponseEntity<Map<String, String>> handlePlateNotFoundException(PlateNotFoundException ignoredPlateNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_FOUND.getMessage()));
+    }
+
+    @ExceptionHandler(PlateAlreadyExistException.class)
+    public ResponseEntity<Map<String, String>> handlePlateAlreadyExistException(PlateAlreadyExistException ignoredPlateAlreadyExistException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_ALREADY_EXIST.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
