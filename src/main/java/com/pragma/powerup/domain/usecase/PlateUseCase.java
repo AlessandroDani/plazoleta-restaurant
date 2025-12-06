@@ -1,6 +1,7 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IPlateServicePort;
+import com.pragma.powerup.domain.exception.PlateAlreadyExistException;
 import com.pragma.powerup.domain.exception.PlateNotFoundException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
@@ -28,6 +29,9 @@ public class PlateUseCase implements IPlateServicePort {
     @Override
     public void savePlate(Plate plate) {
         Long id = tokenPort.getUserId();
+        if (platePersistencePort.getPlateByName(plate.getName()) != null) {
+            throw new PlateAlreadyExistException();
+        }
         validateRestaurantAndRole(plate, id);
         plate.setActive(true);
         platePersistencePort.savePlate(plate);
