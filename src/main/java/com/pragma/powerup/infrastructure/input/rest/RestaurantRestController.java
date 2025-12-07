@@ -45,10 +45,10 @@ public class RestaurantRestController {
             @ApiResponse(responseCode = "404", description = "No se encontraron restaurantes para los criterios de búsqueda", content = @Content),
     })
     @GetMapping
-    public ResponseEntity<List<RestaurantResponseClientDto>> getAllRestaurant(@Parameter(description = "Número de página a buscar (inicia en 0)", example = "0") @RequestParam(defaultValue = "0") int page,
-                                                                              @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<List<RestaurantResponseClientDto>> getAllRestaurant(
+            @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(restaurantHandler.getAllRestaurant(page, size));
     }
-
 
 }
