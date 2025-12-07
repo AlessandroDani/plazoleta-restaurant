@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/platos")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PlateRestController {
     private final  IPlateHandler plateHandler;
@@ -48,13 +48,13 @@ public class PlateRestController {
             @ApiResponse(responseCode = "404", description = "El plato no existe."),
             @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/platos/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
         plateHandler.updatePlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/platos/{id}")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
         plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -66,7 +66,7 @@ public class PlateRestController {
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
             @ApiResponse(responseCode = "404", description = "No se encontraron platos para los criterios de búsqueda", content = @Content),
     })
-    @GetMapping("/{id}/platos")
+    @GetMapping("/restaurantes/{id}/platos")
     public ResponseEntity<List<PlateResponseDto>> getPlatesByRestaurant(
             @Parameter(description = "ID del restaurante cuyos platos se desean listar", example = "1") @PathVariable Long id,
             @Parameter(description = "Nombre de la categoría para filtrar (opcional)", example = "Entradas")  @RequestParam(required = false) String category,
