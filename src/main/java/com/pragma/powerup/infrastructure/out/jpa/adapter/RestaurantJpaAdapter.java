@@ -1,6 +1,5 @@
 package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
-import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.RestaurantEntity;
@@ -36,13 +35,8 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     @Override
     public List<Restaurant> getAllRestaurant(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-
         Page<RestaurantEntity> restaurantPage = restaurantRepository.findAll(pageable);
-
         List<RestaurantEntity> restaurantEntityList = restaurantPage.getContent();
-        if(restaurantEntityList.isEmpty()){
-            throw new RestaurantNotFoundException();
-        }
         return restaurantEntityMapper.toRestaurantList(restaurantEntityList);
     }
 }
