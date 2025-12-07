@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/restaurantes").hasRole(ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/restaurantes").hasRole(CLIENT)
+                .antMatchers(HttpMethod.GET, "/api/restaurantes/{id}/platos").hasRole(CLIENT)
                 .antMatchers(HttpMethod.POST, "/api/platos").hasRole(OWNER)
                 .antMatchers(HttpMethod.PUT, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)

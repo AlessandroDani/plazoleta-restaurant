@@ -3,8 +3,11 @@ package com.pragma.powerup.infrastructure.input.rest;
 import com.pragma.powerup.application.dto.request.PlatePathActiveRequestDto;
 import com.pragma.powerup.application.dto.request.PlateRequestDto;
 import com.pragma.powerup.application.dto.request.PlateUpdateRequestDto;
+import com.pragma.powerup.application.dto.response.PlateResponseDto;
 import com.pragma.powerup.application.handler.IPlateHandler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/platos")
@@ -54,6 +58,21 @@ public class PlateRestController {
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
         plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "Listar todos los platos de un restaurante paginados y filtrados por categoria")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Platos obtenidos", content = @Content),
+            @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No se encontraron platos para los criterios de búsqueda", content = @Content),
+    })
+    @GetMapping("/{id}/platos")
+    public ResponseEntity<List<PlateResponseDto>> getPlatesByRestaurant(
+            @Parameter(description = "ID del restaurante cuyos platos se desean listar", example = "1") @PathVariable Long id,
+            @Parameter(description = "Nombre de la categoría para filtrar (opcional)", example = "Entradas")  @RequestParam(required = false) String category,
+            @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0")  @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Número de elementos por página", example = "5")  @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(plateHandler.getPlatesByRestaurant(id, page, size, category));
     }
 
 }
