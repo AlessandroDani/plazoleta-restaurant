@@ -22,6 +22,7 @@ public class WebSecurityConfig {
 
     private static final String ADMIN = "ADMINISTRADOR";
     private static final String OWNER = "PROPIETARIO";
+    private static final String CLIENT = "CLIENTE";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,7 +35,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/restaurantes").hasRole(ADMIN)
-                .antMatchers(HttpMethod.GET, "/api/restaurantes").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/restaurantes").hasRole(CLIENT)
                 .antMatchers(HttpMethod.POST, "/api/platos").hasRole(OWNER)
                 .antMatchers(HttpMethod.PUT, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)
