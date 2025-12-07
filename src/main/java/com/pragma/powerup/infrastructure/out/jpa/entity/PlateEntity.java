@@ -21,8 +21,9 @@ public class PlateEntity {
     @Column(name = "nombre")
     private String name;
 
-    @Column(name = "id_categoria")
-    private Long idCategory;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private CategoryEntity category;
 
     @Column(name = "descripcion")
     private String description;
