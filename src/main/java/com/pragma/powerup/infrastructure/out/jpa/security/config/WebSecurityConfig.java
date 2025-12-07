@@ -20,8 +20,9 @@ public class WebSecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    private static final String ADMINISTRADOR = "ADMINISTRADOR";
-    private static final String PROPIETARIO = "PROPIETARIO";
+    private static final String ADMIN = "ADMINISTRADOR";
+    private static final String OWNER = "PROPIETARIO";
+    private static final String CLIENT = "CLIENTE";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,10 +34,11 @@ public class WebSecurityConfig {
                 .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/restaurante").hasRole(ADMINISTRADOR)
-                .antMatchers(HttpMethod.POST, "/api/plato").hasRole(PROPIETARIO)
-                .antMatchers(HttpMethod.PUT, "/api/plato/**").hasRole(PROPIETARIO)
-                .antMatchers(HttpMethod.PATCH, "/api/plato/habilitar/**").hasRole(PROPIETARIO)
+                .antMatchers(HttpMethod.POST, "/api/restaurantes").hasRole(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/restaurantes").hasRole(CLIENT)
+                .antMatchers(HttpMethod.POST, "/api/platos").hasRole(OWNER)
+                .antMatchers(HttpMethod.PUT, "/api/platos/{id}").hasRole(OWNER)
+                .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated()

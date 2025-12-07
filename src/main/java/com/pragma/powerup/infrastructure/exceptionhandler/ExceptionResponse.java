@@ -4,14 +4,17 @@ import lombok.Getter;
 
 @Getter
 public enum ExceptionResponse {
-    NO_DATA_FOUND("El ID del propietario no existe en el sistema de usuarios"),
-    USER_NOT_OWNER_RESTAURANT("El usuario no es propietario del restaurante"),
-    USER_DENIED_PERMISSION("El rol del usuario no es propietario"),
-    RESTAURANT_ALREADY_EXIST("Ya existe un restaurante con ese NIT en el sistema de restaurantes"),
-    RESTAURANT_NOT_FOUND("El restaurante no existe con ese identificador"),
-    PLATE_ALREADY_EXIST("Ya existe un plato con ese nombre"),
-    PLATE_NOT_FOUND("El plato no existe en el sistema"),
-    SERVICE_UNAVAILABLE("Error del servicio de usuarios");
+    NO_DATA_FOUND("El usuario con el ID especificado no fue encontrado."),
+    USER_NOT_OWNER_RESTAURANT("El usuario autenticado no es el propietario de este restaurante."),
+    USER_DENIED_PERMISSION("El rol del usuario no está autorizado para esta operación."),
+    SERVICE_UNAVAILABLE("El servicio de usuarios no está disponible en este momento."),
+
+    RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),
+    RESTAURANT_NOT_EXIST("El restaurante con el ID solicitado no existe."),
+    RESTAURANT_NOT_FOUND("No se encontraron restaurantes para los criterios de búsqueda."),
+
+    PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
+    PLATE_NOT_FOUND("El plato solicitado no fue encontrado.");
 
     private final String message;
 

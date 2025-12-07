@@ -1,6 +1,7 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
+import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,5 +85,45 @@ class RestaurantUseCaseTest {
         verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
         verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
+    }
+
+    @Test
+    @DisplayName("Debería retornar la lista de restaurantes paginada y ordenada correctamente")
+    void getAllRestaurant_Success() {
+        int page = 0;
+        int size = 5;
+
+        List<Restaurant> mockList = List.of(
+                new Restaurant(2L, "Zeta", "777", "addr1", "311", "logo.png", 9L),
+                new Restaurant(3L, "Alfa", "888", "addr2", "312", "logo.png", 9L)
+        );
+
+        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(mockList);
+
+        List<Restaurant> result = assertDoesNotThrow(
+                () -> restaurantUseCase.getAllRestaurant(page, size),
+                "No debería lanzar excepción cuando se encuentran restaurantes."
+        );
+
+        verify(restaurantPersistence).getAllRestaurant(page, size);
+        org.junit.jupiter.api.Assertions.assertNotNull(result);
+        org.junit.jupiter.api.Assertions.assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("Debería lanzar RestaurantNotFoundException si la lista de restaurantes está vacía")
+    void getAllRestaurant_ThrowsRestaurantNotFoundException() {
+        int page = 1;
+        int size = 10;
+
+        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(List.of());
+
+        assertThrows(
+                RestaurantNotFoundException.class,
+                () -> restaurantUseCase.getAllRestaurant(page, size),
+                "Debería lanzar RestaurantNotFoundException cuando la lista está vacía."
+        );
+
+        verify(restaurantPersistence).getAllRestaurant(page, size);
     }
 }

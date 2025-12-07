@@ -36,9 +36,9 @@ class PlateUseCaseTest {
     @InjectMocks
     private PlateUseCase plateUseCase;
 
-    private final Long RESTAURANT_ID = 1L;
-    private final Long OWNER_ID = 100L;
-    private final Long OTHER_USER_ID = 200L;
+    private static final Long RESTAURANT_ID = 1L;
+    private static final Long OWNER_ID = 100L;
+    private static final Long OTHER_USER_ID = 200L;
     private Plate testPlate;
     private Restaurant testRestaurant;
 
@@ -187,6 +187,86 @@ class PlateUseCaseTest {
         when(platePersistencePort.getPlateById(plateId)).thenReturn(existingPlate);
 
         assertThrows(UserIsNotOwnerRestaurantException.class, () -> plateUseCase.updatePlate(10000L, "Desc", plateId));
+        verify(platePersistencePort, never()).updatePlate(any(Plate.class));
+    }
+
+    @Test
+    @DisplayName("Debería habilitar el plato y llamar al puerto de persistencia")
+    void updateActivePlate_EnablePlate_Success() {
+        Long plateId = 5L;
+        boolean newStatus = true;
+
+        Plate existingPlate = new Plate();
+        existingPlate.setId(plateId);
+        existingPlate.setIdRestaurant(RESTAURANT_ID);
+        existingPlate.setActive(false);
+
+        when(tokenPort.getUserId()).thenReturn(OWNER_ID);
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(testRestaurant);
+        when(platePersistencePort.getPlateById(plateId)).thenReturn(existingPlate);
+
+        assertDoesNotThrow(() -> plateUseCase.updateActivePlate(newStatus, plateId));
+
+        assertTrue(existingPlate.isActive());
+        verify(platePersistencePort).updatePlate(existingPlate);
+    }
+
+    @Test
+    @DisplayName("Debería deshabilitar el plato y llamar al puerto de persistencia")
+    void updateActivePlate_DisablePlate_Success() {
+        Long plateId = 6L;
+        boolean newStatus = false;
+
+        Plate existingPlate = new Plate();
+        existingPlate.setId(plateId);
+        existingPlate.setIdRestaurant(RESTAURANT_ID);
+        existingPlate.setActive(true);
+
+
+        when(tokenPort.getUserId()).thenReturn(OWNER_ID);
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(testRestaurant);
+        when(platePersistencePort.getPlateById(plateId)).thenReturn(existingPlate);
+
+        assertDoesNotThrow(() -> plateUseCase.updateActivePlate(newStatus, plateId));
+
+        assertFalse(existingPlate.isActive());
+        verify(platePersistencePort).updatePlate(existingPlate);
+    }
+
+    @Test
+    @DisplayName("Debería lanzar PlateNotFoundException si el plato a cambiar estado no existe")
+    void updateActivePlate_ThrowsPlateNotFoundException() {
+        Long nonExistentPlateId = 99L;
+        boolean newStatus = true;
+
+
+        when(platePersistencePort.getPlateById(nonExistentPlateId)).thenReturn(null);
+
+        assertThrows(PlateNotFoundException.class,
+                () -> plateUseCase.updateActivePlate(newStatus, nonExistentPlateId));
+
+        verify(platePersistencePort, never()).updatePlate(any(Plate.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar UserIsNotOwnerRestaurantException si un usuario que no es propietario intenta cambiar el estado")
+    void updateActivePlate_ThrowsUserIsNotOwnerRestaurantException() {
+        Long plateId = 5L;
+        boolean newStatus = false;
+
+        Plate existingPlate = new Plate();
+        existingPlate.setId(plateId);
+        existingPlate.setIdRestaurant(RESTAURANT_ID);
+        existingPlate.setActive(true);
+
+        when(tokenPort.getUserId()).thenReturn(OTHER_USER_ID);
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(testRestaurant);
+        when(platePersistencePort.getPlateById(plateId)).thenReturn(existingPlate);
+
+        assertThrows(UserIsNotOwnerRestaurantException.class,
+                () -> plateUseCase.updateActivePlate(newStatus, plateId));
+
+        assertTrue(existingPlate.isActive());
         verify(platePersistencePort, never()).updatePlate(any(Plate.class));
     }
 

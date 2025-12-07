@@ -2,9 +2,12 @@ package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
+import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
+
+import java.util.List;
 
 
 public class RestaurantUseCase implements IRestaurantServicePort {
@@ -23,5 +26,14 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         }
         userGateway.isUserOwner(restaurant.getIdOwner());
         restaurantPersistence.saveRestaurant(restaurant);
+    }
+
+    @Override
+    public List<Restaurant> getAllRestaurant(int page, int size) {
+        List<Restaurant> restaurantList = restaurantPersistence.getAllRestaurant(page, size);
+        if(restaurantList.isEmpty()){
+            throw new RestaurantNotFoundException();
+        }
+        return restaurantList;
     }
 }
