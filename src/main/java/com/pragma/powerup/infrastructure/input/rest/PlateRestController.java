@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/plato")
+@RequestMapping("/api/platos")
 @RequiredArgsConstructor
 public class PlateRestController {
     private final  IPlateHandler plateHandler;
@@ -50,7 +50,7 @@ public class PlateRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/habilitar/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
         plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
         return new ResponseEntity<>(HttpStatus.OK);
