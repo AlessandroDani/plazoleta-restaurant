@@ -34,7 +34,7 @@ public class PlateRestController {
             @ApiResponse(responseCode = "409", description = "Ya existe un plato con ese nombre."),
             @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
     })
-    @PostMapping
+    @PostMapping("/platos")
     public ResponseEntity<Void> savePlate(@Valid @RequestBody PlateRequestDto plateRequestDto) {
         plateHandler.savePlate(plateRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);

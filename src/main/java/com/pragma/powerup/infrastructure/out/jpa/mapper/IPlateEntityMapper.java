@@ -15,7 +15,9 @@ public interface IPlateEntityMapper{
     PlateEntity toEntity(Plate plate);
 
     @Mapping(source = "restaurant.id", target = "idRestaurant")
+    @Mapping(source = "category.id", target = "idCategory")
     Plate toPlate(PlateEntity plateEntity);
+
 
     List<Plate> toPlateList(List<PlateEntity> plateEntities);
 

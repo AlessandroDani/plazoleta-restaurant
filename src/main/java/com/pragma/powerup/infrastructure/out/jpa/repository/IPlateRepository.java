@@ -11,7 +11,7 @@ public interface IPlateRepository extends JpaRepository<PlateEntity, Long> {
 
     Optional<PlateEntity> findByName(String name);
 
-    Page<PlateEntity> findByRestaurantId(Long idRestaurant, Pageable pageable);
+    Page<PlateEntity> findByRestaurantIdAndActiveTrue(Long idRestaurant, Pageable pageable);
 
-    Page<PlateEntity> findByRestaurantIdAndCategoryName(Long idRestaurant, String category,  Pageable pageable);
+    Page<PlateEntity> findByRestaurantIdAndCategoryNameAndActiveTrue(Long idRestaurant, String category,  Pageable pageable);
 }

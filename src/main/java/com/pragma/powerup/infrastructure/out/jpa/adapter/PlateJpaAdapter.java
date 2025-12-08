@@ -54,9 +54,9 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
         Page<PlateEntity> platePage;
 
         if (category != null && !category.isEmpty()) {
-            platePage = plateRepository.findByRestaurantIdAndCategoryName(idRestaurant, category, pageable);
+            platePage = plateRepository.findByRestaurantIdAndCategoryNameAndActiveTrue(idRestaurant, category, pageable);
         } else {
-            platePage = plateRepository.findByRestaurantId(idRestaurant, pageable);
+            platePage = plateRepository.findByRestaurantIdAndActiveTrue(idRestaurant, pageable);
         }
 
         return plateEntityMapper.toPlateList(platePage.getContent());
