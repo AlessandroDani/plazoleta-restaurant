@@ -7,7 +7,11 @@ import com.pragma.powerup.infrastructure.out.jpa.mapper.IPlateEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IPlateRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,5 +45,20 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
     @Override
     public void updatePlate(Plate plate) {
         savePlate(plate);
+    }
+
+    @Override
+    public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+
+        Page<PlateEntity> platePage;
+
+        if (category != null && !category.isEmpty()) {
+            platePage = plateRepository.findByRestaurantIdAndCategoryNameAndActiveTrue(idRestaurant, category, pageable);
+        } else {
+            platePage = plateRepository.findByRestaurantIdAndActiveTrue(idRestaurant, pageable);
+        }
+
+        return plateEntityMapper.toPlateList(platePage.getContent());
     }
 }

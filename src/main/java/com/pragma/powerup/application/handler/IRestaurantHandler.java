@@ -9,5 +9,4 @@ public interface IRestaurantHandler {
 
     void save(RestaurantRequestDto restaurantRequestDto);
     List<RestaurantResponseClientDto> getAllRestaurant(int page, int size);
-
 }

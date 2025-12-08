@@ -24,15 +24,7 @@ public class PlateResponseDto {
     @JsonProperty("precio")
     private Long price;
 
-    @Schema(description = "Id del restaurante al cual pertenece el plato", example = "1")
-    @JsonProperty("id_restaurante")
-    private Long idRestaurante;
-
     @Schema(description = "Url de la imagen del plato", example = "https://img.mi-dominio.com/logo/example.png")
     @JsonProperty("url_imagen")
     private String urlImagen;
-
-    @Schema(description = "El estado del plato", example = "true")
-    @JsonProperty("activo")
-    private boolean active;
 }

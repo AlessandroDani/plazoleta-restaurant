@@ -11,6 +11,7 @@ import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.ITokenPort;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -58,6 +59,19 @@ public class PlateUseCase implements IPlateServicePort {
         platePersistencePort.updatePlate(newPlate);
     }
 
+    @Override
+    public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(idRestaurant);
+        if (restaurant == null) {
+            throw new RestaurantNotExistException();
+        }
+        List<Plate> plateList = platePersistencePort.getPlatesByRestaurant(idRestaurant, page, size, category);
+        if(plateList.isEmpty()){
+            throw new PlateNotFoundException();
+        }
+        return plateList;
+    }
+
     public void validateRestaurantAndOwner(Plate plate, Long id) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
         if (restaurant == null) {
@@ -69,10 +83,10 @@ public class PlateUseCase implements IPlateServicePort {
     }
 
     public Plate validPlate(Plate plate) {
-        Long idUser = tokenPort.getUserId();
         if (plate == null) {
             throw new PlateNotFoundException();
         }
+        Long idUser = tokenPort.getUserId();
         validateRestaurantAndOwner(plate, idUser);
         return plate;
     }
