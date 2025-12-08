@@ -8,19 +8,19 @@ public class Order {
     private Long id;
     private Long idClient;
     private LocalDate date;
-    private String status ;
+    private OrderStatus status ;
     private Long idChef;
     private Long idRestaurant;
-    private List<OrderPlate> orders;
+    private List<OrderPlate> plates;
 
-    public Order(Long id, Long idClient, LocalDate date, String status, Long idChef, Long idRestaurant, List<OrderPlate> orders) {
+    public Order(Long id, Long idClient, LocalDate date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
         this.status = status;
         this.idChef = idChef;
         this.idRestaurant = idRestaurant;
-        this.orders = orders;
+        this.plates = plates;
     }
 
     public Long getId() {
@@ -47,11 +47,11 @@ public class Order {
         this.date = date;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
@@ -71,11 +71,11 @@ public class Order {
         this.idRestaurant = idRestaurant;
     }
 
-    public List<OrderPlate> getOrders() {
-        return orders;
+    public List<OrderPlate> getPlates() {
+        return plates;
     }
 
-    public void setOrders(List<OrderPlate> orders) {
-        this.orders = orders;
+    public void setPlates(List<OrderPlate> plates) {
+        this.plates = plates;
     }
 }

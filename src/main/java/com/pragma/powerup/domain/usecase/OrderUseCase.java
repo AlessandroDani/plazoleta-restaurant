@@ -30,15 +30,16 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void saveOrder(Order order) {
+        Long userId = tokenPort.getUserId();
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(order.getIdRestaurant());
         if (restaurant == null) {
             throw new RestaurantNotExistException();
         }
-        if(orderPersistencePort.hasActiveOrder(tokenPort.getUserId())){
+        if(orderPersistencePort.hasActiveOrder(userId)){
             throw new UserHasActiveOrderException();
         }
 
-        for(OrderPlate orderPlate : order.getOrders()){
+        for(OrderPlate orderPlate : order.getPlates()){
             Plate plate = platePersistencePort.getPlateById(orderPlate.getIdPlate());
             if(plate == null){
                 throw new PlateNotFoundException();
@@ -49,7 +50,8 @@ public class OrderUseCase implements IOrderServicePort {
         }
 
         order.setDate(LocalDate.now());
-        order.setStatus(OrderStatus.PENDING.getDbValue());
+        order.setStatus(OrderStatus.PENDING);
+        order.setIdClient(userId);
         orderPersistencePort.saveOrder(order);
     }
 }
