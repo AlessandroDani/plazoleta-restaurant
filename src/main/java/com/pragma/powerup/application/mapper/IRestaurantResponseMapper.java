@@ -13,13 +13,11 @@ import java.util.stream.Collectors;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IRestaurantResponseMapper {
 
+    RestaurantResponseClientDto toRestaurantResponseClientDto(Restaurant restaurant);
+
     default List<RestaurantResponseClientDto> toResponseList(List<Restaurant> restaurantList) {
         return restaurantList.stream()
-                .map(restaurant -> {
-                    RestaurantResponseClientDto restaurantResponseClientDto = new RestaurantResponseClientDto();
-                    restaurantResponseClientDto.setName(restaurant.getName());
-                    restaurantResponseClientDto.setUrlLogo(restaurant.getUrlLogo());
-                    return restaurantResponseClientDto;
-                }).collect(Collectors.toList());
+                .map(this::toRestaurantResponseClientDto)
+                .collect(Collectors.toList());
     }
 }
