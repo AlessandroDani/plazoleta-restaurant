@@ -14,7 +14,10 @@ public enum ExceptionResponse {
     RESTAURANT_NOT_FOUND("No se encontraron restaurantes para los criterios de búsqueda."),
 
     PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
-    PLATE_NOT_FOUND("El plato solicitado no fue encontrado.");
+    PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
+    PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante"),
+
+    USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo");
 
     private final String message;
 
