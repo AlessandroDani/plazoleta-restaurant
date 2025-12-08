@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -25,8 +25,7 @@ public class OrderEntity {
     private Long idClient;
 
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "estado")
     @Enumerated(EnumType.STRING)
