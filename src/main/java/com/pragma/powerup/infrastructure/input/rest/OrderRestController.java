@@ -30,7 +30,7 @@ public class OrderRestController {
             @ApiResponse(responseCode = "404", description = "El restaurante no existe con ese identificador."),
             @ApiResponse(responseCode = "409", description = "Plato no pertenece a ese restaurante"),
     })
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Void> saveOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
         orderHandler.saveOrder(orderRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
