@@ -29,7 +29,6 @@ public class OrderEntity {
     private LocalDate date;
 
     @Column(name = "estado")
-    @Enumerated(EnumType.STRING)
     @Convert(converter = OrderStatusConverter.class)
     private OrderStatus status ;
 
