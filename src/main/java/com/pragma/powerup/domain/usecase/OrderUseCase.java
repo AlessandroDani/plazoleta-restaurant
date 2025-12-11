@@ -39,7 +39,8 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
-        return restaurantPersistencePort.getRestaurantById(idRestaurant).orElseThrow(RestaurantNotExistException::new);
+        return restaurantPersistencePort.getRestaurantById(idRestaurant)
+                .orElseThrow(RestaurantNotExistException::new);
     }
 
     private void validateOrderStatus(Long userId) {

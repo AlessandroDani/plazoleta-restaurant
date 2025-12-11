@@ -30,10 +30,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public List<Restaurant> getAllRestaurant(int page, int size) {
-        List<Restaurant> restaurantList = restaurantPersistence.getAllRestaurant(page, size);
-        if(restaurantList.isEmpty()){
-            throw new RestaurantNotFoundException();
-        }
-        return restaurantList;
+        return restaurantPersistence.getAllRestaurant(page, size)
+                .orElseThrow(RestaurantNotFoundException::new);
     }
 }

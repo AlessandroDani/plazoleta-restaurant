@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
@@ -24,13 +25,10 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     }
 
     @Override
-    public Restaurant getRestaurantByNit(String nit) {
-        return restaurantEntityMapper.toRestaurant(restaurantRepository.getRestaurantByNit(nit));
+    public Optional<Restaurant> getRestaurantById(Long id) {
+        return restaurantRepository.findById(id).map(restaurantEntityMapper::toRestaurant);
     }
 
-    public Restaurant getRestaurantById(Long id) {
-        return restaurantEntityMapper.toRestaurant(restaurantRepository.getRestaurantById(id));
-    }
 
     @Override
     public boolean existsRestaurantByNit(String nit) {
@@ -38,10 +36,10 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     }
 
     @Override
-    public List<Restaurant> getAllRestaurant(int page, int size) {
+    public Optional<List<Restaurant>> getAllRestaurant(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
         Page<RestaurantEntity> restaurantPage = restaurantRepository.findAll(pageable);
         List<RestaurantEntity> restaurantEntityList = restaurantPage.getContent();
-        return restaurantEntityMapper.toRestaurantList(restaurantEntityList);
+        return Optional.ofNullable(restaurantEntityMapper.toRestaurantList(restaurantEntityList));
     }
 }
