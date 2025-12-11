@@ -4,7 +4,6 @@ import com.pragma.powerup.domain.api.IPlateServicePort;
 import com.pragma.powerup.domain.exception.PlateAlreadyExistException;
 import com.pragma.powerup.domain.exception.PlateNotFoundException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
-import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
 import com.pragma.powerup.domain.model.Plate;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
@@ -12,7 +11,6 @@ import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.ITokenPort;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public class PlateUseCase implements IPlateServicePort {
@@ -40,20 +38,14 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
-        Plate newPlate = validPlate(idPlate);
-        if (newPrice != null) {
-            newPlate.setPrice(newPrice);
-        }
-
-        if (newDescription != null) {
-            newPlate.setDescription(newDescription);
-        }
+        Plate newPlate = getPlateAndValidateOwner(idPlate);
+        newPlate.updateDetails(newPrice, newDescription);
         platePersistencePort.updatePlate(newPlate);
     }
 
     @Override
     public void updateActivePlate(boolean status, Long idPlate) {
-        Plate newPlate = validPlate(idPlate);
+        Plate newPlate = getPlateAndValidateOwner(idPlate);
         newPlate.setActive(status);
         platePersistencePort.updatePlate(newPlate);
     }
@@ -62,28 +54,18 @@ public class PlateUseCase implements IPlateServicePort {
     public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
         restaurantPersistencePort.getRestaurantById(idRestaurant).
                 orElseThrow(RestaurantNotExistException::new);
-
-        List<Plate> plateList = platePersistencePort.getPlatesByRestaurant(idRestaurant, page, size, category);
-        if (plateList.isEmpty()) {
-            throw new PlateNotFoundException();
-        }
-        return plateList;
+        return platePersistencePort.getPlatesByRestaurant(idRestaurant, page, size, category);
     }
 
-    public Plate validPlate(Long idPlate) {
-        Long idUser = tokenPort.getUserId();
+    private Plate getPlateAndValidateOwner(Long idPlate) {
         Plate plate = platePersistencePort.getPlateById(idPlate).orElseThrow(PlateNotFoundException::new);
-        validateRestaurantAndOwner(plate.getIdRestaurant(), idUser);
+        validateRestaurantAndOwner(plate.getIdRestaurant(), tokenPort.getUserId());
         return plate;
     }
 
-    public void validateRestaurantAndOwner(Long idRestaurant, Long idUser){
+    private void validateRestaurantAndOwner(Long idRestaurant, Long idUser){
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(idRestaurant).
                 orElseThrow(RestaurantNotExistException::new);
-
-        if (!Objects.equals(restaurant.getIdOwner(), idUser)) {
-            throw new UserIsNotOwnerRestaurantException();
-        }
-
+        restaurant.validateOwner(idUser);
     }
 }
