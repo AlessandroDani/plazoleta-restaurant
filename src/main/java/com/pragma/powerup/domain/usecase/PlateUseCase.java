@@ -29,8 +29,7 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void savePlate(Plate plate) {
-        Long id = tokenPort.getUserId();
-        validPlate(plate, id);
+        validateRestaurantAndOwner(plate.getIdRestaurant(), tokenPort.getUserId());
         if (platePersistencePort.existsPlateByName(plate.getName())) {
             throw new PlateAlreadyExistException();
         }
@@ -41,8 +40,7 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
-        Long userId = tokenPort.getUserId();
-        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate), userId);
+        Plate newPlate = validPlate(idPlate);
         if (newPrice != null) {
             newPlate.setPrice(newPrice);
         }
@@ -55,8 +53,7 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updateActivePlate(boolean status, Long idPlate) {
-        Long userId = tokenPort.getUserId();
-        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate), userId);
+        Plate newPlate = validPlate(idPlate);
         newPlate.setActive(status);
         platePersistencePort.updatePlate(newPlate);
     }
@@ -73,15 +70,20 @@ public class PlateUseCase implements IPlateServicePort {
         return plateList;
     }
 
-    public Plate validPlate(Plate plate, Long userId) {
-        if (plate == null) {
-            throw new PlateNotFoundException();
-        }
-        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant()).
+    public Plate validPlate(Long idPlate) {
+        Long idUser = tokenPort.getUserId();
+        Plate plate = platePersistencePort.getPlateById(idPlate).orElseThrow(PlateNotFoundException::new);
+        validateRestaurantAndOwner(plate.getIdRestaurant(), idUser);
+        return plate;
+    }
+
+    public void validateRestaurantAndOwner(Long idRestaurant, Long idUser){
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(idRestaurant).
                 orElseThrow(RestaurantNotExistException::new);
-        if (!Objects.equals(restaurant.getIdOwner(), userId)) {
+
+        if (!Objects.equals(restaurant.getIdOwner(), idUser)) {
             throw new UserIsNotOwnerRestaurantException();
         }
-        return plate;
+
     }
 }
