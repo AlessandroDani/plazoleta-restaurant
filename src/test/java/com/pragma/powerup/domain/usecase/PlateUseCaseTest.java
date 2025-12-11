@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -296,5 +297,53 @@ class PlateUseCaseTest {
         assertTrue(existingPlate.isActive());
         verify(platePersistencePort, never()).updatePlate(any(Plate.class));
     }
+
+    @Test
+    @DisplayName("Debería retornar la lista de platos de un restaurante cuando el restaurante existe")
+    void getPlatesByRestaurant_Success() {
+        Long restaurantId = 1L;
+        int page = 0;
+        int size = 10;
+        String category = "Principal";
+
+        List<Plate> mockPlates = List.of(
+                new Plate(1L, "Plato A", 1L, "Desc", 10000L, restaurantId, "url", true),
+                new Plate(2L, "Plato B", 1L, "Desc", 12000L, restaurantId, "url", true)
+        );
+
+        when(restaurantPersistencePort.getRestaurantById(restaurantId)).thenReturn(Optional.of(testRestaurant));
+        when(platePersistencePort.getPlatesByRestaurant(restaurantId, page, size, category)).thenReturn(mockPlates);
+
+        List<Plate> result = assertDoesNotThrow(
+                () -> plateUseCase.getPlatesByRestaurant(restaurantId, page, size, category),
+                "No debería lanzar excepción si el restaurante existe."
+        );
+
+        verify(restaurantPersistencePort).getRestaurantById(restaurantId);
+        verify(platePersistencePort).getPlatesByRestaurant(restaurantId, page, size, category);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("Debería lanzar RestaurantNotExistException si el restaurante no existe al buscar platos")
+    void getPlatesByRestaurant_ThrowsRestaurantNotExistException() {
+        Long nonExistentRestaurantId = 99L;
+        int page = 0;
+        int size = 10;
+        String category = "Principal";
+
+        when(restaurantPersistencePort.getRestaurantById(nonExistentRestaurantId)).thenReturn(Optional.empty());
+
+        assertThrows(
+                RestaurantNotExistException.class,
+                () -> plateUseCase.getPlatesByRestaurant(nonExistentRestaurantId, page, size, category),
+                "Debería lanzar RestaurantNotExistException si el restaurante no es encontrado."
+        );
+
+        verify(restaurantPersistencePort).getRestaurantById(nonExistentRestaurantId);
+        verify(platePersistencePort, never()).getPlatesByRestaurant(anyLong(), anyInt(), anyInt(), anyString());
+    }
+
 
 }
