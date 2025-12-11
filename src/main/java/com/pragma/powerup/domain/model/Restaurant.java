@@ -3,6 +3,7 @@ package com.pragma.powerup.domain.model;
 
 import com.pragma.powerup.domain.exception.PlateBelongsToAnotherRestaurantException;
 import com.pragma.powerup.domain.exception.PlateNotFoundException;
+import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 
 import java.util.List;
@@ -85,15 +86,18 @@ public class Restaurant {
         this.idOwner = idOwner;
     }
 
-    public void validatePlateList(List<OrderPlate> plates, Long restaurantId, IPlatePersistencePort platePersistencePort){
+    public void validatePlateList(List<OrderPlate> plates, IPlatePersistencePort platePersistencePort){
         for(OrderPlate orderPlate : plates){
-            Plate plate = platePersistencePort.getPlateById(orderPlate.getIdPlate());
-            if(plate == null){
-                throw new PlateNotFoundException();
-            }
-            if(!Objects.equals(restaurantId, plate.getIdRestaurant())){
+            Plate plate = platePersistencePort.getPlateById(orderPlate.getIdPlate()).orElseThrow(PlateNotFoundException::new);
+            if(!Objects.equals(this.id, plate.getIdRestaurant())){
                 throw new PlateBelongsToAnotherRestaurantException();
             }
+        }
+    }
+
+    public void validateOwner(Long userId) {
+        if (!Objects.equals(this.idOwner, userId)) {
+            throw new UserIsNotOwnerRestaurantException();
         }
     }
 }
