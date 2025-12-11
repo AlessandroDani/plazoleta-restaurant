@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface IRestaurantPersistencePort {
     void saveRestaurant(Restaurant restaurant);
-    Restaurant getRestaurantByNit(String nit);
     Optional<Restaurant> getRestaurantById(Long id);
     boolean existsRestaurantByNit(String nit);
     Optional<List<Restaurant>> getAllRestaurant(int page, int size);
