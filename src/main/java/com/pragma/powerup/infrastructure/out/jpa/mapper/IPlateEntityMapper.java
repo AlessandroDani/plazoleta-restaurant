@@ -12,6 +12,8 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IPlateEntityMapper{
+    @Mapping(source = "idCategory", target = "category.id")
+    @Mapping(source = "idRestaurant", target = "restaurant.id")
     PlateEntity toEntity(Plate plate);
 
     @Mapping(source = "restaurant.id", target = "idRestaurant")
