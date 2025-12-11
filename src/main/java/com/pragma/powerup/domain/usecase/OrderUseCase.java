@@ -30,11 +30,9 @@ public class OrderUseCase implements IOrderServicePort {
         Long userId = tokenPort.getUserId();
         Restaurant restaurant = validateRestaurant(order.getIdRestaurant());
         validateOrderStatus(userId);
-        restaurant.validatePlateList(order.getPlates(), restaurant.getId(), platePersistencePort);
+        restaurant.validatePlateList(order.getPlates(), platePersistencePort);
 
-        order.setDate(LocalDate.now());
-        order.setStatus(OrderStatus.PENDING);
-        order.setIdClient(userId);
+        order.initializeNewOrder(userId, LocalDate.now());
         orderPersistencePort.saveOrder(order);
     }
 

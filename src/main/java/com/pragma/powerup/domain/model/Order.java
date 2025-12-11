@@ -23,6 +23,12 @@ public class Order {
         this.plates = plates;
     }
 
+    public void initializeNewOrder(Long userId, LocalDate currentDate) {
+        this.date = currentDate;
+        this.status = OrderStatus.PENDING;
+        this.idClient = userId;
+    }
+
     public Long getId() {
         return id;
     }
