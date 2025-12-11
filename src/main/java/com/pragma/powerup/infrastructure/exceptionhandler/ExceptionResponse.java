@@ -15,9 +15,11 @@ public enum ExceptionResponse {
 
     PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
     PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
-    PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante"),
+    PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
 
-    USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo");
+    USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
+
+    CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada.");
 
     private final String message;
 
