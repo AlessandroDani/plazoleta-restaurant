@@ -42,8 +42,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IPlateServicePort plateServicePort(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort) {
-        return new PlateUseCase(platePersistencePort, restaurantPersistencePort, tokenPort);
+    public IPlateServicePort plateServicePort(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, ICategoryPersistencePort  categoryPersistencePort) {
+        return new PlateUseCase(platePersistencePort, restaurantPersistencePort, tokenPort, categoryPersistencePort);
     }
 
     @Bean

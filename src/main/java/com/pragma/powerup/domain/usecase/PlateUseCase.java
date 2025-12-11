@@ -1,11 +1,13 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IPlateServicePort;
+import com.pragma.powerup.domain.exception.CategoryNotFoundException;
 import com.pragma.powerup.domain.exception.PlateAlreadyExistException;
 import com.pragma.powerup.domain.exception.PlateNotFoundException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.model.Plate;
 import com.pragma.powerup.domain.model.Restaurant;
+import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
 import com.pragma.powerup.domain.spi.IPlatePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.ITokenPort;
@@ -18,16 +20,21 @@ public class PlateUseCase implements IPlateServicePort {
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final ITokenPort tokenPort;
+    private final ICategoryPersistencePort  categoryPersistencePort;
 
-    public PlateUseCase(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort) {
+    public PlateUseCase(IPlatePersistencePort platePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, ICategoryPersistencePort categoryPersistencePort) {
         this.platePersistencePort = platePersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.tokenPort = tokenPort;
+        this.categoryPersistencePort = categoryPersistencePort;
     }
 
     @Override
     public void savePlate(Plate plate) {
         validateRestaurantAndOwner(plate.getIdRestaurant(), tokenPort.getUserId());
+        if(!categoryPersistencePort.existsCategoryById(plate.getIdCategory())){
+            throw new CategoryNotFoundException();
+        }
         if (platePersistencePort.existsPlateByName(plate.getName())) {
             throw new PlateAlreadyExistException();
         }
