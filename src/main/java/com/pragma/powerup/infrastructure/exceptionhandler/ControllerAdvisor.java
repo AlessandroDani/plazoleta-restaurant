@@ -66,6 +66,21 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_ALREADY_EXIST.getMessage()));
     }
 
+    @ExceptionHandler(UserHasActiveOrderException.class)
+    public ResponseEntity<Map<String, String>> handleUserHasActiveOrderException(UserHasActiveOrderException ignoredUserHasActiveOrderException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_HAS_ACTIVE_ORDER.getMessage()));
+    }
+
+    @ExceptionHandler(PlateBelongsToAnotherRestaurantException.class)
+    public ResponseEntity<Map<String, String>> handlePlateBelongsToAnotherRestaurantException(PlateBelongsToAnotherRestaurantException ignoredPlateBelongsToAnotherRestaurantException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_BELONGS_ANOTHER_RESTAURANT.getMessage()));
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCategoryNotFoundClass (CategoryNotFoundException ignoredCategoryNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CATEGORY_NOT_FOUND.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, Object> errors = new HashMap<>();

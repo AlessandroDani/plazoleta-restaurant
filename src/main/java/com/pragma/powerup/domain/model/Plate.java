@@ -87,4 +87,13 @@ public class Plate {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public void updateDetails(Long newPrice, String newDescription) {
+        if (newPrice != null) {
+            this.price = newPrice;
+        }
+        if (newDescription != null) {
+            this.description = newDescription;
+        }
+    }
 }

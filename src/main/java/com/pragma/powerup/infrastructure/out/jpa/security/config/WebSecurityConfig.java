@@ -40,6 +40,7 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/platos").hasRole(OWNER)
                 .antMatchers(HttpMethod.PUT, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)
+                .antMatchers(HttpMethod.POST, "/api/pedidos").hasRole(CLIENT)
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated()

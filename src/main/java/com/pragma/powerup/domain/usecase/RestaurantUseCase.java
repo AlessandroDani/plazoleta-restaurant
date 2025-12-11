@@ -21,7 +21,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
-        if (restaurantPersistence.getRestaurantByNit(restaurant.getNit()) != null) {
+        if (restaurantPersistence.existsRestaurantByNit(restaurant.getNit())) {
             throw new RestaurantAlreadyExistException();
         }
         userGateway.isUserOwner(restaurant.getIdOwner());
@@ -30,10 +30,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public List<Restaurant> getAllRestaurant(int page, int size) {
-        List<Restaurant> restaurantList = restaurantPersistence.getAllRestaurant(page, size);
-        if(restaurantList.isEmpty()){
-            throw new RestaurantNotFoundException();
-        }
-        return restaurantList;
+        return restaurantPersistence.getAllRestaurant(page, size)
+                .orElseThrow(RestaurantNotFoundException::new);
     }
 }

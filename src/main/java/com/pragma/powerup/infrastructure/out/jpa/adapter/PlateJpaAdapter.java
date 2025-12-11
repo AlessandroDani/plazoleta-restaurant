@@ -30,16 +30,15 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
     }
 
     @Override
-    public Plate getPlateById(Long id) {
+    public Optional<Plate> getPlateById(Long id) {
         Optional<PlateEntity> plateEntity = plateRepository.findById(id);
-        return plateEntity.map(plateEntityMapper::toPlate).orElse(null);
+        return plateEntity.map(plateEntityMapper::toPlate);
 
     }
 
     @Override
-    public Plate getPlateByName(String name) {
-        Optional<PlateEntity> plateEntity = plateRepository.findByName(name);
-        return plateEntity.map(plateEntityMapper::toPlate).orElse(null);
+    public boolean existsPlateByName(String name) {
+        return plateRepository.existsByName(name);
     }
 
     @Override

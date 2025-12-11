@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,11 +51,11 @@ class RestaurantUseCaseTest {
     @Test
     @DisplayName("Debería guardar el restaurante si el NIT no existe y el usuario tiene rol de Propietario")
     void saveRestaurant_Success() {
-        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(null);
+        when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(false);
 
         assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(validRestaurant));
 
-        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
+        verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
         verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence).saveRestaurant(validRestaurant);
     }
@@ -62,12 +63,12 @@ class RestaurantUseCaseTest {
     @Test
     @DisplayName("Debería lanzar RestaurantAlreadyExistException si ya existe un restaurante con el mismo NIT")
     void saveRestaurant_ThrowsRestaurantAlreadyExistException() {
-        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(new Restaurant());
+        when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(true);
 
         assertThrows(RestaurantAlreadyExistException.class,
                 () -> restaurantUseCase.saveRestaurant(validRestaurant));
 
-        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
+        verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
         verify(userGateway, never()).isUserOwner(anyLong());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
     }
@@ -75,14 +76,14 @@ class RestaurantUseCaseTest {
     @Test
     @DisplayName("Debería propagar la excepción si el UserGateway falla al validar el rol de Propietario")
     void saveRestaurant_ThrowsExceptionIfOwnerRoleIsInvalid() {
-        when(restaurantPersistence.getRestaurantByNit(validRestaurant.getNit())).thenReturn(null);
+        when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(false);
 
         doThrow(new RuntimeException("El usuario no tiene el rol de propietario requerido")).when(userGateway).isUserOwner(validRestaurant.getIdOwner());
 
         assertThrows(RuntimeException.class,
                 () -> restaurantUseCase.saveRestaurant(validRestaurant));
 
-        verify(restaurantPersistence).getRestaurantByNit(validRestaurant.getNit());
+        verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
         verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
     }
@@ -98,7 +99,7 @@ class RestaurantUseCaseTest {
                 new Restaurant(3L, "Alfa", "888", "addr2", "312", "logo.png", 9L)
         );
 
-        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(mockList);
+        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(Optional.of(mockList));
 
         List<Restaurant> result = assertDoesNotThrow(
                 () -> restaurantUseCase.getAllRestaurant(page, size),
@@ -116,7 +117,7 @@ class RestaurantUseCaseTest {
         int page = 1;
         int size = 10;
 
-        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(List.of());
+        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(Optional.empty());
 
         assertThrows(
                 RestaurantNotFoundException.class,
