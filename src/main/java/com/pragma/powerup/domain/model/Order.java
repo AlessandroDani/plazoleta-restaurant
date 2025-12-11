@@ -23,6 +23,10 @@ public class Order {
         this.plates = plates;
     }
 
+    public Order() {
+
+    }
+
     public void initializeNewOrder(Long userId, LocalDate currentDate) {
         this.date = currentDate;
         this.status = OrderStatus.PENDING;
