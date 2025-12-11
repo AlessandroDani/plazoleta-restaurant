@@ -41,7 +41,8 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
-        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate));
+        Long userId = tokenPort.getUserId();
+        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate), userId);
         if (newPrice != null) {
             newPlate.setPrice(newPrice);
         }
@@ -54,7 +55,8 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public void updateActivePlate(boolean status, Long idPlate) {
-        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate));
+        Long userId = tokenPort.getUserId();
+        Plate newPlate = validPlate(platePersistencePort.getPlateById(idPlate), userId);
         newPlate.setActive(status);
         platePersistencePort.updatePlate(newPlate);
     }
@@ -82,12 +84,11 @@ public class PlateUseCase implements IPlateServicePort {
         }
     }
 
-    public Plate validPlate(Plate plate) {
+    public Plate validPlate(Plate plate, Long userId) {
         if (plate == null) {
             throw new PlateNotFoundException();
         }
-        Long idUser = tokenPort.getUserId();
-        validateRestaurantAndOwner(plate, idUser);
+        validateRestaurantAndOwner(plate, userId);
         return plate;
     }
 }

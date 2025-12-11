@@ -3,10 +3,11 @@ package com.pragma.powerup.domain.spi;
 import com.pragma.powerup.domain.model.Restaurant;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IRestaurantPersistencePort {
     void saveRestaurant(Restaurant restaurant);
     Restaurant getRestaurantByNit(String nit);
-    Restaurant getRestaurantById(Long id);
-    List<Restaurant> getAllRestaurant(int page, int size);
+    Optional<Restaurant> getRestaurantById(Long id);
+    Optional<List<Restaurant>> getAllRestaurant(int page, int size);
 }
