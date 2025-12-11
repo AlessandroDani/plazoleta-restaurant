@@ -38,7 +38,7 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
 
     @Override
     public boolean existsPlateByName(String name) {
-        return plateRepository.findByName(name);
+        return plateRepository.existsByName(name);
     }
 
     @Override

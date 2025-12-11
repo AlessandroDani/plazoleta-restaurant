@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IPlateRepository extends JpaRepository<PlateEntity, Long> {
 
-    boolean findByName(String name);
+    boolean existsByName(String name);
 
     Page<PlateEntity> findByRestaurantIdAndActiveTrue(Long idRestaurant, Pageable pageable);
 
