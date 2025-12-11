@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface IPlatePersistencePort {
     void savePlate(Plate plate);
-    Optional<Plate> getPlateById(Long id);
-    boolean existsPlateByName(String name);
     void updatePlate(Plate plate);
+    boolean existsPlateByName(String name);
+    Optional<Plate> getPlateById(Long id);
     List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category);
 }
