@@ -33,6 +33,11 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     }
 
     @Override
+    public boolean existsRestaurantByNit(String nit) {
+        return restaurantRepository.existsByNit(nit);
+    }
+
+    @Override
     public List<Restaurant> getAllRestaurant(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
         Page<RestaurantEntity> restaurantPage = restaurantRepository.findAll(pageable);

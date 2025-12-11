@@ -21,7 +21,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
-        if (restaurantPersistence.getRestaurantByNit(restaurant.getNit()) != null) {
+        if (restaurantPersistence.existsRestaurantByNit(restaurant.getNit())) {
             throw new RestaurantAlreadyExistException();
         }
         userGateway.isUserOwner(restaurant.getIdOwner());
