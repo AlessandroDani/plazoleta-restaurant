@@ -1,9 +1,6 @@
 package com.pragma.powerup.domain.usecase;
 
-import com.pragma.powerup.domain.exception.PlateAlreadyExistException;
-import com.pragma.powerup.domain.exception.PlateNotFoundException;
-import com.pragma.powerup.domain.exception.RestaurantNotExistException;
-import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.Plate;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
@@ -121,6 +118,27 @@ class PlateUseCaseTest {
         assertThrows(UserIsNotOwnerRestaurantException.class, () -> plateUseCase.savePlate(testPlate));
         verify(platePersistencePort, never()).existsPlateByName(anyString());
         verify(platePersistencePort, never()).savePlate(any(Plate.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar CategoryNotFoundException si la categoría del plato no existe")
+    void savePlate_ThrowsCategoryNotFoundException() {
+        Long invalidCategoryId = 999L;
+        Long originalCategoryId = testPlate.getIdCategory();
+        testPlate.setIdCategory(invalidCategoryId);
+
+        when(tokenPort.getUserId()).thenReturn(OWNER_ID);
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
+
+        when(categoryPersistencePort.existsCategoryById(invalidCategoryId)).thenReturn(false);
+
+        assertThrows(CategoryNotFoundException.class, () -> plateUseCase.savePlate(testPlate));
+
+        verify(categoryPersistencePort, times(1)).existsCategoryById(invalidCategoryId);
+        verify(platePersistencePort, never()).existsPlateByName(anyString());
+        verify(platePersistencePort, never()).savePlate(any(Plate.class));
+        testPlate.setIdCategory(originalCategoryId);
+
     }
 
     @Test
