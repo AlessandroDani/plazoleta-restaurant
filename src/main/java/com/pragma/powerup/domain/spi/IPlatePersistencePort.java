@@ -7,7 +7,7 @@ import java.util.List;
 public interface IPlatePersistencePort {
     void savePlate(Plate plate);
     Plate getPlateById(Long id);
-    Plate getPlateByName(String name);
+    boolean existsPlateByName(String name);
     void updatePlate(Plate plate);
     List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category);
 }

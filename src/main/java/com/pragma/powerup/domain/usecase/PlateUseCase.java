@@ -30,8 +30,8 @@ public class PlateUseCase implements IPlateServicePort {
     @Override
     public void savePlate(Plate plate) {
         Long id = tokenPort.getUserId();
-        validateRestaurantAndOwner(plate, id);
-        if (platePersistencePort.getPlateByName(plate.getName()) != null) {
+        validPlate(plate, id);
+        if (platePersistencePort.existsPlateByName(plate.getName())) {
             throw new PlateAlreadyExistException();
         }
         plate.setActive(true);
@@ -63,32 +63,25 @@ public class PlateUseCase implements IPlateServicePort {
 
     @Override
     public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
-        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(idRestaurant);
-        if (restaurant == null) {
-            throw new RestaurantNotExistException();
-        }
+        restaurantPersistencePort.getRestaurantById(idRestaurant).
+                orElseThrow(RestaurantNotExistException::new);
+
         List<Plate> plateList = platePersistencePort.getPlatesByRestaurant(idRestaurant, page, size, category);
-        if(plateList.isEmpty()){
+        if (plateList.isEmpty()) {
             throw new PlateNotFoundException();
         }
         return plateList;
-    }
-
-    public void validateRestaurantAndOwner(Plate plate, Long id) {
-        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant());
-        if (restaurant == null) {
-            throw new RestaurantNotExistException();
-        }
-        if (!Objects.equals(restaurant.getIdOwner(), id)) {
-            throw new UserIsNotOwnerRestaurantException();
-        }
     }
 
     public Plate validPlate(Plate plate, Long userId) {
         if (plate == null) {
             throw new PlateNotFoundException();
         }
-        validateRestaurantAndOwner(plate, userId);
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(plate.getIdRestaurant()).
+                orElseThrow(RestaurantNotExistException::new);
+        if (!Objects.equals(restaurant.getIdOwner(), userId)) {
+            throw new UserIsNotOwnerRestaurantException();
+        }
         return plate;
     }
 }
