@@ -6,6 +6,7 @@ import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderPlate;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public interface IOrderRequestMapper{
 
     Order toOrder(OrderRequestDto orderRequestDto);
 
+    @Mapping(target = "status", expression = "java(order.getStatus().getDbValue())")
     OrderResponseDto toOrderResponseDto(Order order);
 
     List<OrderResponseDto> toResponseList(List<Order> orders);
