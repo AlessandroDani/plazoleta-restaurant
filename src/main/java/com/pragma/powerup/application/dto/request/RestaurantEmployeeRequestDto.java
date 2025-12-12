@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class RestaurantEmployeeRequestDto {
 
-    @Schema(description = "Id del empleado", example = "15000")
-    @NotNull(message = "El id del empleado es obligatorio")
-    @JsonProperty("id_empleado")
-    private Long idEmployee;
+    @Schema(description = "Id del usuario", example = "15000")
+    @NotNull(message = "El id del usuario es obligatorio")
+    @JsonProperty("id_usuario")
+    private Long idUser;
 
     @Schema(description = "Id del restaurante", example = "1")
     @JsonProperty("id_restaurante")
