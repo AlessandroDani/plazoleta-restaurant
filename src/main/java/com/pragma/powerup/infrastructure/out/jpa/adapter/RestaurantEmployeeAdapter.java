@@ -5,18 +5,17 @@ import com.pragma.powerup.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.RestaurantEmployeeEntity;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestaurantEmployeeEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantEmployeeRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
+@Service
+@AllArgsConstructor
 public class RestaurantEmployeeAdapter implements IRestaurantEmployeePersistencePort {
-    private final IRestaurantEmployeeRepository  restaurantEmployeeRepository;
+    private final IRestaurantEmployeeRepository restaurantEmployeeRepository;
     private final IRestaurantEmployeeEntityMapper restaurantEmployeeEntityMapper;
 
-    public RestaurantEmployeeAdapter(IRestaurantEmployeeRepository restaurantEmployeeRepository, IRestaurantEmployeeEntityMapper restaurantEmployeeEntityMapper) {
-        this.restaurantEmployeeRepository = restaurantEmployeeRepository;
-        this.restaurantEmployeeEntityMapper = restaurantEmployeeEntityMapper;
-    }
 
     @Override
     public void saveEmployee(RestaurantEmployee restaurantEmployee) {

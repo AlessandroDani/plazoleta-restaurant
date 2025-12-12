@@ -6,22 +6,21 @@ import com.pragma.powerup.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderEntity;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IOrderEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IOrderRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@AllArgsConstructor
 public class OrderJpaAdapter implements IOrderPersistencePort {
 
     private final IOrderRepository orderRepository;
     private final IOrderEntityMapper orderEntityMapper;
-
-    public OrderJpaAdapter(IOrderRepository orderRepository, IOrderEntityMapper orderEntityMapper) {
-        this.orderRepository = orderRepository;
-        this.orderEntityMapper = orderEntityMapper;
-    }
 
     @Override
     public void saveOrder(Order order) {
