@@ -1,19 +1,21 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
+import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
+import com.pragma.powerup.domain.model.OrderStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -34,5 +36,19 @@ public class OrderRestController {
     public ResponseEntity<Void> saveOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
         orderHandler.saveOrder(orderRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Listar todos los pedidos de un restaurante paginados y filtrados por estado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pedidos obtenidos", content = @Content),
+            @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No se encontraron pedidos para los criterios de búsqueda", content = @Content),
+    })
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(
+        @Parameter(description = "Nombre del estado del pedido para filtrar (opcional)", example = "PENDIENTE")  @RequestParam(required = false) OrderStatus status,
+        @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0")  @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "Número de elementos por página", example = "5")  @RequestParam(defaultValue = "5") int size) {
+            return ResponseEntity.ok(orderHandler.getOrdersByStatus(status, page, size));
     }
 }

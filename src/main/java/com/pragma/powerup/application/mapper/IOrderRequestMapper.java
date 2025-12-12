@@ -2,6 +2,7 @@ package com.pragma.powerup.application.mapper;
 
 import com.pragma.powerup.application.dto.request.OrderPlateRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
+import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderPlate;
 import org.mapstruct.Mapper;
@@ -18,4 +19,8 @@ public interface IOrderRequestMapper{
     List<OrderPlate> toOrderPlatesList(List<OrderPlateRequestDto> orderListDto);
 
     Order toOrder(OrderRequestDto orderRequestDto);
+
+    OrderResponseDto toOrderResponseDto(Order order);
+
+    List<OrderResponseDto> toResponseList(List<Order> orders);
 }
