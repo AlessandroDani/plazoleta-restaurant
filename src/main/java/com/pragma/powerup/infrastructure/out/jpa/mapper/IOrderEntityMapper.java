@@ -8,6 +8,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+import java.util.Optional;
+
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -29,4 +32,6 @@ public interface IOrderEntityMapper {
     @Mapping(target = "plates", source = "plates")
     @Mapping(target = "restaurant", ignore = true)
     OrderEntity toEntity(Order order);
+
+    Optional<List<Order>> toOrderList(List<OrderEntity> orderEntities);
 }
