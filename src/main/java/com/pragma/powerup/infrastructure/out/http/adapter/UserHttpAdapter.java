@@ -18,9 +18,18 @@ public class UserHttpAdapter implements IUserGatewayPort {
 
     @Override
     public void isUserOwner(Long userId) {
+        search(userId, "PROPIETARIO");
+    }
+
+    @Override
+    public void isUserEmployee(Long userId) {
+        search(userId, "EMPLEADO");
+    }
+
+    private void search(Long userId, String role){
         try {
             UserResponseDto userResponse = userFeignClient.getUserById(userId);
-            if (userResponse.getRole() == null || !"PROPIETARIO".equals(userResponse.getRole().getName())) {
+            if (userResponse.getRole() == null || !role.equals(userResponse.getRole().getName())) {
                 throw new InvalidRoleException();
             }
         } catch (FeignException.NotFound e) {
