@@ -13,6 +13,9 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderResponseDto {
+    @Schema(description = "id del pedido", example = "1")
+    @JsonProperty("id")
+    private Long id;
 
     @Schema(description = "id del cliente", example = "1")
     @JsonProperty("id_cliente")
