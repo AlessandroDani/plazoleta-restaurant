@@ -17,7 +17,6 @@ public class RestaurantEmployeeRequestDto {
     private Long idEmployee;
 
     @Schema(description = "Id del restaurante", example = "1")
-    @NotNull(message = "El id del restaurante es obligatorio")
     @JsonProperty("id_restaurante")
     private Long idRestaurant;
 
