@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Mapper(componentModel = "spring",
@@ -33,5 +32,5 @@ public interface IOrderEntityMapper {
     @Mapping(target = "restaurant", ignore = true)
     OrderEntity toEntity(Order order);
 
-    Optional<List<Order>> toOrderList(List<OrderEntity> orderEntities);
+    List<Order> toOrderList(List<OrderEntity> orderEntities);
 }
