@@ -1,7 +1,9 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import com.pragma.powerup.application.dto.request.RestaurantEmployeeRequestDto;
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.application.dto.response.RestaurantResponseClientDto;
+import com.pragma.powerup.application.handler.impl.RestaurantEmployeeHandler;
 import com.pragma.powerup.application.handler.impl.RestaurantHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +24,7 @@ import java.util.List;
 public class RestaurantRestController {
 
     private final RestaurantHandler restaurantHandler;
+    private final RestaurantEmployeeHandler restaurantEmployeeHandler;
 
     @Operation(summary = "Agregar un nuevo restaurante")
     @ApiResponses(value = {
@@ -49,6 +52,14 @@ public class RestaurantRestController {
             @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(restaurantHandler.getAllRestaurant(page, size));
+    }
+    @PostMapping("/{id}/empleados")
+    public ResponseEntity<Void> saveEmployee(
+            @PathVariable Long id,
+            @Valid @RequestBody RestaurantEmployeeRequestDto restaurantEmployeeRequestDto){
+        restaurantEmployeeRequestDto.setIdRestaurant(id);
+        restaurantEmployeeHandler.saveEmployee(restaurantEmployeeRequestDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 }
