@@ -1,8 +1,6 @@
 package com.pragma.powerup.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pragma.powerup.domain.model.OrderPlate;
-import com.pragma.powerup.domain.model.OrderStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +25,7 @@ public class OrderResponseDto {
 
     @Schema(description = "estado del pedido", example = "PENDIENTE")
     @JsonProperty("estado")
-    private OrderStatus status ;
+    private String status ;
 
     @Schema(description = "id del chef (empleado)", example = "1")
     @JsonProperty("id_chef")
@@ -39,5 +37,5 @@ public class OrderResponseDto {
 
     @Schema(description = "Lista de platos de la orden")
     @JsonProperty("plates")
-    private List<OrderPlate> plates;
+    private List<OrderPlateResponseDto> plates;
 }
