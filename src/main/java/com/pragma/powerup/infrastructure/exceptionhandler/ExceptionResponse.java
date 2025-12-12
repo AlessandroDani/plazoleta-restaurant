@@ -20,7 +20,9 @@ public enum ExceptionResponse {
     PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
 
 
-    CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada.");
+    CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
+
+    ORDER_NOT_FOUND("No se encontraron pedidos con el estado y restaurante especificados.");
 
     private final String message;
 
