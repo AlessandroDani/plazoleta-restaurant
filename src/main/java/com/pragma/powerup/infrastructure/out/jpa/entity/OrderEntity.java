@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,7 +26,7 @@ public class OrderEntity {
     private Long idClient;
 
     @Column(name = "fecha")
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Column(name = "estado")
     @Convert(converter = OrderStatusConverter.class)

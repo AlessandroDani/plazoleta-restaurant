@@ -8,7 +8,7 @@ import com.pragma.powerup.domain.exception.UserHasActiveOrderException;
 import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.domain.spi.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderUseCase implements IOrderServicePort {
@@ -33,7 +33,7 @@ public class OrderUseCase implements IOrderServicePort {
         validateOrderStatus(userId);
         restaurant.validatePlateList(order.getPlates(), platePersistencePort);
 
-        order.initializeNewOrder(userId, LocalDate.now());
+        order.initializeNewOrder(userId, LocalDateTime.now());
         orderPersistencePort.saveOrder(order);
     }
 

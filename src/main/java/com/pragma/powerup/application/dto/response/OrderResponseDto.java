@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -21,9 +21,9 @@ public class OrderResponseDto {
     @JsonProperty("id_cliente")
     private Long idClient;
 
-    @Schema(description = "fecha de la orden", example = "2025-12-08")
+    @Schema(description = "fecha y hora de la orden", example = "2025-12-08T10:30:00")
     @JsonProperty("fecha")
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Schema(description = "estado del pedido", example = "PENDIENTE")
     @JsonProperty("estado")
