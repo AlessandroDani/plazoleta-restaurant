@@ -10,8 +10,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IRestaurantEmployeeEntityMapper {
-//    @Mapping(source = "idRestaurant", target = "restaurant.id")
-//    @Mapping(source = "idRestaurant", target = "user.id")
     RestaurantEmployeeEntity toEntity(RestaurantEmployee restaurantEmployee);
 
     RestaurantEmployee toRestaurantEmployee(RestaurantEmployeeEntity  restaurantEmployeeEntity);

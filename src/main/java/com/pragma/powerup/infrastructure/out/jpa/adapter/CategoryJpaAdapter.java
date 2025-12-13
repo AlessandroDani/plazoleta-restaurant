@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryJpaAdapter implements ICategoryPersistencePort {
     private final ICategoryRepository categoryRepository;
+
     @Override
     public boolean existsCategoryById(Long id) {
         return categoryRepository.existsById(id);

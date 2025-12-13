@@ -21,7 +21,7 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
 
     private final IPlateRepository plateRepository;
     private final IPlateEntityMapper plateEntityMapper;
-    private final IRestaurantRepository  restaurantRepository;
+    private final IRestaurantRepository restaurantRepository;
 
     @Override
     public void savePlate(Plate plate) {
@@ -51,15 +51,9 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
     @Override
     public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-
-        Page<PlateEntity> platePage;
-
-        if (category != null && !category.isEmpty()) {
-            platePage = plateRepository.findByRestaurantIdAndCategoryNameAndActiveTrue(idRestaurant, category, pageable);
-        } else {
-            platePage = plateRepository.findByRestaurantIdAndActiveTrue(idRestaurant, pageable);
-        }
-
+        Page<PlateEntity> platePage = category == null ?
+                plateRepository.findByRestaurantIdAndActiveTrue(idRestaurant, pageable) :
+                plateRepository.findByRestaurantIdAndCategoryNameAndActiveTrue(idRestaurant, category, pageable);
         return plateEntityMapper.toPlateList(platePage.getContent());
     }
 }
