@@ -45,8 +45,7 @@ public class PlateRestController {
             @ApiResponse(responseCode = "200", description = "Plato actualizado con éxito."),
             @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
             @ApiResponse(responseCode = "403", description = "El usuario no autorizado."),
-            @ApiResponse(responseCode = "404", description = "El plato no existe."),
-            @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
+            @ApiResponse(responseCode = "404", description = "El plato no existe.")
     })
     @PutMapping("/platos/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
@@ -54,6 +53,14 @@ public class PlateRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+    @Operation(summary = "Habilitar/Deshabilitar un plato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Plato actualizado con éxito."),
+            @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
+            @ApiResponse(responseCode = "403", description = "El usuario no autorizado."),
+            @ApiResponse(responseCode = "404", description = "El plato no existe."),
+    })
     @PatchMapping("/platos/{id}")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
         plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
