@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface IRestaurantEmployeeRepository extends JpaRepository<RestaurantEmployeeEntity, Long> {
     Optional<RestaurantEmployeeEntity> findByIdUser(Long userId);
+    boolean existsByIdUser(Long idUser);
 }

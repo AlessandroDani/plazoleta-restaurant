@@ -27,4 +27,9 @@ public class RestaurantEmployeeAdapter implements IRestaurantEmployeePersistence
         Optional<RestaurantEmployeeEntity> restaurantEmployeeEntity = restaurantEmployeeRepository.findByIdUser(userId);
         return restaurantEmployeeEntity.map(restaurantEmployeeEntityMapper::toRestaurantEmployee);
     }
+
+    @Override
+    public boolean existsByUserId(Long idUser) {
+        return restaurantEmployeeRepository.existsByIdUser(idUser);
+    }
 }

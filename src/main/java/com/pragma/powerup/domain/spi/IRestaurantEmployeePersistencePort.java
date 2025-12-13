@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface IRestaurantEmployeePersistencePort {
     void saveEmployee(RestaurantEmployee restaurantEmployee);
     Optional<RestaurantEmployee> getEmployee(Long userId);
+    boolean existsByUserId(Long idUser);
 }

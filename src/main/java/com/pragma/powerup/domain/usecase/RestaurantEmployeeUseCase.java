@@ -1,6 +1,7 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IRestaurantEmployeeServicePort;
+import com.pragma.powerup.domain.exception.RestaurantEmployeeExistsException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.model.RestaurantEmployee;
@@ -27,8 +28,10 @@ public class RestaurantEmployeeUseCase implements IRestaurantEmployeeServicePort
     public void saveEmployee(RestaurantEmployee restaurantEmployee) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantEmployee.getIdRestaurant())
                 .orElseThrow(RestaurantNotExistException::new);
-
         restaurant.validateOwner(tokenPort.getUserId());
+        if (restaurantEmployeePersistencePort.existsByUserId(restaurantEmployee.getIdUser())){
+            throw new RestaurantEmployeeExistsException();
+        }
         userGatewayPort.isUserEmployee(restaurantEmployee.getIdUser());
         restaurantEmployeePersistencePort.saveEmployee(restaurantEmployee);
     }
