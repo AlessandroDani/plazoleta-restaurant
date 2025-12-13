@@ -9,7 +9,7 @@ public enum ExceptionResponse {
     USER_DENIED_PERMISSION("El usuario no existe o El rol del usuario no está autorizado para esta operación."),
     USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
     SERVICE_UNAVAILABLE("El servicio de usuarios no está disponible en este momento."),
-    EMPLOYEE_NOT_VALID("El usuario no está asociado al restaurante."),
+    USER_NOT_BELONG_RESTAURANT("El usuario no está asociado al restaurante."),
     USER_IS_ALREADY_EMPLOYEE("El usuario ya fue asignado a un restaurante"),
 
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),
@@ -18,6 +18,8 @@ public enum ExceptionResponse {
     PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
     PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
     PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
+
+    ORDER_NOT_PENDING_STATE("El pedido debe estar en estado PENDIENTE para esta operación."),
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 

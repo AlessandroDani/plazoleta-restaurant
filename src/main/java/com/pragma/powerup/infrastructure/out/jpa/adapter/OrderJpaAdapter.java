@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +36,11 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
                 OrderStatus.IN_PREPARATION,
                 OrderStatus.READY);
         return orderRepository.existsByIdClientAndStatusIn(userId, activeStatus);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).map(orderEntityMapper::toOrder);
     }
 
     @Override

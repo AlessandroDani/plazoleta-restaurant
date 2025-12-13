@@ -37,4 +37,9 @@ public class OrderHandler implements IOrderHandler {
         return orderRequestMapper.toResponseList(orders);
     }
 
+    @Override
+    public void assignOrderAndChangeStatus(Long orderId) {
+        orderServicePort.assignOrderAndChangeStatus(orderId);
+    }
+
 }

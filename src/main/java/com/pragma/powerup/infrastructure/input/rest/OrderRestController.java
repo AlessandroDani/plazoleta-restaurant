@@ -53,4 +53,10 @@ public class OrderRestController {
             @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(orderHandler.getOrdersByStatus(status, page, size));
     }
+
+    @PutMapping("/{orderId}/en-preparacion")
+    public ResponseEntity<Void> assignOrder( @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
+        orderHandler.assignOrderAndChangeStatus(orderId);
+        return ResponseEntity.ok().build();
+    }
 }
