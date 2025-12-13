@@ -30,7 +30,8 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
 
     @Override
     public boolean hasActiveOrder(Long userId) {
-        List<OrderStatus> activeStatus = List.of(OrderStatus.PENDING,
+        List<OrderStatus> activeStatus = List.of(
+                OrderStatus.PENDING,
                 OrderStatus.IN_PREPARATION,
                 OrderStatus.READY);
         return orderRepository.existsByIdClientAndStatusIn(userId, activeStatus);
