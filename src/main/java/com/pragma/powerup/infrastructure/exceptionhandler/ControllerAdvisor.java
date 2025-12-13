@@ -3,6 +3,7 @@ package com.pragma.powerup.infrastructure.exceptionhandler;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
+import com.pragma.powerup.domain.exception.InvalidStatusParameterException;
 import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
 import org.springframework.http.HttpStatus;
@@ -91,6 +92,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleOrderNotFoundException (OrderNotFoundException ignoredOrderNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_FOUND.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidStatusParameterException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidStatusParameterException (InvalidStatusParameterException ignoredInvalidStatusParameterException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.STATUS_NOT_VALID.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

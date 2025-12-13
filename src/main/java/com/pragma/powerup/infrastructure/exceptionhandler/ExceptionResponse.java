@@ -9,7 +9,7 @@ public enum ExceptionResponse {
     USER_DENIED_PERMISSION("El rol del usuario no está autorizado para esta operación."),
     USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
     SERVICE_UNAVAILABLE("El servicio de usuarios no está disponible en este momento."),
-    EMPLOYEE_NOT_VALID("El empleado no está asociado al restaurante."),
+    EMPLOYEE_NOT_VALID("El usuario no está asociado al restaurante."),
 
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),
     RESTAURANT_NOT_EXIST("El restaurante con el ID solicitado no existe."),
@@ -22,7 +22,9 @@ public enum ExceptionResponse {
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 
-    ORDER_NOT_FOUND("No se encontraron pedidos con el estado y restaurante especificados.");
+    ORDER_NOT_FOUND("No se encontraron pedidos con el estado y restaurante especificados."),
+
+    STATUS_NOT_VALID("No se permite ese filtro de estado de pedido, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
 
     private final String message;
 
