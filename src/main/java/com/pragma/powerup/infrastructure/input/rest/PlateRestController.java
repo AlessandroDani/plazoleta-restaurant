@@ -71,7 +71,7 @@ public class PlateRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Platos obtenidos", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No se encontraron platos para los criterios de búsqueda", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Categoria no existe", content = @Content),
     })
     @GetMapping("/restaurantes/{id}/platos")
     public ResponseEntity<List<PlateResponseDto>> getPlatesByRestaurant(

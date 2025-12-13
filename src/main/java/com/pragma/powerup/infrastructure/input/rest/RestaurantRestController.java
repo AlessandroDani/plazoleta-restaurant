@@ -45,7 +45,6 @@ public class RestaurantRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurantes obtenidos", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No se encontraron restaurantes para los criterios de búsqueda", content = @Content),
     })
     @GetMapping
     public ResponseEntity<List<RestaurantResponseClientDto>> getAllRestaurant(
