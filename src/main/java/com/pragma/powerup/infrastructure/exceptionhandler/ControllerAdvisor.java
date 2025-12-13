@@ -99,6 +99,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.STATUS_NOT_VALID.getMessage()));
     }
 
+    @ExceptionHandler(RestaurantEmployeeExistsException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantEmployeeExistException (RestaurantEmployeeExistsException ignoredRestaurantEmployeeExistsException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_IS_ALREADY_EMPLOYEE.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
