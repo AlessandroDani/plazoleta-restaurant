@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ExceptionResponse {
     NO_DATA_FOUND("El usuario con el ID especificado no fue encontrado."),
     USER_NOT_OWNER_RESTAURANT("El usuario autenticado no es el propietario de este restaurante."),
-    USER_DENIED_PERMISSION("El rol del usuario no está autorizado para esta operación."),
+    USER_DENIED_PERMISSION("El usuario no existe o El rol del usuario no está autorizado para esta operación."),
     USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
     SERVICE_UNAVAILABLE("El servicio de usuarios no está disponible en este momento."),
     EMPLOYEE_NOT_VALID("El usuario no está asociado al restaurante."),
