@@ -8,4 +8,5 @@ import java.util.List;
 public interface IOrderServicePort {
     void saveOrder(Order order);
     List<Order> getOrdersByStatus(OrderStatus status, int page, int size);
+    void assignOrderAndChangeStatus(Long plateId);
 }
