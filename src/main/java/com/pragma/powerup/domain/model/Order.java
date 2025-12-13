@@ -1,5 +1,7 @@
 package com.pragma.powerup.domain.model;
 
+import com.pragma.powerup.domain.exception.OrderNotInPendingStatusException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -86,5 +88,13 @@ public class Order {
 
     public void setPlates(List<OrderPlate> plates) {
         this.plates = plates;
+    }
+
+    public void assignToPreparation(Long idChef) {
+        if (!this.status.equals(OrderStatus.PENDING)) {
+            throw new OrderNotInPendingStatusException();
+        }
+        this.idChef = idChef;
+        this.status = OrderStatus.IN_PREPARATION;
     }
 }

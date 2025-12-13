@@ -52,11 +52,7 @@ public class OrderUseCase implements IOrderServicePort {
         if (!order.getIdRestaurant().equals(employee.getIdRestaurant())) {
             throw new EmployeeNotValidException();
         }
-        if (!order.getStatus().equals(OrderStatus.PENDING)) {
-            throw new OrderNotInPendingStatusException();
-        }
-        order.setIdChef(userId);
-        order.setStatus(OrderStatus.IN_PREPARATION);
+        order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
     }
 
