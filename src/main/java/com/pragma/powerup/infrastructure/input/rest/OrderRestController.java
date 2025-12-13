@@ -44,6 +44,7 @@ public class OrderRestController {
             @ApiResponse(responseCode = "400", description = "Estado de pedido no existe", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
             @ApiResponse(responseCode = "404", description = "No se encontraron pedidos para los criterios de búsqueda", content = @Content),
+            @ApiResponse(responseCode = "409", description = "El empleado no está asociado al restaurante ", content = @Content),
     })
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrders(
