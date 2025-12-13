@@ -41,6 +41,7 @@ public class OrderRestController {
     @Operation(summary = "Listar todos los pedidos de un restaurante paginados y filtrados por estado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pedidos obtenidos", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Estado de pedido no existe", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
             @ApiResponse(responseCode = "404", description = "No se encontraron pedidos para los criterios de búsqueda", content = @Content),
     })

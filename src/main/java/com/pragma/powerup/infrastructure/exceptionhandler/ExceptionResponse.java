@@ -24,7 +24,7 @@ public enum ExceptionResponse {
 
     ORDER_NOT_FOUND("No se encontraron pedidos con el estado y restaurante especificados."),
 
-    STATUS_NOT_VALID("No se permite ese filtro de estado de pedido, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
+    STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
 
     private final String message;
 
