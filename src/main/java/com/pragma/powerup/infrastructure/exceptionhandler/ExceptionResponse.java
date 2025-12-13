@@ -23,7 +23,6 @@ public enum ExceptionResponse {
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 
-    ORDER_NOT_FOUND("No se encontraron pedidos con el estado y restaurante especificados."),
 
     STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
 

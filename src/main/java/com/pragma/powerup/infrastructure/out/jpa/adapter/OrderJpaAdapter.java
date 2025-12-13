@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,11 +37,11 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     }
 
     @Override
-    public Optional<List<Order>> getOrdersByRestaurantAndStatus(Long restaurantId, OrderStatus status, int page, int size) {
+    public List<Order> getOrdersByRestaurantAndStatus(Long restaurantId, OrderStatus status, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("date").ascending());
         Page<OrderEntity> ordersPage = status == null ?
                 orderRepository.findByRestaurantId(restaurantId, pageable) :
                 orderRepository.findByRestaurantIdAndStatus(restaurantId, status, pageable);
-        return Optional.of(orderEntityMapper.toOrderList(ordersPage.getContent()));
+        return orderEntityMapper.toOrderList(ordersPage.getContent());
     }
 }

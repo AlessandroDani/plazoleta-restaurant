@@ -2,7 +2,6 @@ package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.exception.EmployeeNotValidException;
-import com.pragma.powerup.domain.exception.OrderNotFoundException;
 import com.pragma.powerup.domain.exception.RestaurantNotExistException;
 import com.pragma.powerup.domain.exception.UserHasActiveOrderException;
 import com.pragma.powerup.domain.model.*;
@@ -42,8 +41,7 @@ public class OrderUseCase implements IOrderServicePort {
         Long userId = tokenPort.getUserId();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
                 .orElseThrow(EmployeeNotValidException::new);
-        return orderPersistencePort.getOrdersByRestaurantAndStatus(employee.getIdRestaurant(), status, page, size)
-                .orElseThrow(OrderNotFoundException::new);
+        return orderPersistencePort.getOrdersByRestaurantAndStatus(employee.getIdRestaurant(), status, page, size);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {

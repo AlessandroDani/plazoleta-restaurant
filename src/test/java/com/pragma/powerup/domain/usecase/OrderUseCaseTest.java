@@ -233,7 +233,7 @@ class OrderUseCaseTest {
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
 
-        when(orderPersistencePort.getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, page, size)).thenReturn(Optional.of(expectedOrders));
+        when(orderPersistencePort.getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, page, size)).thenReturn(expectedOrders);
 
         List<Order> actualOrders = orderUseCase.getOrdersByStatus(status, page, size);
 
@@ -241,19 +241,5 @@ class OrderUseCaseTest {
 
         verify(restaurantEmployeePersistencePort, times(1)).getEmployee(EMPLOYEE_ID);
         verify(orderPersistencePort, times(1)).getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, page, size);
-    }
-
-    @Test
-    @DisplayName("Debería lanzar OrderNotFoundException si no hay órdenes para el estado y restaurante")
-    void getOrdersByStatus_ThrowsOrderNotFoundException() {
-        OrderStatus status = OrderStatus.IN_PREPARATION;
-
-        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
-        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
-        when(orderPersistencePort.getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, 0, 10)).thenReturn(Optional.empty());
-
-        assertThrows(OrderNotFoundException.class, () -> orderUseCase.getOrdersByStatus(status, 0, 10));
-
-        verify(orderPersistencePort, times(1)).getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, 0, 10);
     }
 }
