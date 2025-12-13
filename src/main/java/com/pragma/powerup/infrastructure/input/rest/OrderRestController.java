@@ -46,9 +46,9 @@ public class OrderRestController {
     })
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrders(
-        @Parameter(description = "Nombre del estado del pedido para filtrar (opcional)", example = "PENDIENTE")  @RequestParam(required = false) OrderStatus status,
-        @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0")  @RequestParam(defaultValue = "0") int page,
-        @Parameter(description = "Número de elementos por página", example = "5")  @RequestParam(defaultValue = "5") int size) {
-            return ResponseEntity.ok(orderHandler.getOrdersByStatus(status, page, size));
+            @Parameter(description = "Nombre del estado del pedido para filtrar (opcional)", example = "PENDIENTE") @RequestParam(required = false) OrderStatus status,
+            @Parameter(description = "Número de página a buscar (inicia en 0)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(orderHandler.getOrdersByStatus(status, page, size));
     }
 }
