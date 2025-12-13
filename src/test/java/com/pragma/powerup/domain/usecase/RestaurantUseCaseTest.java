@@ -1,7 +1,6 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
-import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
@@ -14,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -99,7 +97,7 @@ class RestaurantUseCaseTest {
                 new Restaurant(3L, "Alfa", "888", "addr2", "312", "logo.png", 9L)
         );
 
-        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(Optional.of(mockList));
+        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(mockList);
 
         List<Restaurant> result = assertDoesNotThrow(
                 () -> restaurantUseCase.getAllRestaurant(page, size),
@@ -109,22 +107,5 @@ class RestaurantUseCaseTest {
         verify(restaurantPersistence).getAllRestaurant(page, size);
         org.junit.jupiter.api.Assertions.assertNotNull(result);
         org.junit.jupiter.api.Assertions.assertEquals(2, result.size());
-    }
-
-    @Test
-    @DisplayName("Debería lanzar RestaurantNotFoundException si la lista de restaurantes está vacía")
-    void getAllRestaurant_ThrowsRestaurantNotFoundException() {
-        int page = 1;
-        int size = 10;
-
-        when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(Optional.empty());
-
-        assertThrows(
-                RestaurantNotFoundException.class,
-                () -> restaurantUseCase.getAllRestaurant(page, size),
-                "Debería lanzar RestaurantNotFoundException cuando la lista está vacía."
-        );
-
-        verify(restaurantPersistence).getAllRestaurant(page, size);
     }
 }

@@ -14,15 +14,12 @@ public enum ExceptionResponse {
 
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),
     RESTAURANT_NOT_EXIST("El restaurante con el ID solicitado no existe."),
-    RESTAURANT_NOT_FOUND("No se encontraron restaurantes para los criterios de búsqueda."),
 
     PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
     PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
     PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
 
-
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
-
 
     STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
 

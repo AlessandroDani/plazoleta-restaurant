@@ -54,11 +54,6 @@ public class ControllerAdvisor {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_EXIST.getMessage()));
     }
 
-    @ExceptionHandler(RestaurantNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleRestaurantNotFoundException(RestaurantNotFoundException ignoredRestaurantNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_FOUND.getMessage()));
-    }
-
     @ExceptionHandler(PlateNotFoundException.class)
     public ResponseEntity<Map<String, String>> handlePlateNotFoundException(PlateNotFoundException ignoredPlateNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_FOUND.getMessage()));
