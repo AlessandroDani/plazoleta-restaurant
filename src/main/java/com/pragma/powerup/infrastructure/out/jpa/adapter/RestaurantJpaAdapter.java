@@ -9,10 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+@Service
 @RequiredArgsConstructor
 public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
 
@@ -36,10 +37,10 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     }
 
     @Override
-    public Optional<List<Restaurant>> getAllRestaurant(int page, int size) {
+    public List<Restaurant> getAllRestaurant(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
         Page<RestaurantEntity> restaurantPage = restaurantRepository.findAll(pageable);
         List<RestaurantEntity> restaurantEntityList = restaurantPage.getContent();
-        return Optional.ofNullable(restaurantEntityMapper.toRestaurantList(restaurantEntityList));
+        return restaurantEntityMapper.toRestaurantList(restaurantEntityList);
     }
 }

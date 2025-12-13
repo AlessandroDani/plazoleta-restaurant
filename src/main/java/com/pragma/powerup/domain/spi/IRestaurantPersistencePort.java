@@ -9,5 +9,5 @@ public interface IRestaurantPersistencePort {
     void saveRestaurant(Restaurant restaurant);
     boolean existsRestaurantByNit(String nit);
     Optional<Restaurant> getRestaurantById(Long id);
-    Optional<List<Restaurant>> getAllRestaurant(int page, int size);
+    List<Restaurant> getAllRestaurant(int page, int size);
 }

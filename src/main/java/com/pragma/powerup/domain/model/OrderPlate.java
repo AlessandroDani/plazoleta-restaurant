@@ -13,6 +13,8 @@ public class OrderPlate {
         this.quantity = quantity;
     }
 
+    public OrderPlate() {}
+
     public Long getId() {
         return id;
     }

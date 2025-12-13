@@ -88,7 +88,9 @@ public class Restaurant {
 
     public void validatePlateList(List<OrderPlate> plates, IPlatePersistencePort platePersistencePort){
         for(OrderPlate orderPlate : plates){
-            Plate plate = platePersistencePort.getPlateById(orderPlate.getIdPlate()).orElseThrow(PlateNotFoundException::new);
+
+            Plate plate = platePersistencePort.getPlateById(orderPlate.getIdPlate())
+                    .orElseThrow(PlateNotFoundException::new);
             if(!Objects.equals(this.id, plate.getIdRestaurant())){
                 throw new PlateBelongsToAnotherRestaurantException();
             }

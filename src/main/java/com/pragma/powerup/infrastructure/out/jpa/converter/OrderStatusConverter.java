@@ -10,8 +10,7 @@ public class OrderStatusConverter implements AttributeConverter<OrderStatus, Str
 
     @Override
     public String convertToDatabaseColumn(OrderStatus status) {
-        if (status == null) return null;
-        return status.getDbValue();
+        return status == null ? null : status.getDbValue();
     }
 
     @Override

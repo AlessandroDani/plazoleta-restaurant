@@ -16,13 +16,4 @@ public class TokenAdapter implements ITokenPort {
         }
         return null;
     }
-
-    @Override
-    public String getRole() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getRoleName();
-        }
-        return null;
-    }
 }

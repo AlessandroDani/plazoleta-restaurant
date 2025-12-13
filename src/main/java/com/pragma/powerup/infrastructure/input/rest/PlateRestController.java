@@ -45,8 +45,7 @@ public class PlateRestController {
             @ApiResponse(responseCode = "200", description = "Plato actualizado con éxito."),
             @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
             @ApiResponse(responseCode = "403", description = "El usuario no autorizado."),
-            @ApiResponse(responseCode = "404", description = "El plato no existe."),
-            @ApiResponse(responseCode = "503", description = "Servicio de usuarios no disponible.")
+            @ApiResponse(responseCode = "404", description = "El plato no existe.")
     })
     @PutMapping("/platos/{id}")
     public ResponseEntity<Void> updatePlate(@PathVariable Long id, @Valid @RequestBody PlateUpdateRequestDto plateUpdateRequestDto) {
@@ -54,6 +53,14 @@ public class PlateRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+    @Operation(summary = "Habilitar/Deshabilitar un plato")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Plato actualizado con éxito."),
+            @ApiResponse(responseCode = "400", description = "Los campos son obligatorios"),
+            @ApiResponse(responseCode = "403", description = "El usuario no autorizado."),
+            @ApiResponse(responseCode = "404", description = "El plato no existe."),
+    })
     @PatchMapping("/platos/{id}")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody PlatePathActiveRequestDto plateUpdateRequestDto) {
         plateHandler.updateStatusPlate(plateUpdateRequestDto, id);
@@ -64,7 +71,7 @@ public class PlateRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Platos obtenidos", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No se encontraron platos para los criterios de búsqueda", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Categoria no existe", content = @Content),
     })
     @GetMapping("/restaurantes/{id}/platos")
     public ResponseEntity<List<PlateResponseDto>> getPlatesByRestaurant(

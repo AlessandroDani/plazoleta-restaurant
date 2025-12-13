@@ -2,9 +2,7 @@ package com.pragma.powerup.infrastructure.out.http.adapter;
 
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
-import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
-import com.pragma.powerup.infrastructure.out.http.UserResponseDto;
 import com.pragma.powerup.infrastructure.out.http.feign.IUserFeignClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +16,19 @@ public class UserHttpAdapter implements IUserGatewayPort {
 
     @Override
     public void isUserOwner(Long userId) {
+        checkRole(userId, "PROPIETARIO");
+    }
+
+    @Override
+    public void isUserEmployee(Long userId) {
+        checkRole(userId, "EMPLEADO");
+    }
+
+    private void checkRole(Long userId, String role) {
         try {
-            UserResponseDto userResponse = userFeignClient.getUserById(userId);
-            if (userResponse.getRole() == null || !"PROPIETARIO".equals(userResponse.getRole().getName())) {
-                throw new InvalidRoleException();
-            }
+            userFeignClient.checkRole(userId, role);
         } catch (FeignException.NotFound e) {
-            throw new RoleNotFoundException();
+            throw new InvalidRoleException();
         } catch (FeignException.FeignServerException e) {
             throw new UserServiceCommunicationException();
         }

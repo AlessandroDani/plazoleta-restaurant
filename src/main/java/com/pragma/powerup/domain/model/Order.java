@@ -1,19 +1,18 @@
 package com.pragma.powerup.domain.model;
 
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order {
     private Long id;
     private Long idClient;
-    private LocalDate date;
+    private LocalDateTime date;
     private OrderStatus status ;
     private Long idChef;
     private Long idRestaurant;
     private List<OrderPlate> plates;
 
-    public Order(Long id, Long idClient, LocalDate date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates) {
+    public Order(Long id, Long idClient, LocalDateTime date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
@@ -27,7 +26,7 @@ public class Order {
 
     }
 
-    public void initializeNewOrder(Long userId, LocalDate currentDate) {
+    public void initializeNewOrder(Long userId, LocalDateTime currentDate) {
         this.date = currentDate;
         this.status = OrderStatus.PENDING;
         this.idClient = userId;
@@ -49,11 +48,11 @@ public class Order {
         this.idClient = idClient;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

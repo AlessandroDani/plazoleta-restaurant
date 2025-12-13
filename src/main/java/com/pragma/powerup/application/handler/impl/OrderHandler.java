@@ -1,11 +1,13 @@
 package com.pragma.powerup.application.handler.impl;
 
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
+import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.application.mapper.IOrderRequestMapper;
 import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderPlate;
+import com.pragma.powerup.domain.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,4 +30,11 @@ public class OrderHandler implements IOrderHandler {
         order.setPlates(list);
         orderServicePort.saveOrder(order);
     }
+
+    @Override
+    public List<OrderResponseDto> getOrdersByStatus(OrderStatus orderStatus, int page, int size) {
+        List<Order> orders = orderServicePort.getOrdersByStatus(orderStatus, page, size);
+        return orderRequestMapper.toResponseList(orders);
+    }
+
 }

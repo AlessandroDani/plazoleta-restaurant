@@ -22,6 +22,7 @@ public class WebSecurityConfig {
 
     private static final String ADMIN = "ADMINISTRADOR";
     private static final String OWNER = "PROPIETARIO";
+    private static final String EMPLOYEE = "EMPLEADO";
     private static final String CLIENT = "CLIENTE";
 
     @Bean
@@ -37,10 +38,12 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/restaurantes").hasRole(ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/restaurantes").hasRole(CLIENT)
                 .antMatchers(HttpMethod.GET, "/api/restaurantes/{id}/platos").hasRole(CLIENT)
+                .antMatchers(HttpMethod.POST, "/api/restaurantes/{id}/empleados").hasRole(OWNER)
                 .antMatchers(HttpMethod.POST, "/api/platos").hasRole(OWNER)
                 .antMatchers(HttpMethod.PUT, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.POST, "/api/pedidos").hasRole(CLIENT)
+                .antMatchers(HttpMethod.GET, "/api/pedidos").hasRole(EMPLOYEE)
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated()

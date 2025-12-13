@@ -18,13 +18,10 @@ public class OrderRequestDto {
     @JsonProperty("id_restaurante")
     private Long idRestaurant;
 
-    @Schema(description = "Lista de los platos escogidos", example = "{\n" +
-            "  \"id_restaurante\": 1,\n" +
-            "  \"platos\": [\n" +
-            "    { \"id_plato\": 10, \"cantidad\": 2 },\n" +
-            "    { \"id_plato\": 15, \"cantidad\": 1 }\n" +
-            "  ]\n" +
-            "}")
+    @Schema(description = "Lista de los platos escogidos", example = " [\n" +
+            "    { \"id_plato\": 5, \"cantidad\": 1 },\n" +
+            "     { \"id_plato\": 2, \"cantidad\": 1 }\n" +
+            "  ]")
     @NotNull(message = "La lista de platos es obligatorio")
     @Valid
     @JsonProperty("platos")

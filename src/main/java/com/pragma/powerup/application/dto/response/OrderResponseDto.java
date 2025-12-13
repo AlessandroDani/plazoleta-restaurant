@@ -1,0 +1,41 @@
+package com.pragma.powerup.application.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+public class OrderResponseDto {
+    @Schema(description = "id del pedido", example = "1")
+    @JsonProperty("id")
+    private Long id;
+
+    @Schema(description = "id del cliente", example = "1")
+    @JsonProperty("id_cliente")
+    private Long idClient;
+
+    @Schema(description = "fecha y hora de la orden", example = "2025-12-08T10:30:00")
+    @JsonProperty("fecha")
+    private LocalDateTime date;
+
+    @Schema(description = "estado del pedido", example = "PENDIENTE")
+    @JsonProperty("estado")
+    private String status ;
+
+    @Schema(description = "id del chef (empleado)", example = "1")
+    @JsonProperty("id_chef")
+    private Long idChef;
+
+    @Schema(description = "id del restaurante del pedido", example = "1")
+    @JsonProperty("id_restaurant")
+    private Long idRestaurant;
+
+    @Schema(description = "Lista de platos de la orden")
+    @JsonProperty("plates")
+    private List<OrderPlateResponseDto> plates;
+}

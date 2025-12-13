@@ -1,11 +1,14 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
+import com.pragma.powerup.domain.exception.InvalidStatusParameterException;
 import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -51,11 +54,6 @@ public class ControllerAdvisor {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_EXIST.getMessage()));
     }
 
-    @ExceptionHandler(RestaurantNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleRestaurantNotFoundException(RestaurantNotFoundException ignoredRestaurantNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_FOUND.getMessage()));
-    }
-
     @ExceptionHandler(PlateNotFoundException.class)
     public ResponseEntity<Map<String, String>> handlePlateNotFoundException(PlateNotFoundException ignoredPlateNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_FOUND.getMessage()));
@@ -79,6 +77,51 @@ public class ControllerAdvisor {
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleCategoryNotFoundClass (CategoryNotFoundException ignoredCategoryNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CATEGORY_NOT_FOUND.getMessage()));
+    }
+
+    @ExceptionHandler(EmployeeNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleEmployeeNotValidException (EmployeeNotValidException ignoredEmployeeNotValidException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.EMPLOYEE_NOT_VALID.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidStatusParameterException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidStatusParameterException (InvalidStatusParameterException ignoredInvalidStatusParameterException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.STATUS_NOT_VALID.getMessage()));
+    }
+
+    @ExceptionHandler(RestaurantEmployeeExistsException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantEmployeeExistException (RestaurantEmployeeExistsException ignoredRestaurantEmployeeExistsException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_IS_ALREADY_EMPLOYEE.getMessage()));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException) cause;
+
+            String fieldName = "un campo";
+            if (ife.getPath() != null && !ife.getPath().isEmpty()) {
+                fieldName = ife.getPath().get(ife.getPath().size() - 1).getFieldName();
+            }
+
+            String invalidValue = String.valueOf(ife.getValue());
+            String expectedType = ife.getTargetType().getSimpleName();
+
+            String friendlyMessage = String.format(
+                    "Error de formato en el campo '%s'. El valor proporcionado ('%s') no pudo ser convertido al tipo de dato esperado (%s).",
+                    fieldName,
+                    invalidValue,
+                    expectedType
+            );
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", friendlyMessage));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap("error", "Error en el formato de la petición JSON. Verifique la sintaxis."));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
