@@ -53,6 +53,13 @@ public class RestaurantRestController {
             @Parameter(description = "Número de elementos por página", example = "5") @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(restaurantHandler.getAllRestaurant(page, size));
     }
+
+    @Operation(summary = "Insertar un nuevo empleado a un restaurante")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Empleado ingresado con exito", content = @Content),
+            @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción", content = @Content),
+            @ApiResponse(responseCode = "404", description = "El usuario con el ID especificado no fue encontrado", content = @Content),
+    })
     @PostMapping("/{id}/empleados")
     public ResponseEntity<Void> saveEmployee(
             @PathVariable Long id,
