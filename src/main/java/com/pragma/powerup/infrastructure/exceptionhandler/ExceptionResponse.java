@@ -19,6 +19,8 @@ public enum ExceptionResponse {
     PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
     PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
 
+    ORDER_NOT_PENDING_STATE("El pedido debe estar en estado PENDIENTE para esta operación."),
+
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 
     STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");

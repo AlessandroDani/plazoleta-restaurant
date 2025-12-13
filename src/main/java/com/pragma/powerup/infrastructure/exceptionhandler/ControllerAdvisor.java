@@ -94,6 +94,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_IS_ALREADY_EMPLOYEE.getMessage()));
     }
 
+    @ExceptionHandler(OrderNotInPendingStatusException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotInPendingStatusException (OrderNotInPendingStatusException ignoredOrderNotInPendingStatusException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_PENDING_STATE.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
