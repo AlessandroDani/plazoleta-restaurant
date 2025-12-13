@@ -71,7 +71,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(PlateBelongsToAnotherRestaurantException.class)
     public ResponseEntity<Map<String, String>> handlePlateBelongsToAnotherRestaurantException(PlateBelongsToAnotherRestaurantException ignoredPlateBelongsToAnotherRestaurantException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_BELONGS_ANOTHER_RESTAURANT.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_BELONGS_ANOTHER_RESTAURANT.getMessage()));
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -79,9 +79,9 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CATEGORY_NOT_FOUND.getMessage()));
     }
 
-    @ExceptionHandler(EmployeeNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleEmployeeNotValidException (EmployeeNotValidException ignoredEmployeeNotValidException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.EMPLOYEE_NOT_VALID.getMessage()));
+    @ExceptionHandler(EmployeeDoesNotBelongToRestaurantException.class)
+    public ResponseEntity<Map<String, String>> handleEmployeeNotValidException (EmployeeDoesNotBelongToRestaurantException ignoredEmployeeDoesNotBelongToRestaurantException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_BELONG_RESTAURANT.getMessage()));
     }
 
     @ExceptionHandler(InvalidStatusParameterException.class)

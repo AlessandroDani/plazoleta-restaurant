@@ -9,7 +9,7 @@ public enum ExceptionResponse {
     USER_DENIED_PERMISSION("El usuario no existe o El rol del usuario no está autorizado para esta operación."),
     USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
     SERVICE_UNAVAILABLE("El servicio de usuarios no está disponible en este momento."),
-    EMPLOYEE_NOT_VALID("El usuario no está asociado al restaurante."),
+    USER_NOT_BELONG_RESTAURANT("El usuario no está asociado al restaurante."),
     USER_IS_ALREADY_EMPLOYEE("El usuario ya fue asignado a un restaurante"),
 
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),

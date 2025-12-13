@@ -38,7 +38,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<Order> getOrdersByStatus(OrderStatus status, int page, int  size) {
         Long userId = tokenPort.getUserId();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
-                .orElseThrow(EmployeeNotValidException::new);
+                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
         return orderPersistencePort.getOrdersByRestaurantAndStatus(employee.getIdRestaurant(), status, page, size);
     }
 
@@ -48,9 +48,9 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
-                .orElseThrow(EmployeeNotValidException::new);
+                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
         if (!order.getIdRestaurant().equals(employee.getIdRestaurant())) {
-            throw new EmployeeNotValidException();
+            throw new EmployeeDoesNotBelongToRestaurantException();
         }
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
