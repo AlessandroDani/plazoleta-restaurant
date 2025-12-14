@@ -104,6 +104,16 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_READY_STATE.getMessage()));
     }
 
+    @ExceptionHandler(OrderNotInPreparationStatusException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotInPreparationStatusException (OrderNotInPreparationStatusException ignoredOrderNotInPreparationStatusException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_PREPARATION_STATE.getMessage()));
+    }
+
+    @ExceptionHandler(OrderHasIncorrectPinException.class)
+    public ResponseEntity<Map<String, String>> handleOrderHasIncorrectPinException (OrderHasIncorrectPinException ignoredOrderHasIncorrectPinException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_INCORRECT_PIN.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 

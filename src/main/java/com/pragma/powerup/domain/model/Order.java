@@ -1,6 +1,8 @@
 package com.pragma.powerup.domain.model;
 
+import com.pragma.powerup.domain.exception.OrderHasIncorrectPinException;
 import com.pragma.powerup.domain.exception.OrderNotInPendingStatusException;
+import com.pragma.powerup.domain.exception.OrderNotInPreparationStatusException;
 import com.pragma.powerup.domain.exception.OrderNotInReadyStatusException;
 
 import java.time.LocalDateTime;
@@ -118,12 +120,11 @@ public class Order {
 
     public void assignToDelivered(Integer securityPin) {
         if(!this.securityPin.equals(securityPin)){
-            throw new OrderHasIncorrectPin();
+            throw new OrderHasIncorrectPinException();
         }
         if (!this.status.equals(OrderStatus.READY)) {
             throw new OrderNotInReadyStatusException();
         }
-        this.securityPin = securityPin;
         this.status = OrderStatus.DELIVERED;
     }
 }
