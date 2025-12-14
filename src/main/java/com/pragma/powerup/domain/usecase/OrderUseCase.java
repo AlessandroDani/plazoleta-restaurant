@@ -48,21 +48,15 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void assignOrderAndChangeStatus(Long orderId) {
         Long userId = tokenPort.getUserId();
-        Order order = orderPersistencePort.getOrderById(orderId)
-                .orElseThrow(OrderNotFoundException::new);
-        RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
-                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
-        if (!order.getIdRestaurant().equals(employee.getIdRestaurant())) {
-            throw new EmployeeDoesNotBelongToRestaurantException();
-        }
+        Order order = checkOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
     }
 
     @Override
     public void notifyOrderReady(Long orderId) {
-        Order order = orderPersistencePort.getOrderById(orderId)
-                .orElseThrow(OrderNotFoundException::new);
+        Order order = checkOrder(orderId, tokenPort.getUserId());
+
         String pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
@@ -85,5 +79,16 @@ public class OrderUseCase implements IOrderServicePort {
 
     private String generateSecurityPin() {
         return String.valueOf(ThreadLocalRandom.current().nextInt(1000, 10000));
+    }
+
+    private Order checkOrder(Long orderId, Long userId){
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
+                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
+        if (!order.getIdRestaurant().equals(employee.getIdRestaurant())) {
+            throw new EmployeeDoesNotBelongToRestaurantException();
+        }
+        return order;
     }
 }
