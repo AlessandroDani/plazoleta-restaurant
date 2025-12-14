@@ -39,6 +39,9 @@ public class OrderEntity {
     @JoinColumn(name = "id_restaurante")
     private RestaurantEntity restaurant;
 
+    @Column(name = "security_pin")
+    private Long securityPin;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderPlateEntity> plates;
 }
