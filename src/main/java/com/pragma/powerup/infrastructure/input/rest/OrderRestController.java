@@ -70,7 +70,7 @@ public class OrderRestController {
     @PutMapping("/{orderId}/entregado")
     public ResponseEntity<Void> assignOrderDelivered(
             @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId,
-            @Parameter(description = "pin del pedido a entregar", example = "2945")  @RequestBody PinRequestDto request) {
+            @Parameter(description = "pin del pedido a entregar", example = "2945")@Valid @RequestBody PinRequestDto request) {
         orderHandler.transitionToDelivered(orderId, request.getSecurityPin());
         return ResponseEntity.ok().build();
     }

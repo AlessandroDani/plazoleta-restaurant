@@ -15,8 +15,8 @@ public class Order {
     private OrderStatus status;
     private Long idChef;
     private Long idRestaurant;
-    private List<OrderPlate> plates;
     private Integer securityPin;
+    private List<OrderPlate> plates;
 
     public Order() {
     }
