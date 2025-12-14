@@ -55,8 +55,14 @@ public class OrderRestController {
     }
 
     @PutMapping("/{orderId}/en-preparacion")
-    public ResponseEntity<Void> assignOrder( @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
+    public ResponseEntity<Void> assignOrderPreparation( @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
         orderHandler.assignOrderAndChangeStatus(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{orderId}/listo")
+    public ResponseEntity<Void> assignOrderReady( @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
+        orderHandler.notifyOrderReady(orderId);
         return ResponseEntity.ok().build();
     }
 }

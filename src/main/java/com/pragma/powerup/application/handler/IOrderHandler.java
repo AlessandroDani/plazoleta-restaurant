@@ -10,4 +10,5 @@ public interface IOrderHandler {
     void saveOrder(OrderRequestDto orderRequestDto);
     List<OrderResponseDto> getOrdersByStatus(OrderStatus orderStatus, int page, int size);
     void assignOrderAndChangeStatus(Long id);
+    void notifyOrderReady(Long orderId);
 }

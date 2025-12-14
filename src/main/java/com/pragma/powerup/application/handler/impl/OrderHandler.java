@@ -42,4 +42,9 @@ public class OrderHandler implements IOrderHandler {
         orderServicePort.assignOrderAndChangeStatus(orderId);
     }
 
+    @Override
+    public void notifyOrderReady(Long orderId) {
+        orderServicePort.notifyOrderReady(orderId);
+    }
+
 }
