@@ -56,14 +56,11 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void notifyOrderReady(Long orderId) {
         Order order = checkOrder(orderId, tokenPort.getUserId());
-
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
-
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        String message = "Tu pedido está listo. Reclámalo con el PIN: " + pin;
-        userGatewayPort.sendSms(client.getPhoneNumber(), message);
+        sendNotification(order.getIdClient(),
+                "Tu pedido está listo. Reclámalo con el PIN: " + pin);
     }
 
     @Override
@@ -83,9 +80,8 @@ public class OrderUseCase implements IOrderServicePort {
             order.assignToCanceled();
             orderPersistencePort.saveOrder(order);
         } catch (OrderNotInPendingStatusException exception) {
-            User client = userGatewayPort.getUserById(order.getIdClient());
-            String message = "Lo sentimos, su pedido ya está en preparación y no puede cancelarse";
-            userGatewayPort.sendSms(client.getPhoneNumber(), message);
+            sendNotification(order.getIdClient(),
+                    "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
             throw exception;
         }
     }
@@ -114,5 +110,10 @@ public class OrderUseCase implements IOrderServicePort {
             throw new EmployeeDoesNotBelongToRestaurantException();
         }
         return order;
+    }
+
+    private void sendNotification(Long clientId, String message) {
+        User client = userGatewayPort.getUserById(clientId);
+        userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 }
