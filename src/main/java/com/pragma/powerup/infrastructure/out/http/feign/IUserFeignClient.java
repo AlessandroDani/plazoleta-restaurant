@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.out.http.feign;
 
 import com.pragma.powerup.infrastructure.out.http.request.SmsRequestDto;
+import com.pragma.powerup.infrastructure.out.http.response.UserResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,5 +16,9 @@ public interface IUserFeignClient {
 
     @PostMapping("/api/sms/send")
     void sendSms(@RequestBody SmsRequestDto request);
+
+    @GetMapping("/api/usuarios/{id}")
+    UserResponseDto getUserById(@PathVariable("id") Long id);
+
 
 }
