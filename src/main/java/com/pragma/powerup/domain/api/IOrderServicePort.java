@@ -10,4 +10,5 @@ public interface IOrderServicePort {
     List<Order> getOrdersByStatus(OrderStatus status, int page, int size);
     void assignOrderAndChangeStatus(Long plateId);
     void notifyOrderReady(Long orderId);
+    void transitionToDelivered(Long orderId, Integer securityPin);
 }

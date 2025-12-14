@@ -57,13 +57,20 @@ public class OrderUseCase implements IOrderServicePort {
     public void notifyOrderReady(Long orderId) {
         Order order = checkOrder(orderId, tokenPort.getUserId());
 
-        String pin = generateSecurityPin();
+        Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
 
         User client = userGatewayPort.getUserById(order.getIdClient());
         String message = "Tu pedido está listo. Reclámalo con el PIN: " + pin;
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
+    }
+
+    @Override
+    public void transitionToDelivered(Long orderId, Integer pin) {
+        Order order = checkOrder(orderId, tokenPort.getUserId());
+        order.assignToDelivered(pin);
+        orderPersistencePort.saveOrder(order);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -77,8 +84,8 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private String generateSecurityPin() {
-        return String.valueOf(ThreadLocalRandom.current().nextInt(1000, 10000));
+    private int generateSecurityPin() {
+        return ThreadLocalRandom.current().nextInt(1000, 10000);
     }
 
     private Order checkOrder(Long orderId, Long userId){

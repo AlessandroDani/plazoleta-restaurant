@@ -47,4 +47,9 @@ public class OrderHandler implements IOrderHandler {
         orderServicePort.notifyOrderReady(orderId);
     }
 
+    @Override
+    public void transitionToDelivered(Long orderId, Integer securityPin) {
+        orderServicePort.transitionToDelivered(orderId, securityPin);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
+import com.pragma.powerup.application.dto.request.PinRequestDto;
 import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.domain.model.OrderStatus;
@@ -63,6 +64,14 @@ public class OrderRestController {
     @PutMapping("/{orderId}/listo")
     public ResponseEntity<Void> assignOrderReady( @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
         orderHandler.notifyOrderReady(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{orderId}/entregado")
+    public ResponseEntity<Void> assignOrderDelivered(
+            @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId,
+            @Parameter(description = "pin del pedido a entregar", example = "2945")@Valid @RequestBody PinRequestDto request) {
+        orderHandler.transitionToDelivered(orderId, request.getSecurityPin());
         return ResponseEntity.ok().build();
     }
 }
