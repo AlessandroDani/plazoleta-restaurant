@@ -66,6 +66,13 @@ public class OrderUseCase implements IOrderServicePort {
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
+    @Override
+    public void transitionToDelivered(Long orderId, String pin) {
+        Order order = checkOrder(orderId, tokenPort.getUserId());
+        order.assignToDelivered(pin);
+        orderPersistencePort.saveOrder(order);
+    }
+
     private Restaurant validateRestaurant(Long idRestaurant) {
         return restaurantPersistencePort.getRestaurantById(idRestaurant)
                 .orElseThrow(RestaurantNotExistException::new);
