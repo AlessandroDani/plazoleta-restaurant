@@ -20,6 +20,7 @@ public enum ExceptionResponse {
     PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
 
     ORDER_NOT_PENDING_STATE("El pedido debe estar en estado PENDIENTE para esta operación."),
+    ORDER_NOT_READY_STATE("El pedido debe estar en estado LISTO para esta operación."),
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 

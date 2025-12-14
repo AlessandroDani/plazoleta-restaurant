@@ -99,6 +99,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_PENDING_STATE.getMessage()));
     }
 
+    @ExceptionHandler(OrderNotInReadyStatusException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotInReadyStatusException (OrderNotInReadyStatusException ignoredOrderNotInReadyStatusException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_READY_STATE.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
