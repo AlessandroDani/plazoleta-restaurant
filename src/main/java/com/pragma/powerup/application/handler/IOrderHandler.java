@@ -12,4 +12,5 @@ public interface IOrderHandler {
     void assignOrderAndChangeStatus(Long id);
     void notifyOrderReady(Long orderId);
     void transitionToDelivered(Long orderId, Integer securityPin);
+    void transitionToCanceled(Long orderId);
 }

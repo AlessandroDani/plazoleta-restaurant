@@ -52,4 +52,9 @@ public class OrderHandler implements IOrderHandler {
         orderServicePort.transitionToDelivered(orderId, securityPin);
     }
 
+    @Override
+    public void transitionToCanceled(Long orderId) {
+        orderServicePort.transitionToCanceled(orderId);
+    }
+
 }

@@ -15,7 +15,7 @@ public class OrderUseCase implements IOrderServicePort {
     private final ITokenPort tokenPort;
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
-    private final IUserGatewayPort  userGatewayPort;
+    private final IUserGatewayPort userGatewayPort;
 
     public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
         this.orderPersistencePort = orderPersistencePort;
@@ -38,7 +38,7 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public List<Order> getOrdersByStatus(OrderStatus status, int page, int  size) {
+    public List<Order> getOrdersByStatus(OrderStatus status, int page, int size) {
         Long userId = tokenPort.getUserId();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
                 .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
@@ -56,14 +56,11 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void notifyOrderReady(Long orderId) {
         Order order = checkOrder(orderId, tokenPort.getUserId());
-
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
-
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        String message = "Tu pedido está listo. Reclámalo con el PIN: " + pin;
-        userGatewayPort.sendSms(client.getPhoneNumber(), message);
+        sendNotification(order.getIdClient(),
+                "Tu pedido está listo. Reclámalo con el PIN: " + pin);
     }
 
     @Override
@@ -71,6 +68,22 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
+    }
+
+    @Override
+    public void transitionToCanceled(Long orderId) {
+        Long userId = tokenPort.getUserId();
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        order.isOwner(userId);
+        try {
+            order.assignToCanceled();
+            orderPersistencePort.saveOrder(order);
+        } catch (OrderNotInPendingStatusException exception) {
+            sendNotification(order.getIdClient(),
+                    "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
+            throw exception;
+        }
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -88,7 +101,7 @@ public class OrderUseCase implements IOrderServicePort {
         return ThreadLocalRandom.current().nextInt(1000, 10000);
     }
 
-    private Order checkOrder(Long orderId, Long userId){
+    private Order checkOrder(Long orderId, Long userId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
@@ -97,5 +110,10 @@ public class OrderUseCase implements IOrderServicePort {
             throw new EmployeeDoesNotBelongToRestaurantException();
         }
         return order;
+    }
+
+    private void sendNotification(Long clientId, String message) {
+        User client = userGatewayPort.getUserById(clientId);
+        userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 }

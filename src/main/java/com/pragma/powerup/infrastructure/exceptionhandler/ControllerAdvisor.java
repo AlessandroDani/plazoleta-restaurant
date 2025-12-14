@@ -114,6 +114,13 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_INCORRECT_PIN.getMessage()));
     }
 
+    @ExceptionHandler(ClientIsNotOrderOwnerException.class)
+    public ResponseEntity<Map<String, String>> handleClientIsNotOrderOwnerException (ClientIsNotOrderOwnerException ignoredClientIsNotOrderOwnerException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CLIENT_NOT_OWNER.getMessage()));
+    }
+
+
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 

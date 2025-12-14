@@ -11,4 +11,5 @@ public interface IOrderServicePort {
     void assignOrderAndChangeStatus(Long plateId);
     void notifyOrderReady(Long orderId);
     void transitionToDelivered(Long orderId, Integer securityPin);
+    void transitionToCanceled(Long orderId);
 }
