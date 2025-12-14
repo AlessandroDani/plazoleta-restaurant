@@ -69,9 +69,15 @@ public class OrderRestController {
 
     @PutMapping("/{orderId}/entregado")
     public ResponseEntity<Void> assignOrderDelivered(
-            @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId,
+            @Parameter(description = "id del pedido a entregar", example = "1") @PathVariable Long orderId,
             @Parameter(description = "pin del pedido a entregar", example = "2945")@Valid @RequestBody PinRequestDto request) {
         orderHandler.transitionToDelivered(orderId, request.getSecurityPin());
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/{orderId}/cancelado")
+    public ResponseEntity<Void> assignOrderCanceled(
+            @Parameter(description = "id del pedido", example = "1") @PathVariable Long orderId) {
+        orderHandler.transitionToCanceled(orderId);
         return ResponseEntity.ok().build();
     }
 }

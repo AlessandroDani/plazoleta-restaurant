@@ -108,12 +108,6 @@ public class Order {
         }
     }
 
-    public void assignToCanceled(){
-        if (!this.status.equals(OrderStatus.PENDING)) {
-            throw new OrderNotInPendingStatusException();
-        }
-        this.status = OrderStatus.CANCELED;
-    }
 
     public void assignToPreparation(Long idChef) {
         if (!this.status.equals(OrderStatus.PENDING)) {
@@ -139,5 +133,12 @@ public class Order {
             throw new OrderNotInReadyStatusException();
         }
         this.status = OrderStatus.DELIVERED;
+    }
+
+    public void assignToCanceled(){
+        if (!this.status.equals(OrderStatus.PENDING)) {
+            throw new OrderNotInPendingStatusException();
+        }
+        this.status = OrderStatus.CANCELED;
     }
 }
