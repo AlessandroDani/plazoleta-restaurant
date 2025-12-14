@@ -110,9 +110,20 @@ public class Order {
 
     public void assignToReady(String securityPin) {
         if (!this.status.equals(OrderStatus.IN_PREPARATION)) {
-            throw new OrderNotInReadyStatusException();
+            throw new OrderNotInPreparationStatusException();
         }
         this.securityPin = securityPin;
         this.status = OrderStatus.READY;
+    }
+
+    public void assignToDelivered(String securityPin) {
+        if(!this.securityPin.equals(securityPin)){
+            throw new OrderHasIncorrectPin();
+        }
+        if (!this.status.equals(OrderStatus.READY)) {
+            throw new OrderNotInReadyStatusException();
+        }
+        this.securityPin = securityPin;
+        this.status = OrderStatus.DELIVERED;
     }
 }
