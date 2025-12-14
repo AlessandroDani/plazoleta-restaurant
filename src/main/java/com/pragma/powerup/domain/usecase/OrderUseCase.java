@@ -57,7 +57,7 @@ public class OrderUseCase implements IOrderServicePort {
     public void notifyOrderReady(Long orderId) {
         Order order = checkOrder(orderId, tokenPort.getUserId());
 
-        String pin = generateSecurityPin();
+        Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
 
@@ -67,7 +67,7 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public void transitionToDelivered(Long orderId, String pin) {
+    public void transitionToDelivered(Long orderId, Integer pin) {
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
@@ -84,8 +84,8 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private String generateSecurityPin() {
-        return String.valueOf(ThreadLocalRandom.current().nextInt(1000, 10000));
+    private int generateSecurityPin() {
+        return ThreadLocalRandom.current().nextInt(1000, 10000);
     }
 
     private Order checkOrder(Long orderId, Long userId){

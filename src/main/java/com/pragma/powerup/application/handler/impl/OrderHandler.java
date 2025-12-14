@@ -48,7 +48,7 @@ public class OrderHandler implements IOrderHandler {
     }
 
     @Override
-    public void transitionToDelivered(Long orderId, String securityPin) {
+    public void transitionToDelivered(Long orderId, Integer securityPin) {
         orderServicePort.transitionToDelivered(orderId, securityPin);
     }
 

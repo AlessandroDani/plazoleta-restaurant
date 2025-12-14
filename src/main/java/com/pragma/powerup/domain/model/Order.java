@@ -14,12 +14,12 @@ public class Order {
     private Long idChef;
     private Long idRestaurant;
     private List<OrderPlate> plates;
-    private String securityPin;
+    private Integer securityPin;
 
     public Order() {
     }
 
-    public Order(Long id, Long idClient, LocalDateTime date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates, String securityPin) {
+    public Order(Long id, Long idClient, LocalDateTime date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates, Integer securityPin) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
@@ -92,11 +92,11 @@ public class Order {
         this.plates = plates;
     }
 
-    public String getSecurityPin() {
+    public Integer getSecurityPin() {
         return securityPin;
     }
 
-    public void setSecurityPin(String securityPin) {
+    public void setSecurityPin(Integer securityPin) {
         this.securityPin = securityPin;
     }
 
@@ -108,7 +108,7 @@ public class Order {
         this.status = OrderStatus.IN_PREPARATION;
     }
 
-    public void assignToReady(String securityPin) {
+    public void assignToReady(Integer securityPin) {
         if (!this.status.equals(OrderStatus.IN_PREPARATION)) {
             throw new OrderNotInPreparationStatusException();
         }
@@ -116,7 +116,7 @@ public class Order {
         this.status = OrderStatus.READY;
     }
 
-    public void assignToDelivered(String securityPin) {
+    public void assignToDelivered(Integer securityPin) {
         if(!this.securityPin.equals(securityPin)){
             throw new OrderHasIncorrectPin();
         }
