@@ -7,6 +7,7 @@ import com.pragma.powerup.domain.spi.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class OrderUseCase implements IOrderServicePort {
     private final IOrderPersistencePort orderPersistencePort;
@@ -14,13 +15,15 @@ public class OrderUseCase implements IOrderServicePort {
     private final ITokenPort tokenPort;
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
+    private final IUserGatewayPort  userGatewayPort;
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.tokenPort = tokenPort;
         this.platePersistencePort = platePersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
+        this.userGatewayPort = userGatewayPort;
     }
 
     @Override
@@ -56,6 +59,19 @@ public class OrderUseCase implements IOrderServicePort {
         orderPersistencePort.saveOrder(order);
     }
 
+    @Override
+    public void notifyOrderReady(Long orderId) {
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        String pin = generateSecurityPin();
+        order.assignToReady(pin);
+        orderPersistencePort.saveOrder(order);
+
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        String message = "Tu pedido está listo. Reclámalo con el PIN: " + pin;
+        userGatewayPort.sendSms(client.getPhoneNumber(), message);
+    }
+
     private Restaurant validateRestaurant(Long idRestaurant) {
         return restaurantPersistencePort.getRestaurantById(idRestaurant)
                 .orElseThrow(RestaurantNotExistException::new);
@@ -65,5 +81,9 @@ public class OrderUseCase implements IOrderServicePort {
         if (orderPersistencePort.hasActiveOrder(userId)) {
             throw new UserHasActiveOrderException();
         }
+    }
+
+    private String generateSecurityPin() {
+        return String.valueOf(ThreadLocalRandom.current().nextInt(1000, 10000));
     }
 }
