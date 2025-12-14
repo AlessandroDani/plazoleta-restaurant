@@ -11,4 +11,5 @@ public interface IOrderHandler {
     List<OrderResponseDto> getOrdersByStatus(OrderStatus orderStatus, int page, int size);
     void assignOrderAndChangeStatus(Long id);
     void notifyOrderReady(Long orderId);
+    void transitionToDelivered(Long orderId, String securityPin);
 }
