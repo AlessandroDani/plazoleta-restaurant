@@ -102,6 +102,19 @@ public class Order {
         this.securityPin = securityPin;
     }
 
+    public void isOwner(Long userId){
+        if(!this.idClient.equals(userId)){
+            throw new ClientIsNotOrderOwnerException();
+        }
+    }
+
+    public void assignToCanceled(){
+        if (!this.status.equals(OrderStatus.PENDING)) {
+            throw new OrderNotInPendingStatusException();
+        }
+        this.status = OrderStatus.CANCELED;
+    }
+
     public void assignToPreparation(Long idChef) {
         if (!this.status.equals(OrderStatus.PENDING)) {
             throw new OrderNotInPendingStatusException();

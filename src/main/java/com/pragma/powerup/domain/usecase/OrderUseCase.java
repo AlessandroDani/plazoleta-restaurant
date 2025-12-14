@@ -73,6 +73,16 @@ public class OrderUseCase implements IOrderServicePort {
         orderPersistencePort.saveOrder(order);
     }
 
+    @Override
+    public void transitionToCancelled(Long orderId) {
+        Long userId = tokenPort.getUserId();
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        order.isOwner(userId);
+        order.assignToCanceled();
+        orderPersistencePort.saveOrder(order);
+    }
+
     private Restaurant validateRestaurant(Long idRestaurant) {
         return restaurantPersistencePort.getRestaurantById(idRestaurant)
                 .orElseThrow(RestaurantNotExistException::new);
