@@ -74,7 +74,7 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public void transitionToCancelled(Long orderId) {
+    public void transitionToCanceled(Long orderId) {
         Long userId = tokenPort.getUserId();
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
