@@ -15,7 +15,7 @@ public class OrderUseCase implements IOrderServicePort {
     private final ITokenPort tokenPort;
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
-    private final IUserGatewayPort  userGatewayPort;
+    private final IUserGatewayPort userGatewayPort;
 
     public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
         this.orderPersistencePort = orderPersistencePort;
@@ -38,7 +38,7 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public List<Order> getOrdersByStatus(OrderStatus status, int page, int  size) {
+    public List<Order> getOrdersByStatus(OrderStatus status, int page, int size) {
         Long userId = tokenPort.getUserId();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
                 .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
@@ -79,8 +79,15 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         order.isOwner(userId);
-        order.assignToCanceled();
-        orderPersistencePort.saveOrder(order);
+        try {
+            order.assignToCanceled();
+            orderPersistencePort.saveOrder(order);
+        } catch (OrderNotInPendingStatusException exception) {
+            User client = userGatewayPort.getUserById(order.getIdClient());
+            String message = "Lo sentimos, su pedido ya está en preparación y no puede cancelarse";
+            userGatewayPort.sendSms(client.getPhoneNumber(), message);
+            throw exception;
+        }
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -98,7 +105,7 @@ public class OrderUseCase implements IOrderServicePort {
         return ThreadLocalRandom.current().nextInt(1000, 10000);
     }
 
-    private Order checkOrder(Long orderId, Long userId){
+    private Order checkOrder(Long orderId, Long userId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
