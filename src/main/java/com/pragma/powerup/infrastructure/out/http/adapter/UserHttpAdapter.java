@@ -11,8 +11,8 @@ import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationExcep
 import com.pragma.powerup.infrastructure.out.http.feign.ISmsFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.ITraceabilityFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.IUserFeignClient;
+import com.pragma.powerup.infrastructure.out.http.mapper.ITraceabilityFeignResponseMapper;
 import com.pragma.powerup.infrastructure.out.http.mapper.ITraceabilityRequestMapper;
-import com.pragma.powerup.infrastructure.out.http.mapper.ITraceabilityResponseMapper;
 import com.pragma.powerup.infrastructure.out.http.mapper.IUserRequestMapper;
 import com.pragma.powerup.infrastructure.out.http.request.SmsRequestDto;
 import com.pragma.powerup.infrastructure.out.http.request.TraceabilityRequestDto;
@@ -35,7 +35,7 @@ public class UserHttpAdapter implements IUserGatewayPort {
     private final IUserRequestMapper userRequestMapper;
     private final ITraceabilityFeignClient traceabilityFeignClient;
     private final ITraceabilityRequestMapper traceabilityRequestMapper;
-    private final ITraceabilityResponseMapper traceabilityResponseMapper;
+    private final ITraceabilityFeignResponseMapper traceabilityResponseMapper;
 
     @Override
     public void isUserOwner(Long userId) {

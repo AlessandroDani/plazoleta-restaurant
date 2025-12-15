@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface ITraceabilityResponseMapper {
+public interface ITraceabilityFeignResponseMapper {
     Traceability toModel(TraceabilityResponseDto traceabilityResponseDto);
     List<Traceability> toModelList(List<TraceabilityResponseDto> traceabilityResponseDtoList);
 }
