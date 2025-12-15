@@ -12,15 +12,19 @@ import com.pragma.powerup.infrastructure.out.http.feign.ISmsFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.ITraceabilityFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.IUserFeignClient;
 import com.pragma.powerup.infrastructure.out.http.mapper.ITraceabilityRequestMapper;
+import com.pragma.powerup.infrastructure.out.http.mapper.ITraceabilityResponseMapper;
 import com.pragma.powerup.infrastructure.out.http.mapper.IUserRequestMapper;
 import com.pragma.powerup.infrastructure.out.http.request.SmsRequestDto;
 import com.pragma.powerup.infrastructure.out.http.request.TraceabilityRequestDto;
 import com.pragma.powerup.infrastructure.out.http.response.EmployeePerformanceResponseDto;
 import com.pragma.powerup.infrastructure.out.http.response.OrderEfficiencyResponseDto;
+import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 import com.pragma.powerup.infrastructure.out.http.response.UserResponseDto;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +35,7 @@ public class UserHttpAdapter implements IUserGatewayPort {
     private final IUserRequestMapper userRequestMapper;
     private final ITraceabilityFeignClient traceabilityFeignClient;
     private final ITraceabilityRequestMapper traceabilityRequestMapper;
+    private final ITraceabilityResponseMapper traceabilityResponseMapper;
 
     @Override
     public void isUserOwner(Long userId) {
@@ -99,6 +104,18 @@ public class UserHttpAdapter implements IUserGatewayPort {
         try {
             OrderEfficiencyResponseDto orders = traceabilityFeignClient.getOrdersEfficiency();
             return traceabilityRequestMapper.toModel(orders);
+        } catch (FeignException.NotFound e) {
+            throw new RoleNotFoundException();
+        } catch (FeignException.FeignServerException e) {
+            throw new UserServiceCommunicationException();
+        }
+    }
+
+    @Override
+    public List<Traceability> getTracesByOrderId(Long orderId) {
+        try{
+            List<TraceabilityResponseDto> trace = traceabilityFeignClient.getOrderTrace(orderId);
+            return traceabilityResponseMapper.toModelList(trace);
         } catch (FeignException.NotFound e) {
             throw new RoleNotFoundException();
         } catch (FeignException.FeignServerException e) {

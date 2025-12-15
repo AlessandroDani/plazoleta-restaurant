@@ -5,6 +5,8 @@ import com.pragma.powerup.domain.model.OrderEfficiency;
 import com.pragma.powerup.domain.model.Traceability;
 import com.pragma.powerup.domain.model.User;
 
+import java.util.List;
+
 public interface IUserGatewayPort {
     void isUserOwner(Long userId);
     void isUserEmployee(Long userId);
@@ -13,5 +15,5 @@ public interface IUserGatewayPort {
     User getUserById(Long clientId);
     EmployeePerformance getEmployeePerformanceById();
     OrderEfficiency getOrderEfficiencyById();
-
+    List<Traceability> getTracesByOrderId(Long orderId);
 }
