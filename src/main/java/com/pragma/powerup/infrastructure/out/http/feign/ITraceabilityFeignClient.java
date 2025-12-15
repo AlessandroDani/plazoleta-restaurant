@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @FeignClient(name = "traceability-service", url = "http://localhost:8084")
 public interface ITraceabilityFeignClient {
 
@@ -17,7 +19,7 @@ public interface ITraceabilityFeignClient {
     void saveOrderTrace(@RequestBody TraceabilityRequestDto trace);
 
     @GetMapping("api/trazabilidad/{id}")
-    TraceabilityResponseDto getOrderTrace(@PathVariable Long id);
+    List<TraceabilityResponseDto> getOrderTrace(@PathVariable Long id);
 
     @GetMapping("api/trazabilidad/eficiencia/pedidos")
     OrderEfficiencyResponseDto getOrdersEfficiency();
