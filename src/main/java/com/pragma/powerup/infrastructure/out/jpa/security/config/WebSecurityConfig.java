@@ -44,6 +44,12 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.PATCH, "/api/platos/{id}").hasRole(OWNER)
                 .antMatchers(HttpMethod.POST, "/api/pedidos").hasRole(CLIENT)
                 .antMatchers(HttpMethod.GET, "/api/pedidos").hasRole(EMPLOYEE)
+
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/en-preparacion").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/listo").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/entregado").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/cancelado").permitAll()
+
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated()
