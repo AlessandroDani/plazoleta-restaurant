@@ -83,8 +83,19 @@ public class OrderRestController {
     }
 
     @GetMapping("/{orderId}/trazabilidad")
-    public ResponseEntity<List<TraceabilityResponseDto>> getOrderTrazabilidad(
+    public ResponseEntity<List<TraceabilityResponseDto>> getOrderTraceability(
             @Parameter(description = "id del pedido", example = "1") @PathVariable Long orderId) {
         return ResponseEntity.ok(orderHandler.getTraceability(orderId));
     }
+
+    @GetMapping("/metricas/eficiencia")
+    public ResponseEntity<List<TraceabilityResponseDto>> getOrderMetrics(){
+        return ResponseEntity.ok(orderHandler.getOrderMetrics());
+    }
+
+    @GetMapping("/metricas/ranking-empleados")
+    public ResponseEntity<List<TraceabilityResponseDto>> getOrderMetricsRankingEmployee(){
+        return ResponseEntity.ok(orderHandler.getOrderMetricsRankingEmployee());
+    }
+
 }
