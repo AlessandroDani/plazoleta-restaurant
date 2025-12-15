@@ -23,7 +23,7 @@ public enum ExceptionResponse {
     ORDER_NOT_PREPARATION_STATE("El pedido debe estar en estado EN PREPARACION para esta operación."),
     ORDER_NOT_READY_STATE("El pedido debe estar en estado LISTO para esta operación."),
     ORDER_INCORRECT_PIN("El PIN de seguridad proporcionado para la entrega es incorrecto"),
-    CLIENT_NOT_OWNER("Solo el propietario dEL pedido tiene permitido realizar esta operación."),
+    CLIENT_NOT_OWNER("Solo el propietario del pedido tiene permitido realizar esta operación."),
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 
