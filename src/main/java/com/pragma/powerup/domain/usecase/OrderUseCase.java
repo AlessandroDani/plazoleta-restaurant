@@ -108,6 +108,11 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
+    @Override
+    public List<Traceability> getTracesByOrderId(Long orderId) {
+        return userGatewayPort.getTracesByOrderId(orderId);
+    }
+
     private Restaurant validateRestaurant(Long idRestaurant) {
         return restaurantPersistencePort.getRestaurantById(idRestaurant)
                 .orElseThrow(RestaurantNotExistException::new);
