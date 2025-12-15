@@ -4,7 +4,6 @@ import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.domain.spi.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,23 +50,41 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = checkOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
+
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        User employee = userGatewayPort.getUserById(userId);
+        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+                OrderStatus.PENDING.getDbValue(), OrderStatus.IN_PREPARATION.getDbValue(),
+                userId, employee.getEmail());
     }
 
     @Override
     public void notifyOrderReady(Long orderId) {
-        Order order = checkOrder(orderId, tokenPort.getUserId());
+        Long userId = tokenPort.getUserId();
+        Order order = checkOrder(orderId, userId);
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
         sendNotification(order.getIdClient(),
                 "Tu pedido está listo. Reclámalo con el PIN: " + pin);
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        User employee = userGatewayPort.getUserById(userId);
+        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+                OrderStatus.IN_PREPARATION.getDbValue(), OrderStatus.READY.getDbValue(),
+                userId, employee.getEmail());
     }
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
+        Long userId = tokenPort.getUserId();
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        User employee = userGatewayPort.getUserById(userId);
+        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+                OrderStatus.READY.getDbValue(), OrderStatus.DELIVERED.getDbValue(),
+                userId, employee.getEmail());
     }
 
     @Override
@@ -79,6 +96,11 @@ public class OrderUseCase implements IOrderServicePort {
         try {
             order.assignToCanceled();
             orderPersistencePort.saveOrder(order);
+            User client = userGatewayPort.getUserById(order.getIdClient());
+            User employee = userGatewayPort.getUserById(userId);
+            updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+                    OrderStatus.PENDING.getDbValue(), OrderStatus.CANCELED.getDbValue(),
+                    userId, employee.getEmail());
         } catch (OrderNotInPendingStatusException exception) {
             sendNotification(order.getIdClient(),
                     "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
@@ -115,5 +137,19 @@ public class OrderUseCase implements IOrderServicePort {
     private void sendNotification(Long clientId, String message) {
         User client = userGatewayPort.getUserById(clientId);
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
+    }
+
+    public void updateOrderStatus(Long orderId, Long clientId, String clientEmail, String lastStatus, String newStatus, Long employeeId, String employeeEmail) {
+        Traceability traceModel = Traceability.builder()
+                .orderId(orderId)
+                .clientId(clientId)
+                .clientEmail(clientEmail)
+                .date(LocalDateTime.now())
+                .lastStatus(lastStatus)
+                .newStatus(newStatus)
+                .employeeId(employeeId)
+                .employeeEmail(employeeEmail)
+                .build();
+        userGatewayPort.saveOrderTrace(traceModel);
     }
 }
