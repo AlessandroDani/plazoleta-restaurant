@@ -5,6 +5,8 @@ import com.pragma.powerup.application.dto.request.PinRequestDto;
 import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.domain.model.OrderStatus;
+import com.pragma.powerup.infrastructure.out.http.response.EmployeePerformanceResponseDto;
+import com.pragma.powerup.infrastructure.out.http.response.OrderEfficiencyResponseDto;
 import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -89,13 +91,13 @@ public class OrderRestController {
     }
 
     @GetMapping("/metricas/eficiencia")
-    public ResponseEntity<List<TraceabilityResponseDto>> getOrderMetrics(){
+    public ResponseEntity<List<OrderEfficiencyResponseDto>> getOrderMetrics(){
         return ResponseEntity.ok(orderHandler.getOrderMetrics());
     }
 
     @GetMapping("/metricas/ranking-empleados")
-    public ResponseEntity<List<TraceabilityResponseDto>> getOrderMetricsRankingEmployee(){
-        return ResponseEntity.ok(orderHandler.getOrderMetricsRankingEmployee());
+    public ResponseEntity<List<EmployeePerformanceResponseDto>> getEmployeePerformances(){
+        return ResponseEntity.ok(orderHandler.getEmployeePerformances());
     }
 
 }
