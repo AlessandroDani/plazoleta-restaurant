@@ -3,6 +3,7 @@ package com.pragma.powerup.application.handler;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.domain.model.OrderStatus;
+import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface IOrderHandler {
     void notifyOrderReady(Long orderId);
     void transitionToDelivered(Long orderId, Integer securityPin);
     void transitionToCanceled(Long orderId);
+    List<TraceabilityResponseDto> getTraceability(Long orderId);
 }
