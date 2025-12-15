@@ -4,10 +4,13 @@ import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.application.mapper.IOrderRequestMapper;
+import com.pragma.powerup.application.mapper.ITraceabilityResponseMapper;
 import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderPlate;
 import com.pragma.powerup.domain.model.OrderStatus;
+import com.pragma.powerup.domain.model.Traceability;
+import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class OrderHandler implements IOrderHandler {
 
     private final IOrderRequestMapper  orderRequestMapper;
     private final IOrderServicePort orderServicePort;
+    private final ITraceabilityResponseMapper traceabilityResponseMapper;
 
 
     @Override
@@ -55,6 +59,12 @@ public class OrderHandler implements IOrderHandler {
     @Override
     public void transitionToCanceled(Long orderId) {
         orderServicePort.transitionToCanceled(orderId);
+    }
+
+    @Override
+    public List<TraceabilityResponseDto> getTraceability(Long orderId) {
+        List<Traceability> traceResponse = orderServicePort.getTracesByOrderId(orderId);
+        return traceabilityResponseMapper.toResponseDtoList(traceResponse);
     }
 
 }

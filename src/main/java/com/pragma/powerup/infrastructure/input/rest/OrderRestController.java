@@ -5,6 +5,7 @@ import com.pragma.powerup.application.dto.request.PinRequestDto;
 import com.pragma.powerup.application.dto.response.OrderResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
 import com.pragma.powerup.domain.model.OrderStatus;
+import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -79,5 +80,11 @@ public class OrderRestController {
             @Parameter(description = "id del pedido", example = "1") @PathVariable Long orderId) {
         orderHandler.transitionToCanceled(orderId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orderId}/trazabilidad")
+    public ResponseEntity<List<TraceabilityResponseDto>> getOrderTrazabilidad(
+            @Parameter(description = "id del pedido", example = "1") @PathVariable Long orderId) {
+        return ResponseEntity.ok(orderHandler.getTraceability(orderId));
     }
 }
