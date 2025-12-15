@@ -49,6 +49,7 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/listo").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/entregado").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/cancelado").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/pedidos/{id}/trazabilidad").permitAll()
 
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
