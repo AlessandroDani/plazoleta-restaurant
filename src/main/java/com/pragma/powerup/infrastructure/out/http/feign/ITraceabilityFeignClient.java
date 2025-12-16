@@ -21,9 +21,9 @@ public interface ITraceabilityFeignClient {
     @GetMapping("api/trazabilidad/{id}")
     List<TraceabilityResponseDto> getOrderTrace(@PathVariable Long id);
 
-    @GetMapping("api/trazabilidad/eficiencia/pedidos")
-    OrderEfficiencyResponseDto getOrdersEfficiency();
+    @GetMapping("api/trazabilidad/eficiencia/pedidos/{restaurantId}")
+    List<OrderEfficiencyResponseDto> getOrdersEfficiency(@PathVariable Long restaurantId);
 
-    @GetMapping("api/trazabilidad/empleados/ranking")
-    EmployeePerformanceResponseDto getEmployeesRanking();
+    @GetMapping("api/trazabilidad/empleados/ranking/{restaurantId}")
+    List<EmployeePerformanceResponseDto> getEmployeesRanking(@PathVariable Long restaurantId);
 }

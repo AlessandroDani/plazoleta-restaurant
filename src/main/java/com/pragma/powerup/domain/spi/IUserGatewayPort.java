@@ -13,7 +13,7 @@ public interface IUserGatewayPort {
     void sendSms(String phoneNumber, String message);
     void saveOrderTrace(Traceability traceability);
     User getUserById(Long clientId);
-    EmployeePerformance getEmployeePerformanceById();
-    OrderEfficiency getOrderEfficiencyById();
     List<Traceability> getTracesByOrderId(Long orderId);
+    List<EmployeePerformance> getEmployeePerformance(Long restaurantId);
+    List<OrderEfficiency> getOrderEfficiency(Long restaurantId);
 }

@@ -88,10 +88,10 @@ public class UserHttpAdapter implements IUserGatewayPort {
     }
 
     @Override
-    public EmployeePerformance getEmployeePerformanceById() {
+    public List<EmployeePerformance> getEmployeePerformance(Long restaurantId) {
         try {
-            EmployeePerformanceResponseDto employees = traceabilityFeignClient.getEmployeesRanking();
-            return traceabilityRequestMapper.toModel(employees);
+            List<EmployeePerformanceResponseDto> employees = traceabilityFeignClient.getEmployeesRanking(restaurantId);
+            return traceabilityResponseMapper.toEmployeeList(employees);
         } catch (FeignException.NotFound e) {
             throw new RoleNotFoundException();
         } catch (FeignException.FeignServerException e) {
@@ -100,10 +100,10 @@ public class UserHttpAdapter implements IUserGatewayPort {
     }
 
     @Override
-    public OrderEfficiency getOrderEfficiencyById() {
+    public List<OrderEfficiency> getOrderEfficiency(Long restaurantId) {
         try {
-            OrderEfficiencyResponseDto orders = traceabilityFeignClient.getOrdersEfficiency();
-            return traceabilityRequestMapper.toModel(orders);
+            List<OrderEfficiencyResponseDto> orders = traceabilityFeignClient.getOrdersEfficiency(restaurantId);
+            return traceabilityResponseMapper.toOrderList(orders);
         } catch (FeignException.NotFound e) {
             throw new RoleNotFoundException();
         } catch (FeignException.FeignServerException e) {

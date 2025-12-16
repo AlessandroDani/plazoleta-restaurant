@@ -14,6 +14,10 @@ public class TraceabilityResponseDto {
     @Schema(description = "ID único del registro de trazabilidad", example = "657a7b8e1f23456789abcdef")
     private String id;
 
+    @Schema(description = "Id del restaurante", example = "24")
+    @JsonProperty("id_restaurante")
+    private Long restaurantId;
+
     @Schema(description = "Id del pedido", example = "24")
     @JsonProperty("id_pedido")
     private Long orderId;
