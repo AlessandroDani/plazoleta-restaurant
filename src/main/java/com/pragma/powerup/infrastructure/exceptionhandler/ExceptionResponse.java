@@ -27,7 +27,9 @@ public enum ExceptionResponse {
 
     CATEGORY_NOT_FOUND("La categoria solicitada no fue encontrada."),
 
-    STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO.");
+    STATUS_NOT_VALID("Estado de pedido no existe, los valores permitidos son: PENDIENTE, EN_PREPARACION, LISTO, ENTREGADO, CANCELADO."),
+
+    FAILED_CONNECTION_TRACE("Fallo crítico al comunicarse con el servicio de Trazabilidad");
 
     private final String message;
 

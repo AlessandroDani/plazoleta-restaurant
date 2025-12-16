@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.exceptionhandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.pragma.powerup.domain.exception.*;
+import com.pragma.powerup.infrastructure.exception.FailedConnectionTraceabilityException;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
 import com.pragma.powerup.domain.exception.InvalidStatusParameterException;
 import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
@@ -119,7 +120,10 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CLIENT_NOT_OWNER.getMessage()));
     }
 
-
+    @ExceptionHandler(FailedConnectionTraceabilityException.class)
+    public ResponseEntity<Map<String, String>> handleFailedConnectionTraceabilityException (FailedConnectionTraceabilityException ignoredFailedConnectionTraceabilityException) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ExceptionResponse.FAILED_CONNECTION_TRACE.getMessage()));
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {

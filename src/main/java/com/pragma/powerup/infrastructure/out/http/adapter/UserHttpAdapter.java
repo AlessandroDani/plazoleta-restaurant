@@ -5,6 +5,7 @@ import com.pragma.powerup.domain.model.OrderEfficiency;
 import com.pragma.powerup.domain.model.Traceability;
 import com.pragma.powerup.domain.model.User;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.infrastructure.exception.FailedConnectionTraceabilityException;
 import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
 import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
 import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
@@ -66,12 +67,11 @@ public class UserHttpAdapter implements IUserGatewayPort {
     public void saveOrderTrace(Traceability traceability) {
         TraceabilityRequestDto traceabilityRequestDto =
                 traceabilityRequestMapper.toRequestDto(traceability);
-        try{
+        try {
             traceabilityFeignClient.saveOrderTrace(traceabilityRequestDto);
-        } catch (FeignException.NotFound e) {
-            throw new InvalidRoleException();
+        } catch (Exception e) {
+            throw new FailedConnectionTraceabilityException();
         }
-
     }
 
     @Override
@@ -113,7 +113,7 @@ public class UserHttpAdapter implements IUserGatewayPort {
 
     @Override
     public List<Traceability> getTracesByOrderId(Long orderId) {
-        try{
+        try {
             List<TraceabilityResponseDto> trace = traceabilityFeignClient.getOrderTrace(orderId);
             return traceabilityResponseMapper.toModelList(trace);
         } catch (FeignException.NotFound e) {
