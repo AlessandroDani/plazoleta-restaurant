@@ -39,6 +39,9 @@ class OrderUseCaseTest {
     @Mock
     private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
 
+    @Mock
+    private IUserGatewayPort userGatewayPort;
+
     @InjectMocks
     private OrderUseCase orderUseCase;
 
@@ -47,7 +50,12 @@ class OrderUseCaseTest {
     private static final Long EMPLOYEE_ID = 300L;
     private static final Long PLATE_ID_1 = 10L;
     private static final Long PLATE_ID_2 = 11L;
+    private static final Long ORDER_ID = 50L;
+    private static final Integer SECURITY_PIN = 1234;
 
+    private Order testOrder;
+    private User testClient;
+    private User testEmployeeUser;
     private Restaurant testRestaurant;
     private RestaurantEmployee testEmployee;
 
@@ -61,6 +69,21 @@ class OrderUseCaseTest {
         testEmployee = new RestaurantEmployee();
         testEmployee.setIdRestaurant(RESTAURANT_ID);
         testEmployee.setIdUser(EMPLOYEE_ID);
+
+        testOrder = new Order();
+        testOrder.setId(ORDER_ID);
+        testOrder.setIdClient(CLIENT_ID);
+        testOrder.setIdRestaurant(RESTAURANT_ID);
+        testOrder.setStatus(OrderStatus.PENDING);
+
+        testClient = new User();
+        testClient.setId(CLIENT_ID);
+        testClient.setEmail("cliente@test.com");
+        testClient.setPhoneNumber("+573001234567");
+
+        testEmployeeUser = new User();
+        testEmployeeUser.setId(EMPLOYEE_ID);
+        testEmployeeUser.setEmail("empleado@test.com");
     }
 
     @Test
@@ -88,6 +111,16 @@ class OrderUseCaseTest {
         plate2.setIdRestaurant(RESTAURANT_ID);
         when(platePersistencePort.getPlateById(PLATE_ID_1)).thenReturn(Optional.of(plate1));
         when(platePersistencePort.getPlateById(PLATE_ID_2)).thenReturn(Optional.of(plate2));
+
+        User mockClient = new User();
+        mockClient.setId(CLIENT_ID);
+        mockClient.setEmail("cliente@test.com");
+        mockClient.setPhoneNumber("+5712345678");
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(mockClient);
+
+        Order savedMockOrder = new Order();
+        savedMockOrder.setId(1L);
+        when(orderPersistencePort.saveOrder(any(Order.class))).thenReturn(savedMockOrder);
 
         assertDoesNotThrow(() -> orderUseCase.saveOrder(localTestOrder));
 
@@ -228,7 +261,7 @@ class OrderUseCaseTest {
         OrderStatus status = OrderStatus.PENDING;
 
         List<Order> expectedOrders = new ArrayList<>();
-        expectedOrders.add(new Order(10L, CLIENT_ID, LocalDateTime.now(), status, testRestaurant.getId(), null, null));
+        expectedOrders.add(new Order(10L, CLIENT_ID, LocalDateTime.now(), status, 1L,  testRestaurant.getId(), null, null));
 
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
@@ -242,4 +275,288 @@ class OrderUseCaseTest {
         verify(restaurantEmployeePersistencePort, times(1)).getEmployee(EMPLOYEE_ID);
         verify(orderPersistencePort, times(1)).getOrdersByRestaurantAndStatus(RESTAURANT_ID, status, page, size);
     }
+
+    @Test
+    @DisplayName("Debería asignar y cambiar estado a EN_PREPARACION exitosamente")
+    void assignOrderAndChangeStatus_Success() {
+        testOrder.setStatus(OrderStatus.PENDING);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+
+        assertDoesNotThrow(() -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
+
+        Order savedOrder = orderCaptor.getValue();
+        assertEquals(OrderStatus.IN_PREPARATION, savedOrder.getStatus());
+        assertEquals(EMPLOYEE_ID, savedOrder.getIdChef());
+
+        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderNotFoundException si la orden no existe al asignar")
+    void assignOrderAndChangeStatus_ThrowsOrderNotFound() {
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.empty());
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID); // Se necesita para el checkOrder
+
+        assertThrows(OrderNotFoundException.class, () -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderNotInPendingStatusException si el estado no es PENDIENTE")
+    void assignOrderAndChangeStatus_ThrowsNotInPending() {
+        testOrder.setStatus(OrderStatus.READY);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+
+        assertThrows(OrderNotInPendingStatusException.class, () -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Debería notificar y cambiar estado a LISTO exitosamente")
+    void notifyOrderReady_Success() {
+        testOrder.setStatus(OrderStatus.IN_PREPARATION);
+        testOrder.setIdChef(EMPLOYEE_ID);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+
+        assertDoesNotThrow(() -> orderUseCase.notifyOrderReady(ORDER_ID));
+
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
+
+        Order savedOrder = orderCaptor.getValue();
+        assertEquals(OrderStatus.READY, savedOrder.getStatus());
+        assertNotNull(savedOrder.getSecurityPin());
+
+        verify(userGatewayPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Tu pedido está listo. Reclámalo con el PIN: "));
+        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderNotInPreparationStatusException si el estado no es EN_PREPARACION")
+    void notifyOrderReady_ThrowsNotInPreparation() {
+        testOrder.setStatus(OrderStatus.PENDING);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+
+        assertThrows(OrderNotInPreparationStatusException.class, () -> orderUseCase.notifyOrderReady(ORDER_ID));
+
+        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Debería cambiar estado a ENTREGADO con PIN correcto")
+    void transitionToDelivered_Success() {
+        testOrder.setStatus(OrderStatus.READY);
+        testOrder.setSecurityPin(SECURITY_PIN);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+
+        assertDoesNotThrow(() -> orderUseCase.transitionToDelivered(ORDER_ID, SECURITY_PIN));
+
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
+
+        Order savedOrder = orderCaptor.getValue();
+        assertEquals(OrderStatus.DELIVERED, savedOrder.getStatus());
+        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderHasIncorrectPinException si el PIN es incorrecto")
+    void transitionToDelivered_ThrowsIncorrectPin() {
+        testOrder.setStatus(OrderStatus.READY);
+        testOrder.setSecurityPin(SECURITY_PIN);
+        int incorrectPin = 9999;
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+
+        assertThrows(OrderHasIncorrectPinException.class, () -> orderUseCase.transitionToDelivered(ORDER_ID, incorrectPin));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+        verify(userGatewayPort, never()).saveOrderTrace(any(Traceability.class));
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderNotInReadyStatusException si el estado no es LISTO (aún con PIN correcto)")
+    void transitionToDelivered_ThrowsNotInReady() {
+        testOrder.setStatus(OrderStatus.IN_PREPARATION);
+        testOrder.setSecurityPin(SECURITY_PIN);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
+
+        when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
+
+        assertThrows(OrderNotInReadyStatusException.class, () -> orderUseCase.transitionToDelivered(ORDER_ID, SECURITY_PIN));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Debería cancelar la orden si está en estado PENDIENTE y es el dueño")
+    void transitionToCanceled_Success() {
+        testOrder.setStatus(OrderStatus.PENDING);
+        testOrder.setIdClient(CLIENT_ID);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testEmployeeUser);
+
+        assertDoesNotThrow(() -> orderUseCase.transitionToCanceled(ORDER_ID));
+
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
+
+        Order savedOrder = orderCaptor.getValue();
+        assertEquals(OrderStatus.CANCELED, savedOrder.getStatus());
+        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Debería lanzar ClientIsNotOrderOwnerException si el cliente no es el dueño")
+    void transitionToCanceled_ThrowsNotOwner() {
+        Long anotherClientId = 999L;
+        testOrder.setStatus(OrderStatus.PENDING);
+        testOrder.setIdClient(CLIENT_ID);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(anotherClientId);
+
+        assertThrows(ClientIsNotOrderOwnerException.class, () -> orderUseCase.transitionToCanceled(ORDER_ID));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Debería lanzar OrderNotInPendingStatusException y notificar si se intenta cancelar fuera de PENDIENTE")
+    void transitionToCanceled_ThrowsNotInPendingAndNotifies() {
+        testOrder.setStatus(OrderStatus.IN_PREPARATION);
+        testOrder.setIdClient(CLIENT_ID);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+
+        assertThrows(OrderNotInPendingStatusException.class,
+                () -> orderUseCase.transitionToCanceled(ORDER_ID));
+
+        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
+        verify(userGatewayPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Lo sentimos, su pedido ya está en preparación y no puede cancelarse"));
+    }
+
+    @Test
+    @DisplayName("Debería obtener la trazabilidad de la orden si el usuario es el dueño")
+    void getTracesByOrderId_IsOwner_Success() {
+        testOrder.setIdClient(CLIENT_ID);
+        Traceability mockTrace = Traceability.builder()
+                .orderId(ORDER_ID)
+                .clientId(CLIENT_ID)
+                .restaurantId(RESTAURANT_ID)
+                .newStatus(OrderStatus.READY.getDbValue())
+                .date(LocalDateTime.now())
+                .build();
+
+        List<Traceability> expectedTraces = List.of(mockTrace);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
+        when(userGatewayPort.getTracesByOrderId(ORDER_ID)).thenReturn(expectedTraces);
+
+        List<Traceability> actualTraces = assertDoesNotThrow(() -> orderUseCase.getTracesByOrderId(ORDER_ID));
+
+        assertFalse(actualTraces.isEmpty());
+        verify(userGatewayPort, times(1)).getTracesByOrderId(ORDER_ID);
+    }
+
+    @Test
+    @DisplayName("Debería lanzar ClientIsNotOrderOwnerException si el usuario no es el dueño al pedir trazabilidad")
+    void getTracesByOrderId_IsNotOwner_Throws() {
+        Long anotherUserId = 999L;
+        testOrder.setIdClient(CLIENT_ID);
+
+        when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
+        when(tokenPort.getUserId()).thenReturn(anotherUserId);
+
+        assertThrows(ClientIsNotOrderOwnerException.class, () -> orderUseCase.getTracesByOrderId(ORDER_ID));
+
+        verify(userGatewayPort, never()).getTracesByOrderId(anyLong());
+    }
+
+    @Test
+    @DisplayName("Debería obtener el ranking de empleados si el usuario es el dueño del restaurante")
+    void getEmployeePerformances_Success() {
+        List<EmployeePerformance> expectedRanking = List.of(new EmployeePerformance());
+        testRestaurant.setIdOwner(CLIENT_ID);
+
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
+        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
+        when(userGatewayPort.getEmployeePerformance(RESTAURANT_ID)).thenReturn(expectedRanking);
+
+        List<EmployeePerformance> actualRanking = assertDoesNotThrow(() -> orderUseCase.getEmployeePerformances(RESTAURANT_ID));
+
+        assertFalse(actualRanking.isEmpty());
+        verify(userGatewayPort, times(1)).getEmployeePerformance(RESTAURANT_ID);
+    }
+
+    @Test
+    @DisplayName("Debería lanzar UserIsNotOwnerRestaurantException si no es el dueño al pedir ranking")
+    void getEmployeePerformances_ThrowsNotOwner() {
+        Long anotherUserId = 999L;
+        testRestaurant.setIdOwner(CLIENT_ID);
+
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
+        when(tokenPort.getUserId()).thenReturn(anotherUserId);
+
+        assertThrows(UserIsNotOwnerRestaurantException.class, () -> orderUseCase.getEmployeePerformances(RESTAURANT_ID));
+
+        verify(userGatewayPort, never()).getEmployeePerformance(anyLong());
+    }
+
+    @Test
+    @DisplayName("Debería obtener métricas de eficiencia si el usuario es el dueño del restaurante")
+    void getOrderMetrics_Success() {
+        List<OrderEfficiency> expectedMetrics = List.of(new OrderEfficiency());
+        testRestaurant.setIdOwner(CLIENT_ID);
+
+        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
+        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
+        when(userGatewayPort.getOrderEfficiency(RESTAURANT_ID)).thenReturn(expectedMetrics);
+
+        List<OrderEfficiency> actualMetrics = assertDoesNotThrow(() -> orderUseCase.getOrderMetrics(RESTAURANT_ID));
+
+        assertFalse(actualMetrics.isEmpty());
+        verify(userGatewayPort, times(1)).getOrderEfficiency(RESTAURANT_ID);
+    }
+
 }
