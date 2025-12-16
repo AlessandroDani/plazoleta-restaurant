@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.domain.spi.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,13 +32,10 @@ public class OrderUseCase implements IOrderServicePort {
         Restaurant restaurant = validateRestaurant(order.getIdRestaurant());
         validateOrderStatus(userId);
         restaurant.validatePlateList(order.getPlates(), platePersistencePort);
-
         order.initializeNewOrder(userId, LocalDateTime.now());
         Order saveOrder = orderPersistencePort.saveOrder(order);
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        updateOrderStatus(saveOrder.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
-                "NONE", OrderStatus.PENDING.getDbValue(),
-                null, null);
+        saveOrderTrace(saveOrder, userGatewayPort.getUserById(order.getIdClient()),
+                null, "NONE", OrderStatus.PENDING.getDbValue());
     }
 
     @Override
@@ -54,12 +52,9 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = checkOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
-
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
-                OrderStatus.PENDING.getDbValue(), OrderStatus.IN_PREPARATION.getDbValue(),
-                userId, employee.getEmail());
+        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
+                userGatewayPort.getUserById(userId), OrderStatus.PENDING.getDbValue(),
+                OrderStatus.IN_PREPARATION.getDbValue());
     }
 
     @Override
@@ -69,13 +64,10 @@ public class OrderUseCase implements IOrderServicePort {
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
-        sendNotification(order.getIdClient(),
-                "Tu pedido está listo. Reclámalo con el PIN: " + pin);
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                OrderStatus.IN_PREPARATION.getDbValue(), OrderStatus.READY.getDbValue(),
-                userId, employee.getEmail());
+        sendNotification(order.getIdClient(), "Tu pedido está listo. Reclámalo con el PIN: " + pin);
+        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
+                userGatewayPort.getUserById(userId), OrderStatus.IN_PREPARATION.getDbValue(),
+                OrderStatus.READY.getDbValue());
     }
 
     @Override
@@ -84,11 +76,9 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                OrderStatus.READY.getDbValue(), OrderStatus.DELIVERED.getDbValue(),
-                userId, employee.getEmail());
+        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
+                userGatewayPort.getUserById(userId), OrderStatus.READY.getDbValue(),
+                OrderStatus.DELIVERED.getDbValue());
     }
 
     @Override
@@ -100,14 +90,11 @@ public class OrderUseCase implements IOrderServicePort {
         try {
             order.assignToCanceled();
             orderPersistencePort.saveOrder(order);
-            User client = userGatewayPort.getUserById(order.getIdClient());
-            User employee = userGatewayPort.getUserById(userId);
-            updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                    OrderStatus.PENDING.getDbValue(), OrderStatus.CANCELED.getDbValue(),
-                    userId, employee.getEmail());
+            saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
+                    userGatewayPort.getUserById(userId), OrderStatus.PENDING.getDbValue(),
+                    OrderStatus.CANCELED.getDbValue());
         } catch (OrderNotInPendingStatusException exception) {
-            sendNotification(order.getIdClient(),
-                    "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
+            sendNotification(order.getIdClient(), "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
             throw exception;
         }
     }
@@ -167,12 +154,15 @@ public class OrderUseCase implements IOrderServicePort {
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
-    public void updateOrderStatus(Long orderId, Long restaurantId,Long clientId, String clientEmail, String lastStatus, String newStatus, Long employeeId, String employeeEmail) {
+    public void saveOrderTrace(Order order, User client, User employee, String lastStatus, String newStatus) {
+        Long employeeId = (employee != null) ? employee.getId() : null;
+        String employeeEmail = (employee != null) ? employee.getEmail() : null;
+
         Traceability traceModel = Traceability.builder()
-                .restaurantId(restaurantId)
-                .orderId(orderId)
-                .clientId(clientId)
-                .clientEmail(clientEmail)
+                .restaurantId(order.getIdRestaurant())
+                .orderId(order.getId())
+                .clientId(client.getId())
+                .clientEmail(client.getEmail())
                 .date(LocalDateTime.now())
                 .lastStatus(lastStatus)
                 .newStatus(newStatus)
