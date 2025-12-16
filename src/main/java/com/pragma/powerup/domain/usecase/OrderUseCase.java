@@ -33,7 +33,11 @@ public class OrderUseCase implements IOrderServicePort {
         restaurant.validatePlateList(order.getPlates(), platePersistencePort);
 
         order.initializeNewOrder(userId, LocalDateTime.now());
-        orderPersistencePort.saveOrder(order);
+        Order saveOrder = orderPersistencePort.saveOrder(order);
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        updateOrderStatus(saveOrder.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
+                "NONE", OrderStatus.PENDING.getDbValue(),
+                null, null);
     }
 
     @Override
@@ -53,7 +57,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         User client = userGatewayPort.getUserById(order.getIdClient());
         User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+        updateOrderStatus(order.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
                 OrderStatus.PENDING.getDbValue(), OrderStatus.IN_PREPARATION.getDbValue(),
                 userId, employee.getEmail());
     }
@@ -69,7 +73,7 @@ public class OrderUseCase implements IOrderServicePort {
                 "Tu pedido está listo. Reclámalo con el PIN: " + pin);
         User client = userGatewayPort.getUserById(order.getIdClient());
         User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
                 OrderStatus.IN_PREPARATION.getDbValue(), OrderStatus.READY.getDbValue(),
                 userId, employee.getEmail());
     }
@@ -82,7 +86,7 @@ public class OrderUseCase implements IOrderServicePort {
         orderPersistencePort.saveOrder(order);
         User client = userGatewayPort.getUserById(order.getIdClient());
         User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
                 OrderStatus.READY.getDbValue(), OrderStatus.DELIVERED.getDbValue(),
                 userId, employee.getEmail());
     }
@@ -98,7 +102,7 @@ public class OrderUseCase implements IOrderServicePort {
             orderPersistencePort.saveOrder(order);
             User client = userGatewayPort.getUserById(order.getIdClient());
             User employee = userGatewayPort.getUserById(userId);
-            updateOrderStatus(order.getId(), client.getId(), client.getEmail(),
+            updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
                     OrderStatus.PENDING.getDbValue(), OrderStatus.CANCELED.getDbValue(),
                     userId, employee.getEmail());
         } catch (OrderNotInPendingStatusException exception) {
@@ -110,7 +114,26 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public List<Traceability> getTracesByOrderId(Long orderId) {
+        Order order = orderPersistencePort.getOrderById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        order.isOwner(tokenPort.getUserId());
         return userGatewayPort.getTracesByOrderId(orderId);
+    }
+
+    @Override
+    public List<EmployeePerformance> getEmployeePerformances(Long restaurantId) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
+                orElseThrow(RestaurantNotExistException::new);
+        restaurant.validateOwner(tokenPort.getUserId());
+        return userGatewayPort.getEmployeePerformance(restaurantId);
+    }
+
+    @Override
+    public List<OrderEfficiency> getOrderMetrics(Long restaurantId) {
+        Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
+                orElseThrow(RestaurantNotExistException::new);
+        restaurant.validateOwner(tokenPort.getUserId());
+        return userGatewayPort.getOrderEfficiency(restaurantId);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -144,8 +167,9 @@ public class OrderUseCase implements IOrderServicePort {
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
-    public void updateOrderStatus(Long orderId, Long clientId, String clientEmail, String lastStatus, String newStatus, Long employeeId, String employeeEmail) {
+    public void updateOrderStatus(Long orderId, Long restaurantId,Long clientId, String clientEmail, String lastStatus, String newStatus, Long employeeId, String employeeEmail) {
         Traceability traceModel = Traceability.builder()
+                .restaurantId(restaurantId)
                 .orderId(orderId)
                 .clientId(clientId)
                 .clientEmail(clientEmail)
