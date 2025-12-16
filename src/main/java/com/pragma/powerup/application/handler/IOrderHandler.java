@@ -17,7 +17,7 @@ public interface IOrderHandler {
     void transitionToDelivered(Long orderId, Integer securityPin);
     void transitionToCanceled(Long orderId);
     List<TraceabilityResponseDto> getTraceability(Long orderId);
-    List<OrderEfficiencyResponseDto> getOrderMetrics();
-    List<EmployeePerformanceResponseDto> getEmployeePerformances();
+    List<OrderEfficiencyResponseDto> getOrderMetrics(Long restaurantId);
+    List<EmployeePerformanceResponseDto> getEmployeePerformances(Long restaurantId);
 
 }

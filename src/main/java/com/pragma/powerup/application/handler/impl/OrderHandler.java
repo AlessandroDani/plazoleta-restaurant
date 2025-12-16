@@ -67,14 +67,14 @@ public class OrderHandler implements IOrderHandler {
     }
 
     @Override
-    public List<OrderEfficiencyResponseDto> getOrderMetrics() {
-        List<OrderEfficiency> orderResponse = orderServicePort.getOrderMetrics();
+    public List<OrderEfficiencyResponseDto> getOrderMetrics(Long restaurantId) {
+        List<OrderEfficiency> orderResponse = orderServicePort.getOrderMetrics(restaurantId);
         return traceabilityResponseMapper.toResponseOrderDtoList(orderResponse);
     }
 
     @Override
-    public List<EmployeePerformanceResponseDto> getEmployeePerformances() {
-        List<EmployeePerformance> employeeResponse = orderServicePort.getEmployeePerformances();
+    public List<EmployeePerformanceResponseDto> getEmployeePerformances(Long restaurantId) {
+        List<EmployeePerformance> employeeResponse = orderServicePort.getEmployeePerformances(restaurantId);
         return traceabilityResponseMapper.toResponseEmployeeDtoList(employeeResponse);
     }
 
