@@ -17,6 +17,6 @@ import org.mapstruct.ReportingPolicy;
 public interface ITraceabilityRequestMapper {
 
     TraceabilityRequestDto toRequestDto(Traceability traceability);
-    EmployeePerformance toModel(EmployeePerformanceResponseDto employeePerformanceResponseDto);
-    OrderEfficiency toModel(OrderEfficiencyResponseDto orderEfficiencyResponseDto);
+    EmployeePerformance toRequestEmployeeDto(EmployeePerformanceResponseDto employeePerformanceResponseDto);
+    OrderEfficiency toRequestOrderDto(OrderEfficiencyResponseDto orderEfficiencyResponseDto);
 }
