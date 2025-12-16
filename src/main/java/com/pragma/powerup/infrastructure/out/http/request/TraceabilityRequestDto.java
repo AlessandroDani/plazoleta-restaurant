@@ -13,6 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TraceabilityRequestDto {
+
+    @Schema(description = "Id del restaurante del pedido", example = "24")
+    @NotNull(message = "El restaurant id es obligatorio")
+    @JsonProperty("id_restaurante")
+    private Long restaurantId;
+
     @Schema(description = "Id del pedido", example = "24")
     @NotNull(message = "El id es obligatorio")
     @JsonProperty("id_pedido")
@@ -45,12 +51,10 @@ public class TraceabilityRequestDto {
     private String newStatus;
 
     @Schema(description = "Id del empleado", example = "1")
-    @NotNull(message = "El id del empleado es obligatorio")
     @JsonProperty("id_empleado")
     private Long employeeId;
 
     @Schema(description = "Correo electronico del empleado", example = "empleado@gmail.com")
-    @NotBlank(message = "El correo electronico del empleado es obligatorio")
     @Email
     @JsonProperty("correo_empleado")
     private String employeeEmail;
