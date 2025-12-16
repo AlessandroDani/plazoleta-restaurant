@@ -90,14 +90,14 @@ public class OrderRestController {
         return ResponseEntity.ok(orderHandler.getTraceability(orderId));
     }
 
-    @GetMapping("/metricas/eficiencia")
-    public ResponseEntity<List<OrderEfficiencyResponseDto>> getOrderMetrics(){
-        return ResponseEntity.ok(orderHandler.getOrderMetrics());
+    @GetMapping("/metricas/eficiencia/{restaurantId}")
+    public ResponseEntity<List<OrderEfficiencyResponseDto>> getOrderMetrics(@PathVariable Long restaurantId){
+        return ResponseEntity.ok(orderHandler.getOrderMetrics(restaurantId));
     }
 
-    @GetMapping("/metricas/ranking-empleados")
-    public ResponseEntity<List<EmployeePerformanceResponseDto>> getEmployeePerformances(){
-        return ResponseEntity.ok(orderHandler.getEmployeePerformances());
+    @GetMapping("/metricas/ranking-empleados/{restaurantId}")
+    public ResponseEntity<List<EmployeePerformanceResponseDto>> getEmployeePerformances(@PathVariable Long restaurantId){
+        return ResponseEntity.ok(orderHandler.getEmployeePerformances(restaurantId));
     }
 
 }
