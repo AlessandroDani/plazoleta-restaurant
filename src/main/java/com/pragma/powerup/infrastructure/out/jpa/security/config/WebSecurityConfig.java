@@ -45,14 +45,14 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/pedidos").hasRole(CLIENT)
                 .antMatchers(HttpMethod.GET, "/api/pedidos").hasRole(EMPLOYEE)
 
-                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/en-preparacion").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/listo").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/entregado").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/cancelado").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/pedidos/{id}/trazabilidad").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/en-preparacion").hasRole(EMPLOYEE)
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/listo").hasRole(EMPLOYEE)
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/entregado").hasRole(EMPLOYEE)
+                .antMatchers(HttpMethod.PUT, "/api/pedidos/{id}/cancelado").hasRole(CLIENT)
+                .antMatchers(HttpMethod.GET, "/api/pedidos/{id}/trazabilidad").hasRole(CLIENT)
 
-                .antMatchers(HttpMethod.GET, "/api/pedidos/metricas/eficiencia").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/pedidos/metricas/ranking-empleados").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/pedidos/metricas/eficiencia/{restaurantId}").hasRole(OWNER)
+                .antMatchers(HttpMethod.GET, "/api/pedidos/metricas/ranking-empleados/{restaurantId}").hasRole(OWNER)
 
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest()
