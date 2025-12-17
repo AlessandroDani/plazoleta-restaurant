@@ -34,8 +34,8 @@ public class OrderUseCase implements IOrderServicePort {
         restaurant.validatePlateList(order.getPlates(), platePersistencePort.getPlatesIdsByRestaurant(restaurant.getId()));
         order.initializeNewOrder(userId, LocalDateTime.now());
         Order saveOrder = orderPersistencePort.saveOrder(order);
-        saveOrderTrace(saveOrder, userGatewayPort.getUserById(order.getIdClient()),
-                null, "NONE", OrderStatus.PENDING.getDbValue());
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        saveOrderTrace(saveOrder, client, null, "NONE", OrderStatus.PENDING.getDbValue());
     }
 
     @Override
@@ -52,47 +52,37 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = checkOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
-        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
-                userGatewayPort.getUserById(userId), OrderStatus.PENDING.getDbValue(),
-                OrderStatus.IN_PREPARATION.getDbValue());
+        registerStatusChangeTrace(order, OrderStatus.PENDING, OrderStatus.IN_PREPARATION);
     }
 
     @Override
     public void notifyOrderReady(Long orderId) {
-        Long userId = getUserIdFromToken();
-        Order order = checkOrder(orderId, userId);
+        Order order = checkOrder(orderId, getUserIdFromToken());
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
         sendNotification(order.getIdClient(), "Tu pedido está listo. Reclámalo con el PIN: " + pin);
-        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
-                userGatewayPort.getUserById(userId), OrderStatus.IN_PREPARATION.getDbValue(),
-                OrderStatus.READY.getDbValue());
+        registerStatusChangeTrace(order, OrderStatus.IN_PREPARATION, OrderStatus.READY);
+
     }
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
-        Long userId = getUserIdFromToken();
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
-        saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
-                userGatewayPort.getUserById(userId), OrderStatus.READY.getDbValue(),
-                OrderStatus.DELIVERED.getDbValue());
+        registerStatusChangeTrace(order, OrderStatus.READY, OrderStatus.DELIVERED);
     }
 
     @Override
     public void transitionToCanceled(Long orderId) {
-        Long userId = getUserIdFromToken();
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
-        order.isOwner(userId);
+        order.isOwner(getUserIdFromToken());
         try {
             order.assignToCanceled();
             orderPersistencePort.saveOrder(order);
-            saveOrderTrace(order, userGatewayPort.getUserById(order.getIdClient()),
-                    userGatewayPort.getUserById(userId), OrderStatus.PENDING.getDbValue(),
-                    OrderStatus.CANCELED.getDbValue());
+            registerStatusChangeTrace(order, OrderStatus.PENDING, OrderStatus.CANCELED);
         } catch (OrderNotInPendingStatusException exception) {
             sendNotification(order.getIdClient(), "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
             throw exception;
@@ -103,7 +93,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<Traceability> getTracesByOrderId(Long orderId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
-        order.isOwner(tokenPort.getUserId());
+        order.isOwner(getUserIdFromToken());
         return userGatewayPort.getTracesByOrderId(orderId);
     }
 
@@ -111,7 +101,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<EmployeePerformance> getEmployeePerformances(Long restaurantId) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
-        restaurant.validateOwner(tokenPort.getUserId());
+        restaurant.validateOwner(getUserIdFromToken());
         return userGatewayPort.getEmployeePerformance(restaurantId);
     }
 
@@ -156,6 +146,12 @@ public class OrderUseCase implements IOrderServicePort {
     private void sendNotification(Long clientId, String message) {
         User client = userGatewayPort.getUserById(clientId);
         userGatewayPort.sendSms(client.getPhoneNumber(), message);
+    }
+
+    private void registerStatusChangeTrace(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        User employee = userGatewayPort.getUserById(getUserIdFromToken());
+        saveOrderTrace(order, client, employee, oldStatus.getDbValue(), newStatus.getDbValue());
     }
 
     public void saveOrderTrace(Order order, User client, User employee, String lastStatus, String newStatus) {
