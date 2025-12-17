@@ -22,14 +22,14 @@ public class ControllerAdvisor {
 
     private static final String MESSAGE = "message";
 
-    @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleOwnerNotFoundException(RoleNotFoundException ignoredOwnerNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.NO_DATA_FOUND.getMessage()));
-    }
-
     @ExceptionHandler(RestaurantAlreadyExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantAlreadyExistException(RestaurantAlreadyExistException  ignoredRestaurantAlreadyExistException) {
         return  ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotAssignRestaurant.class)
+    public ResponseEntity<Map<String, String>> handleUserNotAssignRestaurant(UserNotAssignRestaurant  ignoredUserNotAssignRestaurant) {
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_ASSIGNED.getMessage()));
     }
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
