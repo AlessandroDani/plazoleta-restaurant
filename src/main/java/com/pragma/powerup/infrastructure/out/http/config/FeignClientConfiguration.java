@@ -1,6 +1,8 @@
 package com.pragma.powerup.infrastructure.out.http.config;
 
+import com.pragma.powerup.infrastructure.out.http.feign.CustomErrorDecoder;
 import feign.RequestInterceptor;
+import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -21,6 +23,11 @@ public class FeignClientConfiguration {
                 }
             }
         };
+    }
+
+    @Bean
+    public ErrorDecoder errorDecoder() {
+        return new CustomErrorDecoder();
     }
 
 }
