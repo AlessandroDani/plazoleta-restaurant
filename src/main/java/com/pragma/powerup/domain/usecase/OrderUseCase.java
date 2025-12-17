@@ -28,7 +28,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void saveOrder(Order order) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Restaurant restaurant = validateRestaurant(order.getIdRestaurant());
         validateOrderStatus(userId);
         restaurant.validatePlateList(order.getPlates(), platePersistencePort.getPlatesIdsByRestaurant(restaurant.getId()));
@@ -40,7 +40,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public List<Order> getOrdersByStatus(OrderStatus status, int page, int size) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
                 .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
         return orderPersistencePort.getOrdersByRestaurantAndStatus(employee.getIdRestaurant(), status, page, size);
@@ -48,7 +48,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void assignOrderAndChangeStatus(Long orderId) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Order order = checkOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
@@ -59,7 +59,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void notifyOrderReady(Long orderId) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Order order = checkOrder(orderId, userId);
         Integer pin = generateSecurityPin();
         order.assignToReady(pin);
@@ -72,7 +72,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Order order = checkOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
@@ -83,7 +83,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void transitionToCanceled(Long orderId) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         order.isOwner(userId);
@@ -121,6 +121,10 @@ public class OrderUseCase implements IOrderServicePort {
                 orElseThrow(RestaurantNotExistException::new);
         restaurant.validateOwner(tokenPort.getUserId());
         return userGatewayPort.getOrderEfficiency(restaurantId);
+    }
+
+    private Long getUserIdFromToken() {
+        return tokenPort.getUserId();
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
