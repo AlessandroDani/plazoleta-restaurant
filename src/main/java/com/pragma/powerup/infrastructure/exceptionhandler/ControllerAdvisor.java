@@ -57,9 +57,9 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_HAS_ACTIVE_ORDER.getMessage()));
     }
 
-    @ExceptionHandler(PlateBelongsToAnotherRestaurantException.class)
-    public ResponseEntity<Map<String, String>> handlePlateBelongsToAnotherRestaurantException(PlateBelongsToAnotherRestaurantException ignoredPlateBelongsToAnotherRestaurantException) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_BELONGS_ANOTHER_RESTAURANT.getMessage()));
+    @ExceptionHandler(PlateNotAvailableException.class)
+    public ResponseEntity<Map<String, String>> handlePlateNotAvailableException(PlateNotAvailableException ignoredPlateBelongsToAnotherRestaurantException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_AVAILABLE.getMessage()));
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)

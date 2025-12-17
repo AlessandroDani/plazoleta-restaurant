@@ -17,7 +17,7 @@ public enum ExceptionResponse {
 
     PLATE_ALREADY_EXIST("Ya existe un plato registrado con ese nombre en este restaurante."),
     PLATE_NOT_FOUND("El plato solicitado no fue encontrado."),
-    PLATE_BELONGS_ANOTHER_RESTAURANT("Uno o más platos pertenecen a otro restaurante."),
+    PLATE_NOT_AVAILABLE("Uno o más platos no están disponibles o no pertenecen al restaurante."),
 
     ORDER_NOT_FOUND("El pedido solicitado no existe"),
     ORDER_NOT_PENDING_STATE("El pedido debe estar en estado PENDIENTE para esta operación."),
