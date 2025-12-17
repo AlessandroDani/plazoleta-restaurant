@@ -128,9 +128,9 @@ public class OrderRestController {
             @ApiResponse(responseCode = "409", description = "El pedido no está en estado PENDIENTE", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
     })
     @PutMapping("/{orderId}/en-preparacion")
-    public ResponseEntity<Void> assignOrderPreparation(
+    public ResponseEntity<Void> transitionToPreparation(
             @Parameter(description = "id del pedido a asignarse", example = "1") @PathVariable Long orderId) {
-        orderHandler.assignOrderAndChangeStatus(orderId);
+        orderHandler.transitionToPreparation(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -145,9 +145,9 @@ public class OrderRestController {
             @ApiResponse(responseCode = "409", description = "El pedido no está en estado EN_PREPARACION", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)) ),
     })
     @PutMapping("/{orderId}/listo")
-    public ResponseEntity<Void> assignOrderReady(
+    public ResponseEntity<Void> transitionToReady(
             @Parameter(description = "id del pedido a listo", example = "1") @PathVariable Long orderId) {
-        orderHandler.notifyOrderReady(orderId);
+        orderHandler.transitionToReady(orderId);
         return ResponseEntity.ok().build();
     }
 
@@ -162,7 +162,7 @@ public class OrderRestController {
             @ApiResponse(responseCode = "409", description = "El pedido no está en estado LISTO o el PIN es incorrecto", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
     })
     @PutMapping("/{orderId}/entregado")
-    public ResponseEntity<Void> assignOrderDelivered(
+    public ResponseEntity<Void> transitionToDelivered(
             @Parameter(description = "id del pedido a entregar", example = "1") @PathVariable Long orderId,
             @Parameter(description = "pin del pedido a entregar", example = "2945")@Valid @RequestBody PinRequestDto request) {
         orderHandler.transitionToDelivered(orderId, request.getSecurityPin());
@@ -180,7 +180,7 @@ public class OrderRestController {
             @ApiResponse(responseCode = "409", description = "El pedido no puede ser cancelado (ya no está en estado PENDIENTE)", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
     })
     @PutMapping("/{orderId}/cancelado")
-    public ResponseEntity<Void> assignOrderCanceled(
+    public ResponseEntity<Void> transitionToCanceled(
             @Parameter(description = "id del pedido", example = "1") @PathVariable Long orderId) {
         orderHandler.transitionToCanceled(orderId);
         return ResponseEntity.ok().build();

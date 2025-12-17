@@ -47,18 +47,18 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public void assignOrderAndChangeStatus(Long orderId) {
+    public void transitionToPreparation(Long orderId) {
         Long userId = getUserIdFromToken();
-        Order order = checkOrder(orderId, userId);
+        Order order = validateOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
         registerStatusChangeTrace(order, OrderStatus.PENDING, OrderStatus.IN_PREPARATION);
     }
 
     @Override
-    public void notifyOrderReady(Long orderId) {
-        Order order = checkOrder(orderId, getUserIdFromToken());
-        Integer pin = generateSecurityPin();
+    public void transitionToReady(Long orderId) {
+        Order order = validateOrder(orderId, getUserIdFromToken());
+        Integer pin = getSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
         sendNotification(order.getIdClient(), "Tu pedido está listo. Reclámalo con el PIN: " + pin);
@@ -68,7 +68,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
-        Order order = checkOrder(orderId, tokenPort.getUserId());
+        Order order = validateOrder(orderId, tokenPort.getUserId());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
         registerStatusChangeTrace(order, OrderStatus.READY, OrderStatus.DELIVERED);
@@ -109,12 +109,21 @@ public class OrderUseCase implements IOrderServicePort {
     public List<OrderEfficiency> getOrderMetrics(Long restaurantId) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
-        restaurant.validateOwner(tokenPort.getUserId());
+        restaurant.validateOwner(getUserIdFromToken());
         return userGatewayPort.getOrderEfficiency(restaurantId);
     }
 
     private Long getUserIdFromToken() {
         return tokenPort.getUserId();
+    }
+
+    private int getSecurityPin() {
+        return ThreadLocalRandom.current().nextInt(1000, 10000);
+    }
+
+    private void sendNotification(Long clientId, String message) {
+        User client = userGatewayPort.getUserById(clientId);
+        userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -128,11 +137,7 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private int generateSecurityPin() {
-        return ThreadLocalRandom.current().nextInt(1000, 10000);
-    }
-
-    private Order checkOrder(Long orderId, Long userId) {
+    private Order validateOrder(Long orderId, Long userId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
@@ -141,11 +146,6 @@ public class OrderUseCase implements IOrderServicePort {
             throw new EmployeeDoesNotBelongToRestaurantException();
         }
         return order;
-    }
-
-    private void sendNotification(Long clientId, String message) {
-        User client = userGatewayPort.getUserById(clientId);
-        userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
     private void registerStatusChangeTrace(Order order, OrderStatus oldStatus, OrderStatus newStatus) {

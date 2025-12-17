@@ -41,13 +41,13 @@ public class OrderHandler implements IOrderHandler {
     }
 
     @Override
-    public void assignOrderAndChangeStatus(Long orderId) {
-        orderServicePort.assignOrderAndChangeStatus(orderId);
+    public void transitionToPreparation(Long orderId) {
+        orderServicePort.transitionToPreparation(orderId);
     }
 
     @Override
-    public void notifyOrderReady(Long orderId) {
-        orderServicePort.notifyOrderReady(orderId);
+    public void transitionToReady(Long orderId) {
+        orderServicePort.transitionToReady(orderId);
     }
 
     @Override
