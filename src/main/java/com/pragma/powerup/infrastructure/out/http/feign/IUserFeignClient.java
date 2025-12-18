@@ -4,6 +4,7 @@ import com.pragma.powerup.infrastructure.out.http.config.FeignClientConfiguratio
 import com.pragma.powerup.infrastructure.out.http.request.SmsRequestDto;
 import com.pragma.powerup.infrastructure.out.http.response.UserResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface IUserFeignClient {
 
     @GetMapping("/api/usuarios/check-role/{userId}/{roleName}")
-    void checkRole(@PathVariable("userId") Long userId, @PathVariable("roleName") String roleName);
+    ResponseEntity<Boolean> checkRole(@PathVariable("userId") Long userId, @PathVariable("roleName") String roleName);
 
     @PostMapping("/api/sms/send")
     void sendSms(@RequestBody SmsRequestDto request);
