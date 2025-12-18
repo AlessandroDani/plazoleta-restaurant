@@ -10,18 +10,78 @@ public class Plate {
     private String urlImagen;
     private boolean active;
 
-    public Plate(Long id, String name, Long idCategory, String description, Long price, Long idRestaurant, String urlImagen, boolean active) {
-        this.id = id;
-        this.name = name;
-        this.idCategory = idCategory;
-        this.description = description;
-        this.price = price;
-        this.idRestaurant = idRestaurant;
-        this.urlImagen = urlImagen;
-        this.active = active;
+    private Plate(Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.idCategory = builder.idCategory;
+        this.description = builder.description;
+        this.price = builder.price;
+        this.idRestaurant = builder.idRestaurant;
+        this.urlImagen = builder.urlImagen;
+        this.active = builder.active;
     }
 
     public Plate() {
+    }
+
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Long id;
+        private String name;
+        private Long idCategory;
+        private String description;
+        private Long price;
+        private Long idRestaurant;
+        private String urlImagen;
+        private boolean active;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder idCategory(Long idCategory) {
+            this.idCategory = idCategory;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder price(Long price) {
+            this.price = price;
+            return this;
+        }
+
+        public Builder idRestaurant(Long idRestaurant) {
+            this.idRestaurant = idRestaurant;
+            return this;
+        }
+
+        public Builder urlImagen(String urlImagen) {
+            this.urlImagen = urlImagen;
+            return this;
+        }
+
+        public Builder active(boolean active) {
+            this.active = active;
+            return this;
+        }
+
+        public Plate build() {
+            return new Plate(this);
+        }
     }
 
     public Long getId() {

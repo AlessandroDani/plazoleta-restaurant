@@ -7,15 +7,56 @@ public class User {
     private String phoneNumber;
     private String email;
 
-    public User(Long id, String name, String lastName, String phoneNumber, String email) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+    private User(Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.lastName = builder.lastName;
+        this.phoneNumber = builder.phoneNumber;
+        this.email = builder.email;
     }
 
     public User() {
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Long id;
+        private String name;
+        private String lastName;
+        private String phoneNumber;
+        private String email;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder lastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public Builder phoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
     }
 
     public Long getId() {

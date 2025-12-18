@@ -18,21 +18,74 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, Long idClient, LocalDateTime date, OrderStatus status, Long idChef, Long idRestaurant, List<OrderPlate> plates, Integer securityPin) {
-        this.id = id;
-        this.idClient = idClient;
-        this.date = date;
-        this.status = status;
-        this.idChef = idChef;
-        this.idRestaurant = idRestaurant;
-        this.plates = plates;
-        this.securityPin = securityPin;
+    private Order(Builder builder) {
+        this.id = builder.id;
+        this.idClient = builder.idClient;
+        this.date = builder.date;
+        this.status = builder.status;
+        this.idChef = builder.idChef;
+        this.idRestaurant = builder.idRestaurant;
+        this.securityPin = builder.securityPin;
+        this.plates = builder.plates;
     }
 
-    public void initializeNewOrder(Long userId, LocalDateTime currentDate) {
-        this.date = currentDate;
-        this.status = OrderStatus.PENDING;
-        this.idClient = userId;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Long id;
+        private Long idClient;
+        private LocalDateTime date;
+        private OrderStatus status;
+        private Long idChef;
+        private Long idRestaurant;
+        private Integer securityPin;
+        private List<OrderPlate> plates;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder idClient(Long idClient) {
+            this.idClient = idClient;
+            return this;
+        }
+
+        public Builder date(LocalDateTime date) {
+            this.date = date;
+            return this;
+        }
+
+        public Builder status(OrderStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder idChef(Long idChef) {
+            this.idChef = idChef;
+            return this;
+        }
+
+        public Builder idRestaurant(Long idRestaurant) {
+            this.idRestaurant = idRestaurant;
+            return this;
+        }
+
+        public Builder securityPin(Integer securityPin) {
+            this.securityPin = securityPin;
+            return this;
+        }
+
+        public Builder plates(List<OrderPlate> plates) {
+            this.plates = plates;
+            return this;
+        }
+
+        public Order build() {
+            return new Order(this);
+        }
     }
 
     public Long getId() {
@@ -83,14 +136,6 @@ public class Order {
         this.idRestaurant = idRestaurant;
     }
 
-    public List<OrderPlate> getPlates() {
-        return plates;
-    }
-
-    public void setPlates(List<OrderPlate> plates) {
-        this.plates = plates;
-    }
-
     public Integer getSecurityPin() {
         return securityPin;
     }
@@ -99,8 +144,22 @@ public class Order {
         this.securityPin = securityPin;
     }
 
-    public void isOwner(Long userId){
-        if(!this.idClient.equals(userId)){
+    public List<OrderPlate> getPlates() {
+        return plates;
+    }
+
+    public void setPlates(List<OrderPlate> plates) {
+        this.plates = plates;
+    }
+
+    public void initializeNewOrder(Long userId, LocalDateTime currentDate) {
+        this.date = currentDate;
+        this.status = OrderStatus.PENDING;
+        this.idClient = userId;
+    }
+
+    public void isOwner(Long userId) {
+        if (!this.idClient.equals(userId)) {
             throw new ClientIsNotOrderOwnerException();
         }
     }
@@ -122,7 +181,7 @@ public class Order {
     }
 
     public void assignToDelivered(Integer securityPin) {
-        if(!this.securityPin.equals(securityPin)){
+        if (!this.securityPin.equals(securityPin)) {
             throw new OrderHasIncorrectPinException();
         }
         if (!this.status.equals(OrderStatus.READY)) {
@@ -131,7 +190,7 @@ public class Order {
         this.status = OrderStatus.DELIVERED;
     }
 
-    public void assignToCanceled(){
+    public void assignToCanceled() {
         if (!this.status.equals(OrderStatus.PENDING)) {
             throw new OrderNotInPendingStatusException();
         }
