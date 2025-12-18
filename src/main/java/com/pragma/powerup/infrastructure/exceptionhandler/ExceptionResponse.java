@@ -9,6 +9,7 @@ public enum ExceptionResponse {
     USER_HAS_ACTIVE_ORDER("El cliente ya tiene un pedido activo."),
     USER_NOT_BELONG_RESTAURANT("El empleado no está asociado a este restaurante."),
     USER_IS_ALREADY_EMPLOYEE("El empleado ya fue asignado a un restaurante"),
+    USER_NOT_EMPLOYEE("El usuario no tiene rol de empleado"),
 
     RESTAURANT_ALREADY_EXIST("Ya existe un restaurante registrado con el NIT proporcionado."),
     RESTAURANT_NOT_EXIST("El restaurante con el ID solicitado no existe."),

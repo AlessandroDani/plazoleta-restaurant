@@ -37,6 +37,12 @@ public class ControllerAdvisor {
         return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_OWNER_RESTAURANT.getMessage()));
     }
 
+    @ExceptionHandler(UserIsNotEmployeeException.class)
+    public ResponseEntity<Map<String, String>> handleUserIsNotEmployeeException (UserIsNotEmployeeException  ignoredUserIsNotEmployeeException) {
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_EMPLOYEE.getMessage()));
+    }
+
+
     @ExceptionHandler(RestaurantNotExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantDoesNotExistException(RestaurantNotExistException ignoredRestaurantDoesNotExistException) {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_NOT_EXIST.getMessage()));
@@ -136,6 +142,7 @@ public class ControllerAdvisor {
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND) .body(Collections.singletonMap(MESSAGE, ex.getMessage()));
     }
+
 
     @ExceptionHandler(ExternalServiceFailureException.class)
     public ResponseEntity<Map<String, String>> handleExternalServiceFailureException(ExternalServiceFailureException ex) {
