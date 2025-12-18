@@ -42,7 +42,6 @@ public class PlateUseCase implements IPlateServicePort {
         platePersistencePort.savePlate(plate);
     }
 
-
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
         Plate newPlate = getPlateAndValidateOwner(idPlate);

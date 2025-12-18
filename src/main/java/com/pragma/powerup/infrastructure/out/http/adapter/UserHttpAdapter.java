@@ -20,6 +20,7 @@ import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseD
 import com.pragma.powerup.infrastructure.out.http.response.UserResponseDto;
 import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,19 +42,28 @@ public class UserHttpAdapter implements IUserGatewayPort {
     private static final String TWILIO = "mensajeria";
 
     @Override
-    public void isUserOwner(Long userId) {
-        executeExternalCall(() -> {
-            userFeignClient.checkRole(userId, "PROPIETARIO");
-            return null;
-        }, USERS);
+    public Boolean isUserOwner(Long userId) {
+        try {
+            return executeExternalCall(() -> {
+                ResponseEntity<Boolean> response = userFeignClient.checkRole(userId, "PROPIETARIO");
+                return response.getBody();
+            }, USERS);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("El id del usuario no fue encontrado");
+        }
     }
 
     @Override
-    public void isUserEmployee(Long userId) {
-        executeExternalCall(() -> {
-            userFeignClient.checkRole(userId, "EMPLEADO");
-            return null;
-        }, USERS);
+    public Boolean isUserEmployee(Long userId) {
+        try {
+            Boolean hasRole = executeExternalCall(() -> {
+                ResponseEntity<Boolean> response = userFeignClient.checkRole(userId, "EMPLEADO");
+                return response.getBody();
+            }, USERS);
+            return hasRole != null && hasRole;
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("El id del usuario no fue encontrado");
+        }
     }
 
     @Override
