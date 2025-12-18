@@ -50,16 +50,16 @@ class PlateUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        testPlate = new Plate(
-                null,
-                "Arepa con todo",
-                VALID_CATEGORY_ID,
-                "Plato típico",
-                15000L,
-                RESTAURANT_ID,
-                "http://img.com/arepa.png",
-                false
-        );
+        testPlate = Plate.builder()
+                .id(null)
+                .name("Arepa con todo")
+                .idCategory(VALID_CATEGORY_ID)
+                .description("Plato típico")
+                .price(15000L)
+                .idRestaurant(RESTAURANT_ID)
+                .urlImagen("http://img.com/arepa.png")
+                .active(false)
+                .build();
 
         testRestaurant = new Restaurant();
         testRestaurant.setId(RESTAURANT_ID);
@@ -90,7 +90,6 @@ class PlateUseCaseTest {
         when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
         when(categoryPersistencePort.existsCategoryById(VALID_CATEGORY_ID)).thenReturn(true);
         when(platePersistencePort.existsPlateByName(anyString())).thenReturn(true);
-
 
 
         assertThrows(PlateAlreadyExistException.class, () -> plateUseCase.savePlate(testPlate));
@@ -307,8 +306,26 @@ class PlateUseCaseTest {
         String category = "Principal";
 
         List<Plate> mockPlates = List.of(
-                new Plate(1L, "Plato A", 1L, "Desc", 10000L, restaurantId, "url", true),
-                new Plate(2L, "Plato B", 1L, "Desc", 12000L, restaurantId, "url", true)
+                Plate.builder()
+                        .id(1L)
+                        .name("Plato A")
+                        .idCategory(1L)
+                        .description("Desc")
+                        .price(10000L)
+                        .idRestaurant(restaurantId)
+                        .urlImagen("url")
+                        .active(true)
+                        .build(),
+                Plate.builder()
+                        .id(2L)
+                        .name("Plato B")
+                        .idCategory(1L)
+                        .description("Desc")
+                        .price(12000L)
+                        .idRestaurant(restaurantId)
+                        .urlImagen("url")
+                        .active(true)
+                        .build()
         );
 
         when(restaurantPersistencePort.getRestaurantById(restaurantId)).thenReturn(Optional.of(testRestaurant));
