@@ -133,8 +133,8 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ignoredResourceNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND) .body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESOURCE_NOT_FOUND_EXCEPTION.getMessage()));
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND) .body(Collections.singletonMap(MESSAGE, ex.getMessage()));
     }
 
     @ExceptionHandler(ExternalServiceFailureException.class)

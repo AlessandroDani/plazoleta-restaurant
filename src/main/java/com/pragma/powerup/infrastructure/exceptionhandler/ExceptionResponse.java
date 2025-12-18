@@ -33,7 +33,7 @@ public enum ExceptionResponse {
     INVALID_DATA_EXCEPTION("Los datos enviados al servicio externo son inválidos o mal formados."),
     USER_AUTHENTICATION_EXCEPTION("Acceso no autorizado. Se requiere autenticación válida."),
     ACTION_FORBIDDEN_EXCEPTION("Permisos denegados para realizar esta acción en el servicio externo."),
-    RESOURCE_NOT_FOUND_EXCEPTION("El recurso solicitado (ej., usuario, dato) no fue encontrado en el servicio externo."),
+    RESOURCE_NOT_FOUND_EXCEPTION("El recurso solicitado no fue encontrado en el servicio externo."),
     EXTERNAL_SERVICE_FAILURE_EXCEPTION("Ocurrió un error interno (500) en el servicio externo que impidió la operación."),
     EXTERNAL_SERVICE_UNAVAILABLE_EXCEPTION("El servicio externo no está disponible o no pudo procesar la solicitud."),
     UNEXPECTED_ERROR_EXCEPTION("Ocurrió un error inesperado al comunicarse con el servicio externo.");
