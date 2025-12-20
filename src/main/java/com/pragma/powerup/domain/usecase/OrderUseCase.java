@@ -68,7 +68,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
-        Order order = validateOrder(orderId, tokenPort.getUserId());
+        Order order = validateOrder(orderId, getUserIdFromToken());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
         registerStatusChangeTrace(order, OrderStatus.READY, OrderStatus.DELIVERED);
