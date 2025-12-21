@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.out.jpa.security.config;
 
+import com.pragma.powerup.domain.model.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +21,10 @@ public class WebSecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    private static final String ADMIN = "ADMINISTRADOR";
-    private static final String OWNER = "PROPIETARIO";
-    private static final String EMPLOYEE = "EMPLEADO";
-    private static final String CLIENT = "CLIENTE";
+    private static final String ADMIN = RoleEnum.ADMIN.getDbName();
+    private static final String OWNER = RoleEnum.OWNER.getDbName();
+    private static final String EMPLOYEE = RoleEnum.EMPLOYEE.getDbName();
+    private static final String CLIENT = RoleEnum.CLIENT.getDbName();
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

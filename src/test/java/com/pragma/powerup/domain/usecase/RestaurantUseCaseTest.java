@@ -36,14 +36,15 @@ class RestaurantUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        validRestaurant = new Restaurant(
-                1L,
-                "RestaurantTest",
-                "123456",
-                "address",
-                "310",
-                "logo.png",
-                5L);
+        validRestaurant = Restaurant.builder()
+                .id(1L)
+                .name("RestaurantTest")
+                .nit("12345")
+                .address("address")
+                .phoneNumber("310")
+                .urlLogo("logo.png")
+                .idOwner(5L)
+                .build();
     }
 
     @Test
@@ -93,8 +94,25 @@ class RestaurantUseCaseTest {
         int size = 5;
 
         List<Restaurant> mockList = List.of(
-                new Restaurant(2L, "Zeta", "777", "addr1", "311", "logo.png", 9L),
-                new Restaurant(3L, "Alfa", "888", "addr2", "312", "logo.png", 9L)
+                Restaurant.builder()
+                        .id(2L)
+                        .name("Zeta")
+                        .nit("777")
+                        .address("addr1")
+                        .phoneNumber("311")
+                        .urlLogo("logo.png")
+                        .idOwner(9L)
+                        .build(),
+
+                Restaurant.builder()
+                        .id(3L)
+                        .name("Alfa")
+                        .nit("888")
+                        .address("addr2")
+                        .phoneNumber("312")
+                        .urlLogo("logo.png")
+                        .idOwner(9L)
+                        .build()
         );
 
         when(restaurantPersistence.getAllRestaurant(page, size)).thenReturn(mockList);

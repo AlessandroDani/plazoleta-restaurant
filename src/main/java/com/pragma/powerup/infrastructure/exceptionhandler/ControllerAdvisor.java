@@ -2,10 +2,8 @@ package com.pragma.powerup.infrastructure.exceptionhandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.pragma.powerup.domain.exception.*;
-import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
+import com.pragma.powerup.infrastructure.exception.*;
 import com.pragma.powerup.domain.exception.InvalidStatusParameterException;
-import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
-import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,30 +22,26 @@ public class ControllerAdvisor {
 
     private static final String MESSAGE = "message";
 
-    @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleOwnerNotFoundException(RoleNotFoundException ignoredOwnerNotFoundException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE, ExceptionResponse.NO_DATA_FOUND.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidRoleException.class)
-    public  ResponseEntity<Map<String, String>> handleInvalidRoleException(InvalidRoleException ignoredInvalidRoleException) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_DENIED_PERMISSION.getMessage()));
-    }
-
-    @ExceptionHandler(UserServiceCommunicationException.class)
-    public ResponseEntity<Map<String, String>> handleUserServiceCommunicationException(UserServiceCommunicationException ignoredUserServiceCommunicationException) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ExceptionResponse.SERVICE_UNAVAILABLE.getMessage()));
-    }
-
     @ExceptionHandler(RestaurantAlreadyExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantAlreadyExistException(RestaurantAlreadyExistException  ignoredRestaurantAlreadyExistException) {
         return  ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.RESTAURANT_ALREADY_EXIST.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotAssignRestaurant.class)
+    public ResponseEntity<Map<String, String>> handleUserNotAssignRestaurant(UserNotAssignRestaurant  ignoredUserNotAssignRestaurant) {
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_ASSIGNED.getMessage()));
     }
 
     @ExceptionHandler(UserIsNotOwnerRestaurantException.class)
     public ResponseEntity<Map<String, String>> handleUserIsNotOwnerRestaurantException(UserIsNotOwnerRestaurantException  ignoredUserIsNotOwnerRestaurantException) {
         return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_OWNER_RESTAURANT.getMessage()));
     }
+
+    @ExceptionHandler(UserIsNotEmployeeException.class)
+    public ResponseEntity<Map<String, String>> handleUserIsNotEmployeeException (UserIsNotEmployeeException  ignoredUserIsNotEmployeeException) {
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_NOT_EMPLOYEE.getMessage()));
+    }
+
 
     @ExceptionHandler(RestaurantNotExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantDoesNotExistException(RestaurantNotExistException ignoredRestaurantDoesNotExistException) {
@@ -69,9 +63,9 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_HAS_ACTIVE_ORDER.getMessage()));
     }
 
-    @ExceptionHandler(PlateBelongsToAnotherRestaurantException.class)
-    public ResponseEntity<Map<String, String>> handlePlateBelongsToAnotherRestaurantException(PlateBelongsToAnotherRestaurantException ignoredPlateBelongsToAnotherRestaurantException) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_BELONGS_ANOTHER_RESTAURANT.getMessage()));
+    @ExceptionHandler(PlateNotAvailableException.class)
+    public ResponseEntity<Map<String, String>> handlePlateNotAvailableException(PlateNotAvailableException ignoredPlateBelongsToAnotherRestaurantException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.PLATE_NOT_AVAILABLE.getMessage()));
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -92,6 +86,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(RestaurantEmployeeExistsException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantEmployeeExistException (RestaurantEmployeeExistsException ignoredRestaurantEmployeeExistsException) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_IS_ALREADY_EMPLOYEE.getMessage()));
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotFoundException (OrderNotFoundException ignoredOrderNotFoundException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_NOT_FOUND.getMessage()));
     }
 
     @ExceptionHandler(OrderNotInPendingStatusException.class)
@@ -119,7 +118,46 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap(MESSAGE, ExceptionResponse.CLIENT_NOT_OWNER.getMessage()));
     }
 
+    @ExceptionHandler(FailedConnectionTraceabilityException.class)
+    public ResponseEntity<Map<String, String>> handleFailedConnectionTraceabilityException (FailedConnectionTraceabilityException ignoredFailedConnectionTraceabilityException) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ExceptionResponse.FAILED_CONNECTION_TRACE.getMessage()));
+    }
 
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidDataException (InvalidDataException ignoredInvalidDataException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(MESSAGE, ExceptionResponse.INVALID_DATA_EXCEPTION.getMessage()));
+    }
+
+    @ExceptionHandler(UserAuthenticationException.class)
+    public ResponseEntity<Map<String, String>> handleUserAuthenticationException(UserAuthenticationException ignoredUserAuthenticationException) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_AUTHENTICATION_EXCEPTION.getMessage()));
+    }
+
+    @ExceptionHandler(ActionForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleActionForbiddenException(ActionForbiddenException ignoredActionForbiddenException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN) .body(Collections.singletonMap(MESSAGE, ExceptionResponse.ACTION_FORBIDDEN_EXCEPTION.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND) .body(Collections.singletonMap(MESSAGE, ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(ExternalServiceFailureException.class)
+    public ResponseEntity<Map<String, String>> handleExternalServiceFailureException(ExternalServiceFailureException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ExternalServiceUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleExternalServiceUnavailableException(ExternalServiceUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Collections.singletonMap(MESSAGE, ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleUnexpectedException(Exception ignoredException) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) .body(Collections.singletonMap(MESSAGE, ExceptionResponse.UNEXPECTED_ERROR_EXCEPTION.getMessage()));
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {

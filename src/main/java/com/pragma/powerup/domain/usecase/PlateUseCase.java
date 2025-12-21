@@ -42,7 +42,6 @@ public class PlateUseCase implements IPlateServicePort {
         platePersistencePort.savePlate(plate);
     }
 
-
     @Override
     public void updatePlate(Long newPrice, String newDescription, Long idPlate) {
         Plate newPlate = getPlateAndValidateOwner(idPlate);
@@ -61,6 +60,9 @@ public class PlateUseCase implements IPlateServicePort {
     public List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category) {
         restaurantPersistencePort.getRestaurantById(idRestaurant).
                 orElseThrow(RestaurantNotExistException::new);
+        if(!categoryPersistencePort.existByName(category)){
+            throw new CategoryNotFoundException();
+        }
         return platePersistencePort.getPlatesByRestaurant(idRestaurant, page, size, category);
     }
 

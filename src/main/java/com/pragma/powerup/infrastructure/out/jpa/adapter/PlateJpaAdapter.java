@@ -56,4 +56,10 @@ public class PlateJpaAdapter implements IPlatePersistencePort {
                 plateRepository.findByRestaurantIdAndCategoryNameAndActiveTrue(idRestaurant, category, pageable);
         return plateEntityMapper.toPlateList(platePage.getContent());
     }
+
+    @Override
+    public List<Long> getPlatesIdsByRestaurant(Long idRestaurant) {
+        return plateRepository.findAllIdsByRestaurantId(idRestaurant);
+    }
 }
+

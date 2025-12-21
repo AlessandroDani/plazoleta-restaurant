@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.*;
 import com.pragma.powerup.domain.spi.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,87 +28,63 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void saveOrder(Order order) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         Restaurant restaurant = validateRestaurant(order.getIdRestaurant());
         validateOrderStatus(userId);
-        restaurant.validatePlateList(order.getPlates(), platePersistencePort);
-
+        restaurant.validatePlateList(order.getPlates(), platePersistencePort.getPlatesIdsByRestaurant(restaurant.getId()));
         order.initializeNewOrder(userId, LocalDateTime.now());
         Order saveOrder = orderPersistencePort.saveOrder(order);
         User client = userGatewayPort.getUserById(order.getIdClient());
-        updateOrderStatus(saveOrder.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
-                "NONE", OrderStatus.PENDING.getDbValue(),
-                null, null);
+        saveOrderTrace(saveOrder, client, null, "NONE", OrderStatus.PENDING.getDbValue());
     }
 
     @Override
     public List<Order> getOrdersByStatus(OrderStatus status, int page, int size) {
-        Long userId = tokenPort.getUserId();
+        Long userId = getUserIdFromToken();
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
-                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
+                .orElseThrow(UserNotAssignRestaurant::new);
         return orderPersistencePort.getOrdersByRestaurantAndStatus(employee.getIdRestaurant(), status, page, size);
     }
 
     @Override
-    public void assignOrderAndChangeStatus(Long orderId) {
-        Long userId = tokenPort.getUserId();
-        Order order = checkOrder(orderId, userId);
+    public void transitionToPreparation(Long orderId) {
+        Long userId = getUserIdFromToken();
+        Order order = validateOrder(orderId, userId);
         order.assignToPreparation(userId);
         orderPersistencePort.saveOrder(order);
-
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(), order.getIdRestaurant(),  client.getId(), client.getEmail(),
-                OrderStatus.PENDING.getDbValue(), OrderStatus.IN_PREPARATION.getDbValue(),
-                userId, employee.getEmail());
+        registerStatusChangeTrace(order, OrderStatus.PENDING, OrderStatus.IN_PREPARATION);
     }
 
     @Override
-    public void notifyOrderReady(Long orderId) {
-        Long userId = tokenPort.getUserId();
-        Order order = checkOrder(orderId, userId);
-        Integer pin = generateSecurityPin();
+    public void transitionToReady(Long orderId) {
+        Order order = validateOrder(orderId, getUserIdFromToken());
+        Integer pin = getSecurityPin();
         order.assignToReady(pin);
         orderPersistencePort.saveOrder(order);
-        sendNotification(order.getIdClient(),
-                "Tu pedido está listo. Reclámalo con el PIN: " + pin);
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                OrderStatus.IN_PREPARATION.getDbValue(), OrderStatus.READY.getDbValue(),
-                userId, employee.getEmail());
+        sendNotification(order.getIdClient(), "Tu pedido está listo. Reclámalo con el PIN: " + pin);
+        registerStatusChangeTrace(order, OrderStatus.IN_PREPARATION, OrderStatus.READY);
+
     }
 
     @Override
     public void transitionToDelivered(Long orderId, Integer pin) {
-        Long userId = tokenPort.getUserId();
-        Order order = checkOrder(orderId, tokenPort.getUserId());
+        Order order = validateOrder(orderId, getUserIdFromToken());
         order.assignToDelivered(pin);
         orderPersistencePort.saveOrder(order);
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(userId);
-        updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                OrderStatus.READY.getDbValue(), OrderStatus.DELIVERED.getDbValue(),
-                userId, employee.getEmail());
+        registerStatusChangeTrace(order, OrderStatus.READY, OrderStatus.DELIVERED);
     }
 
     @Override
     public void transitionToCanceled(Long orderId) {
-        Long userId = tokenPort.getUserId();
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
-        order.isOwner(userId);
+        order.isOwner(getUserIdFromToken());
         try {
             order.assignToCanceled();
             orderPersistencePort.saveOrder(order);
-            User client = userGatewayPort.getUserById(order.getIdClient());
-            User employee = userGatewayPort.getUserById(userId);
-            updateOrderStatus(order.getId(),  order.getIdRestaurant(), client.getId(), client.getEmail(),
-                    OrderStatus.PENDING.getDbValue(), OrderStatus.CANCELED.getDbValue(),
-                    userId, employee.getEmail());
+            registerStatusChangeTrace(order, OrderStatus.PENDING, OrderStatus.CANCELED);
         } catch (OrderNotInPendingStatusException exception) {
-            sendNotification(order.getIdClient(),
-                    "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
+            sendNotification(order.getIdClient(), "Lo sentimos, su pedido ya está en preparación y no puede cancelarse");
             throw exception;
         }
     }
@@ -116,7 +93,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<Traceability> getTracesByOrderId(Long orderId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
-        order.isOwner(tokenPort.getUserId());
+        order.isOwner(getUserIdFromToken());
         return userGatewayPort.getTracesByOrderId(orderId);
     }
 
@@ -124,7 +101,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<EmployeePerformance> getEmployeePerformances(Long restaurantId) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
-        restaurant.validateOwner(tokenPort.getUserId());
+        restaurant.validateOwner(getUserIdFromToken());
         return userGatewayPort.getEmployeePerformance(restaurantId);
     }
 
@@ -132,8 +109,21 @@ public class OrderUseCase implements IOrderServicePort {
     public List<OrderEfficiency> getOrderMetrics(Long restaurantId) {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
-        restaurant.validateOwner(tokenPort.getUserId());
+        restaurant.validateOwner(getUserIdFromToken());
         return userGatewayPort.getOrderEfficiency(restaurantId);
+    }
+
+    private Long getUserIdFromToken() {
+        return tokenPort.getUserId();
+    }
+
+    private int getSecurityPin() {
+        return ThreadLocalRandom.current().nextInt(1000, 10000);
+    }
+
+    private void sendNotification(Long clientId, String message) {
+        User client = userGatewayPort.getUserById(clientId);
+        userGatewayPort.sendSms(client.getPhoneNumber(), message);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -147,32 +137,32 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private int generateSecurityPin() {
-        return ThreadLocalRandom.current().nextInt(1000, 10000);
-    }
-
-    private Order checkOrder(Long orderId, Long userId) {
+    private Order validateOrder(Long orderId, Long userId) {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         RestaurantEmployee employee = restaurantEmployeePersistencePort.getEmployee(userId)
-                .orElseThrow(EmployeeDoesNotBelongToRestaurantException::new);
+                .orElseThrow(UserNotAssignRestaurant::new);
         if (!order.getIdRestaurant().equals(employee.getIdRestaurant())) {
             throw new EmployeeDoesNotBelongToRestaurantException();
         }
         return order;
     }
 
-    private void sendNotification(Long clientId, String message) {
-        User client = userGatewayPort.getUserById(clientId);
-        userGatewayPort.sendSms(client.getPhoneNumber(), message);
+    private void registerStatusChangeTrace(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        User client = userGatewayPort.getUserById(order.getIdClient());
+        User employee = userGatewayPort.getUserById(getUserIdFromToken());
+        saveOrderTrace(order, client, employee, oldStatus.getDbValue(), newStatus.getDbValue());
     }
 
-    public void updateOrderStatus(Long orderId, Long restaurantId,Long clientId, String clientEmail, String lastStatus, String newStatus, Long employeeId, String employeeEmail) {
+    public void saveOrderTrace(Order order, User client, User employee, String lastStatus, String newStatus) {
+        Long employeeId = (employee != null) ? employee.getId() : null;
+        String employeeEmail = (employee != null) ? employee.getEmail() : null;
+
         Traceability traceModel = Traceability.builder()
-                .restaurantId(restaurantId)
-                .orderId(orderId)
-                .clientId(clientId)
-                .clientEmail(clientEmail)
+                .restaurantId(order.getIdRestaurant())
+                .orderId(order.getId())
+                .clientId(client.getId())
+                .clientEmail(client.getEmail())
                 .date(LocalDateTime.now())
                 .lastStatus(lastStatus)
                 .newStatus(newStatus)

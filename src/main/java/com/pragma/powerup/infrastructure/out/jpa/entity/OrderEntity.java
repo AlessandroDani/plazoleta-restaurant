@@ -42,6 +42,6 @@ public class OrderEntity {
     @Column(name = "security_pin")
     private Long securityPin;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderPlateEntity> plates;
 }

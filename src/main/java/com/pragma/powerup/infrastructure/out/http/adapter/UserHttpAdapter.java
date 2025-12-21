@@ -5,9 +5,7 @@ import com.pragma.powerup.domain.model.OrderEfficiency;
 import com.pragma.powerup.domain.model.Traceability;
 import com.pragma.powerup.domain.model.User;
 import com.pragma.powerup.domain.spi.IUserGatewayPort;
-import com.pragma.powerup.infrastructure.exception.InvalidRoleException;
-import com.pragma.powerup.infrastructure.exception.RoleNotFoundException;
-import com.pragma.powerup.infrastructure.exception.UserServiceCommunicationException;
+import com.pragma.powerup.infrastructure.exception.*;
 import com.pragma.powerup.infrastructure.out.http.feign.ISmsFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.ITraceabilityFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.IUserFeignClient;
@@ -20,11 +18,13 @@ import com.pragma.powerup.infrastructure.out.http.response.EmployeePerformanceRe
 import com.pragma.powerup.infrastructure.out.http.response.OrderEfficiencyResponseDto;
 import com.pragma.powerup.infrastructure.out.http.response.TraceabilityResponseDto;
 import com.pragma.powerup.infrastructure.out.http.response.UserResponseDto;
-import feign.FeignException;
+import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
@@ -37,14 +37,33 @@ public class UserHttpAdapter implements IUserGatewayPort {
     private final ITraceabilityRequestMapper traceabilityRequestMapper;
     private final ITraceabilityFeignResponseMapper traceabilityResponseMapper;
 
+    private static final String TRACEABILITY = "trazabilidad";
+    private static final String USERS = "usuarios";
+    private static final String TWILIO = "mensajeria";
+
     @Override
-    public void isUserOwner(Long userId) {
-        checkRole(userId, "PROPIETARIO");
+    public Boolean isUserOwner(Long userId) {
+        try {
+            return executeExternalCall(() -> {
+                ResponseEntity<Boolean> response = userFeignClient.checkRole(userId, "PROPIETARIO");
+                return response.getBody();
+            }, USERS);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("El id del usuario no fue encontrado");
+        }
     }
 
     @Override
-    public void isUserEmployee(Long userId) {
-        checkRole(userId, "EMPLEADO");
+    public Boolean isUserEmployee(Long userId) {
+        try {
+            Boolean hasRole = executeExternalCall(() -> {
+                ResponseEntity<Boolean> response = userFeignClient.checkRole(userId, "EMPLEADO");
+                return response.getBody();
+            }, USERS);
+            return hasRole != null && hasRole;
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("El id del usuario no fue encontrado");
+        }
     }
 
     @Override
@@ -52,84 +71,62 @@ public class UserHttpAdapter implements IUserGatewayPort {
         SmsRequestDto request = new SmsRequestDto();
         request.setPhoneNumber(phoneNumber);
         request.setMessage(message);
-
-        try {
+        executeExternalCall(() -> {
             smsFeignClient.sendSms(request);
-        } catch (FeignException.NotFound e) {
-            throw new InvalidRoleException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
-        }
+            return null;
+        }, TWILIO);
     }
 
     @Override
     public void saveOrderTrace(Traceability traceability) {
-        TraceabilityRequestDto traceabilityRequestDto =
-                traceabilityRequestMapper.toRequestDto(traceability);
-        try{
+        TraceabilityRequestDto traceabilityRequestDto = traceabilityRequestMapper.toRequestDto(traceability);
+        executeExternalCall(() -> {
             traceabilityFeignClient.saveOrderTrace(traceabilityRequestDto);
-        } catch (FeignException.NotFound e) {
-            throw new InvalidRoleException();
-        }
-
+            return null;
+        }, TRACEABILITY);
     }
 
     @Override
     public User getUserById(Long clientId) {
         try {
-            UserResponseDto userResponse = userFeignClient.getUserById(clientId);
+            UserResponseDto userResponse = executeExternalCall(() ->
+                    userFeignClient.getUserById(clientId), USERS);
             return userRequestMapper.toModel(userResponse);
-        } catch (FeignException.NotFound e) {
-            throw new RoleNotFoundException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("El usuario con ID " + clientId + " no fue encontrado.");
         }
-
     }
 
     @Override
     public List<EmployeePerformance> getEmployeePerformance(Long restaurantId) {
-        try {
-            List<EmployeePerformanceResponseDto> employees = traceabilityFeignClient.getEmployeesRanking(restaurantId);
-            return traceabilityResponseMapper.toEmployeeList(employees);
-        } catch (FeignException.NotFound e) {
-            throw new RoleNotFoundException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
-        }
+        List<EmployeePerformanceResponseDto> employees = executeExternalCall(() ->
+                traceabilityFeignClient.getEmployeesRanking(restaurantId), TRACEABILITY);
+        return traceabilityResponseMapper.toEmployeeList(employees);
     }
 
     @Override
     public List<OrderEfficiency> getOrderEfficiency(Long restaurantId) {
-        try {
-            List<OrderEfficiencyResponseDto> orders = traceabilityFeignClient.getOrdersEfficiency(restaurantId);
-            return traceabilityResponseMapper.toOrderList(orders);
-        } catch (FeignException.NotFound e) {
-            throw new RoleNotFoundException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
-        }
+        List<OrderEfficiencyResponseDto> orders = executeExternalCall(() ->
+                traceabilityFeignClient.getOrdersEfficiency(restaurantId), TRACEABILITY);
+        return traceabilityResponseMapper.toOrderList(orders);
     }
 
     @Override
     public List<Traceability> getTracesByOrderId(Long orderId) {
-        try{
-            List<TraceabilityResponseDto> trace = traceabilityFeignClient.getOrderTrace(orderId);
-            return traceabilityResponseMapper.toModelList(trace);
-        } catch (FeignException.NotFound e) {
-            throw new RoleNotFoundException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
-        }
+        List<TraceabilityResponseDto> trace = executeExternalCall(() ->
+                traceabilityFeignClient.getOrderTrace(orderId), TRACEABILITY);
+        return traceabilityResponseMapper.toModelList(trace);
     }
 
-    private void checkRole(Long userId, String role) {
+    private <T> T executeExternalCall(Supplier<T> feignCall, String serviceName) {
         try {
-            userFeignClient.checkRole(userId, role);
-        } catch (FeignException.NotFound e) {
-            throw new InvalidRoleException();
-        } catch (FeignException.FeignServerException e) {
-            throw new UserServiceCommunicationException();
+            return feignCall.get();
+        } catch (ResourceNotFoundException | ActionForbiddenException | ExternalServiceFailureException e) {
+            throw e;
+        } catch(ExternalServiceUnavailableException  | RetryableException e) {
+            throw new ExternalServiceUnavailableException("El servicio de " + serviceName +  " no está disponible o no pudo procesar la solicitud.");
+        } catch (Exception e) {
+            throw new ExternalServiceUnavailableException("Fallo de conexión o error inesperado con el servicio de " + serviceName);
         }
     }
 }

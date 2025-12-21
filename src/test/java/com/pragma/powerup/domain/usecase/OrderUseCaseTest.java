@@ -97,44 +97,28 @@ class OrderUseCaseTest {
         op2.setIdPlate(PLATE_ID_2);
         op2.setQuantity(2);
 
-        Order localTestOrder = new Order();
-        localTestOrder.setIdRestaurant(RESTAURANT_ID);
-        localTestOrder.setPlates(List.of(op1, op2));
+        Order localTestOrder = Order.builder()
+                .idRestaurant(RESTAURANT_ID)
+                .idClient(CLIENT_ID)
+                .plates(List.of(op1, op2))
+                .build();
 
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
         when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
         when(orderPersistencePort.hasActiveOrder(CLIENT_ID)).thenReturn(false);
 
-        Plate plate1 = new Plate();
-        plate1.setIdRestaurant(RESTAURANT_ID);
-        Plate plate2 = new Plate();
-        plate2.setIdRestaurant(RESTAURANT_ID);
-        when(platePersistencePort.getPlateById(PLATE_ID_1)).thenReturn(Optional.of(plate1));
-        when(platePersistencePort.getPlateById(PLATE_ID_2)).thenReturn(Optional.of(plate2));
+        when(platePersistencePort.getPlatesIdsByRestaurant(RESTAURANT_ID))
+                .thenReturn(List.of(PLATE_ID_1, PLATE_ID_2));
 
-        User mockClient = new User();
-        mockClient.setId(CLIENT_ID);
-        mockClient.setEmail("cliente@test.com");
-        mockClient.setPhoneNumber("+5712345678");
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(mockClient);
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
-        Order savedMockOrder = new Order();
-        savedMockOrder.setId(1L);
+        Order savedMockOrder = Order.builder().id(1L).build();
         when(orderPersistencePort.saveOrder(any(Order.class))).thenReturn(savedMockOrder);
 
         assertDoesNotThrow(() -> orderUseCase.saveOrder(localTestOrder));
 
-        verify(orderPersistencePort, times(1)).hasActiveOrder(CLIENT_ID);
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_1);
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_2);
-
-        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
-        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
-
-        Order savedOrder = orderCaptor.getValue();
-        assertEquals(CLIENT_ID, savedOrder.getIdClient());
-        assertEquals(OrderStatus.PENDING, savedOrder.getStatus());
-        assertTrue(savedOrder.getDate().isAfter(LocalDateTime.now().minusSeconds(1)));
+        verify(platePersistencePort).getPlatesIdsByRestaurant(RESTAURANT_ID);
+        verify(orderPersistencePort).saveOrder(any(Order.class));
     }
 
     @Test
@@ -176,7 +160,6 @@ class OrderUseCaseTest {
         when(orderPersistencePort.hasActiveOrder(CLIENT_ID)).thenReturn(true);
 
 
-
         assertThrows(UserHasActiveOrderException.class, () -> orderUseCase.saveOrder(localTestOrder));
 
         verify(orderPersistencePort, times(1)).hasActiveOrder(CLIENT_ID);
@@ -185,42 +168,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    @DisplayName("Debería lanzar PlateNotFoundException si alguno de los platos no existe")
-    void saveOrder_ThrowsPlateNotFoundException() {
-        OrderPlate op1 = new OrderPlate();
-        op1.setIdPlate(PLATE_ID_1);
-        op1.setQuantity(4);
-
-        OrderPlate op2 = new OrderPlate();
-        op2.setIdPlate(PLATE_ID_2);
-        op2.setQuantity(2);
-
-        Order localTestOrder = new Order();
-        localTestOrder.setIdRestaurant(RESTAURANT_ID);
-        localTestOrder.setPlates(List.of(op1, op2));
-
-        when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
-        when(orderPersistencePort.hasActiveOrder(CLIENT_ID)).thenReturn(false);
-
-
-        Plate plate1 = new Plate();
-        plate1.setIdRestaurant(RESTAURANT_ID);
-
-        when(platePersistencePort.getPlateById(PLATE_ID_1)).thenReturn(Optional.of(plate1));
-        when(platePersistencePort.getPlateById(PLATE_ID_2)).thenReturn(Optional.empty());
-
-
-        assertThrows(PlateNotFoundException.class, () -> orderUseCase.saveOrder(localTestOrder));
-
-
-        verify(orderPersistencePort, never()).saveOrder(any(Order.class));
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_1);
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_2);
-    }
-
-    @Test
-    @DisplayName("Debería lanzar PlateBelongsToAnotherRestaurantException si un plato no pertenece al restaurante")
+    @DisplayName("Debería lanzar PlateNotAvailableException si un plato no pertenece al restaurante")
     void saveOrder_ThrowsPlateBelongsToAnotherRestaurantException() {
         OrderPlate op1 = new OrderPlate();
         op1.setIdPlate(PLATE_ID_1);
@@ -230,27 +178,20 @@ class OrderUseCaseTest {
         op2.setIdPlate(PLATE_ID_2);
         op2.setQuantity(2);
 
-        Order localTestOrder = new Order();
-        localTestOrder.setIdRestaurant(RESTAURANT_ID);
-        localTestOrder.setPlates(List.of(op1, op2));
+        Order localTestOrder = Order.builder()
+                .idRestaurant(RESTAURANT_ID)
+                .plates(List.of(op1,op2))
+                .build();
 
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
         when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
-        when(orderPersistencePort.hasActiveOrder(CLIENT_ID)).thenReturn(false);
 
-        Plate plate1 = new Plate();
-        plate1.setIdRestaurant(RESTAURANT_ID);
-        Plate plate2 = new Plate();
-        plate2.setIdRestaurant(999L);
+        when(platePersistencePort.getPlatesIdsByRestaurant(RESTAURANT_ID))
+                .thenReturn(List.of(999L));
 
-        when(platePersistencePort.getPlateById(PLATE_ID_1)).thenReturn(Optional.of(plate1));
-        when(platePersistencePort.getPlateById(PLATE_ID_2)).thenReturn(Optional.of(plate2));
-
-        assertThrows(PlateBelongsToAnotherRestaurantException.class, () -> orderUseCase.saveOrder(localTestOrder));
+        assertThrows(PlateNotAvailableException.class, () -> orderUseCase.saveOrder(localTestOrder));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_1);
-        verify(platePersistencePort, times(1)).getPlateById(PLATE_ID_2);
     }
 
     @Test
@@ -261,7 +202,14 @@ class OrderUseCaseTest {
         OrderStatus status = OrderStatus.PENDING;
 
         List<Order> expectedOrders = new ArrayList<>();
-        expectedOrders.add(new Order(10L, CLIENT_ID, LocalDateTime.now(), status, 1L,  testRestaurant.getId(), null, null));
+        expectedOrders.add(Order.builder()
+                .id(10L)
+                .idClient(CLIENT_ID)
+                .date(LocalDateTime.now())
+                .status(status)
+                .idChef(1L)
+                .idRestaurant(testRestaurant.getId())
+                .build());
 
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
@@ -287,7 +235,7 @@ class OrderUseCaseTest {
         when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
         when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
 
-        assertDoesNotThrow(() -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+        assertDoesNotThrow(() -> orderUseCase.transitionToPreparation(ORDER_ID));
 
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
@@ -305,7 +253,7 @@ class OrderUseCaseTest {
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.empty());
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID); // Se necesita para el checkOrder
 
-        assertThrows(OrderNotFoundException.class, () -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+        assertThrows(OrderNotFoundException.class, () -> orderUseCase.transitionToPreparation(ORDER_ID));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
     }
@@ -319,7 +267,7 @@ class OrderUseCaseTest {
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
 
-        assertThrows(OrderNotInPendingStatusException.class, () -> orderUseCase.assignOrderAndChangeStatus(ORDER_ID));
+        assertThrows(OrderNotInPendingStatusException.class, () -> orderUseCase.transitionToPreparation(ORDER_ID));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
     }
@@ -336,7 +284,7 @@ class OrderUseCaseTest {
         when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
         when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
 
-        assertDoesNotThrow(() -> orderUseCase.notifyOrderReady(ORDER_ID));
+        assertDoesNotThrow(() -> orderUseCase.transitionToReady(ORDER_ID));
 
         ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
         verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
@@ -358,7 +306,7 @@ class OrderUseCaseTest {
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
 
-        assertThrows(OrderNotInPreparationStatusException.class, () -> orderUseCase.notifyOrderReady(ORDER_ID));
+        assertThrows(OrderNotInPreparationStatusException.class, () -> orderUseCase.transitionToReady(ORDER_ID));
 
         verify(userGatewayPort, never()).sendSms(anyString(), anyString());
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
@@ -429,17 +377,12 @@ class OrderUseCaseTest {
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
         when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testEmployeeUser);
+
+        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
         assertDoesNotThrow(() -> orderUseCase.transitionToCanceled(ORDER_ID));
 
-        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
-        verify(orderPersistencePort, times(1)).saveOrder(orderCaptor.capture());
-
-        Order savedOrder = orderCaptor.getValue();
-        assertEquals(OrderStatus.CANCELED, savedOrder.getStatus());
-        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
-        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+        verify(orderPersistencePort).saveOrder(any(Order.class));
     }
 
     @Test

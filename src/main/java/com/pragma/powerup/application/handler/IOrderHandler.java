@@ -12,8 +12,8 @@ import java.util.List;
 public interface IOrderHandler {
     void saveOrder(OrderRequestDto orderRequestDto);
     List<OrderResponseDto> getOrdersByStatus(OrderStatus orderStatus, int page, int size);
-    void assignOrderAndChangeStatus(Long id);
-    void notifyOrderReady(Long orderId);
+    void transitionToPreparation(Long id);
+    void transitionToReady(Long orderId);
     void transitionToDelivered(Long orderId, Integer securityPin);
     void transitionToCanceled(Long orderId);
     List<TraceabilityResponseDto> getTraceability(Long orderId);

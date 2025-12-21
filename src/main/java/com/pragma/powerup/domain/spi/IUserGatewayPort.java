@@ -8,8 +8,8 @@ import com.pragma.powerup.domain.model.User;
 import java.util.List;
 
 public interface IUserGatewayPort {
-    void isUserOwner(Long userId);
-    void isUserEmployee(Long userId);
+    Boolean isUserOwner(Long userId);
+    Boolean isUserEmployee(Long userId);
     void sendSms(String phoneNumber, String message);
     void saveOrderTrace(Traceability traceability);
     User getUserById(Long clientId);

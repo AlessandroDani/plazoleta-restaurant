@@ -11,4 +11,5 @@ public interface IPlatePersistencePort {
     boolean existsPlateByName(String name);
     Optional<Plate> getPlateById(Long id);
     List<Plate> getPlatesByRestaurant(Long idRestaurant, int page, int size, String category);
+    List<Long> getPlatesIdsByRestaurant(Long idRestaurant);
 }
