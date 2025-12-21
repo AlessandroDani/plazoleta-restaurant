@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3307/powerup
-    username: root
-    password:
+    url: jdbc:mysql://${DB_HOST:localhost}:3307/${DB_NAME:powerup}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
@@ -13,7 +13,7 @@ spring:
     show-sql: true
 
 jwt:
-  secret: dev-secret
+  secret: ${JWT_SECRET:dev-secret}
 
 appTitle: "Microservicio de Gestión de Restaurante, Arquitectura Hexagonal"
 appDescription: "API para la creación y adminsitración de restaurante, platos y pedidos. Parte de la solución Power-up"

@@ -11,7 +11,7 @@ public class JwtUtil {
 
     private final Algorithm algorithm;
 
-    public JwtUtil(@Value("${jwt.secret}") String jwtSecret) {
+    public JwtUtil(@Value("${jwt.secret}") String jwtSecret){
         this.algorithm = Algorithm.HMAC256(jwtSecret);
     }
 
@@ -25,17 +25,17 @@ public class JwtUtil {
     }
 
     public Long getId(String token) {
-        try{
+        try {
             return JWT.require(algorithm).build().verify(token).getClaim("id").asLong();
-        }catch (JWTVerificationException e){
+        } catch (JWTVerificationException e) {
             return null;
         }
     }
 
     public String getRole(String token) {
-        try{
+        try {
             return JWT.require(algorithm).build().verify(token).getClaim("role").asString();
-        }catch (JWTVerificationException e){
+        } catch (JWTVerificationException e) {
             return null;
         }
     }
