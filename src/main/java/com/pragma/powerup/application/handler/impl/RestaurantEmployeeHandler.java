@@ -18,7 +18,7 @@ public class RestaurantEmployeeHandler implements IRestaurantEmployeeHandler {
     private final IRestaurantEmployeeServicePort restaurantEmployeeServicePort;
 
     @Override
-    public void saveEmployee(RestaurantEmployeeRequestDto restaurantEmployeeRequestDto) {
-        restaurantEmployeeServicePort.saveEmployee(restaurantEmployeeRequestMapper.toRestaurantEmployee(restaurantEmployeeRequestDto));
+    public void saveEmployee(RestaurantEmployeeRequestDto restaurantEmployeeRequestDto, Long id) {
+        restaurantEmployeeServicePort.saveEmployee(restaurantEmployeeRequestMapper.toRestaurantEmployee(restaurantEmployeeRequestDto, id));
     }
 }

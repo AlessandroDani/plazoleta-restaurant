@@ -3,8 +3,8 @@ package com.pragma.powerup.infrastructure.input.rest;
 import com.pragma.powerup.application.dto.request.RestaurantEmployeeRequestDto;
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.application.dto.response.RestaurantResponseClientDto;
-import com.pragma.powerup.application.handler.impl.RestaurantEmployeeHandler;
-import com.pragma.powerup.application.handler.impl.RestaurantHandler;
+import com.pragma.powerup.application.handler.IRestaurantEmployeeHandler;
+import com.pragma.powerup.application.handler.IRestaurantHandler;
 import com.pragma.powerup.infrastructure.exceptionhandler.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +28,8 @@ import java.util.List;
 @Tag(name = "Restaurantes", description = "Operaciones para la gestión de restaurantes y empleados")
 public class RestaurantRestController {
 
-    private final RestaurantHandler restaurantHandler;
-    private final RestaurantEmployeeHandler restaurantEmployeeHandler;
+    private final IRestaurantHandler restaurantHandler;
+    private final IRestaurantEmployeeHandler restaurantEmployeeHandler;
 
     @Operation(summary = "Listar todos los restaurantes paginados y ordenados por nombre",
             description = "Permite a los CLIENTES y otros usuarios listar los restaurantes, mostrando solo información pública.")
@@ -63,16 +63,15 @@ public class RestaurantRestController {
 
     @Operation(summary = "Insertar un nuevo empleado a un restaurante")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Empleado ingresado con exito", content = @Content),
+            @ApiResponse(responseCode = "201", description = "Empleado ingresado con exito", content = @Content),
             @ApiResponse(responseCode = "403", description = "El usuario autenticado no tiene el rol permitido para realizar esa acción",  content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "El usuario con el ID especificado no fue encontrado",  content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
     })
     @PostMapping("/{id}/empleados")
     public ResponseEntity<Void> saveEmployee(
-            @Parameter(description = "id del empleado", example = "1") @PathVariable Long id,
+            @Parameter(description = "id del restaurante", example = "1") @PathVariable Long id,
             @Valid @RequestBody RestaurantEmployeeRequestDto restaurantEmployeeRequestDto) {
-        restaurantEmployeeRequestDto.setIdRestaurant(id);
-        restaurantEmployeeHandler.saveEmployee(restaurantEmployeeRequestDto);
+        restaurantEmployeeHandler.saveEmployee(restaurantEmployeeRequestDto, id);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

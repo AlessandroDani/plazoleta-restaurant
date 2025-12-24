@@ -39,8 +39,8 @@ public class BeanConfiguration {
     private final IRestaurantEmployeeEntityMapper restaurantEmployeeEntityMapper;
 
     @Bean
-    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort, IUserGatewayPort  userGatewayPort) {
-        return new RestaurantUseCase(restaurantPersistencePort, userGatewayPort);
+    public IRestaurantServicePort  restaurantServicePort(IRestaurantPersistencePort restaurantPersistencePort, IExternalServicesPort externalServicesPort) {
+        return new RestaurantUseCase(restaurantPersistencePort, externalServicesPort);
     }
 
     @Bean
@@ -59,8 +59,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IOrderServicePort orderServicePort(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
-        return new OrderUseCase(orderPersistencePort, restaurantPersistencePort, tokenPort, platePersistencePort, restaurantEmployeePersistencePort, userGatewayPort);
+    public IOrderServicePort orderServicePort(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IExternalServicesPort externalServicesPort) {
+        return new OrderUseCase(orderPersistencePort, restaurantPersistencePort, tokenPort, platePersistencePort, restaurantEmployeePersistencePort, externalServicesPort);
 
     }
 
@@ -70,8 +70,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IRestaurantEmployeeServicePort restaurantEmployeeServicePort(IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
-        return new RestaurantEmployeeUseCase(restaurantEmployeePersistencePort ,restaurantPersistencePort, tokenPort, userGatewayPort);
+    public IRestaurantEmployeeServicePort restaurantEmployeeServicePort(IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IExternalServicesPort externalServicesPort) {
+        return new RestaurantEmployeeUseCase(restaurantEmployeePersistencePort ,restaurantPersistencePort, tokenPort, externalServicesPort);
     }
 
     @Bean

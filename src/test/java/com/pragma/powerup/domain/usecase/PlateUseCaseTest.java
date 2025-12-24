@@ -330,6 +330,7 @@ class PlateUseCaseTest {
 
         when(restaurantPersistencePort.getRestaurantById(restaurantId)).thenReturn(Optional.of(testRestaurant));
         when(platePersistencePort.getPlatesByRestaurant(restaurantId, page, size, category)).thenReturn(mockPlates);
+        when(categoryPersistencePort.existByName(anyString())).thenReturn(true);
 
         List<Plate> result = assertDoesNotThrow(
                 () -> plateUseCase.getPlatesByRestaurant(restaurantId, page, size, category),

@@ -9,20 +9,20 @@ import com.pragma.powerup.domain.model.RestaurantEmployee;
 import com.pragma.powerup.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.ITokenPort;
-import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.domain.spi.IExternalServicesPort;
 
 public class RestaurantEmployeeUseCase implements IRestaurantEmployeeServicePort {
 
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final ITokenPort tokenPort;
-    private final IUserGatewayPort  userGatewayPort;
+    private final IExternalServicesPort externalServicesPort;
 
-    public RestaurantEmployeeUseCase(IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IUserGatewayPort userGatewayPort) {
+    public RestaurantEmployeeUseCase(IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IExternalServicesPort externalServicesPort) {
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.tokenPort = tokenPort;
-        this.userGatewayPort = userGatewayPort;
+        this.externalServicesPort = externalServicesPort;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class RestaurantEmployeeUseCase implements IRestaurantEmployeeServicePort
         if (restaurantEmployeePersistencePort.existsByUserId(restaurantEmployee.getIdUser())){
             throw new RestaurantEmployeeExistsException();
         }
-        if (Boolean.FALSE.equals( userGatewayPort.isUserEmployee(restaurantEmployee.getIdUser()))){
+        if (Boolean.FALSE.equals( externalServicesPort.isUserEmployee(restaurantEmployee.getIdUser()))){
             throw new UserIsNotEmployeeException();
         }
         restaurantEmployeePersistencePort.saveEmployee(restaurantEmployee);
