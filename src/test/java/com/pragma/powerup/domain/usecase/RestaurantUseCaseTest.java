@@ -51,7 +51,7 @@ class RestaurantUseCaseTest {
     @DisplayName("Debería guardar el restaurante si el NIT no existe y el usuario tiene rol de Propietario")
     void saveRestaurant_Success() {
         when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(false);
-
+        when(userGateway.isUserOwner(validRestaurant.getIdOwner())).thenReturn(true);
         assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(validRestaurant));
 
         verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
