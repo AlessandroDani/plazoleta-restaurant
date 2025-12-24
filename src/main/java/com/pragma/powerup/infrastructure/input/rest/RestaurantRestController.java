@@ -3,8 +3,8 @@ package com.pragma.powerup.infrastructure.input.rest;
 import com.pragma.powerup.application.dto.request.RestaurantEmployeeRequestDto;
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.application.dto.response.RestaurantResponseClientDto;
-import com.pragma.powerup.application.handler.impl.RestaurantEmployeeHandler;
-import com.pragma.powerup.application.handler.impl.RestaurantHandler;
+import com.pragma.powerup.application.handler.IRestaurantEmployeeHandler;
+import com.pragma.powerup.application.handler.IRestaurantHandler;
 import com.pragma.powerup.infrastructure.exceptionhandler.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +28,8 @@ import java.util.List;
 @Tag(name = "Restaurantes", description = "Operaciones para la gestión de restaurantes y empleados")
 public class RestaurantRestController {
 
-    private final RestaurantHandler restaurantHandler;
-    private final RestaurantEmployeeHandler restaurantEmployeeHandler;
+    private final IRestaurantHandler restaurantHandler;
+    private final IRestaurantEmployeeHandler restaurantEmployeeHandler;
 
     @Operation(summary = "Listar todos los restaurantes paginados y ordenados por nombre",
             description = "Permite a los CLIENTES y otros usuarios listar los restaurantes, mostrando solo información pública.")
