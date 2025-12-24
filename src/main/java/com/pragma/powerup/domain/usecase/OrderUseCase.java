@@ -15,15 +15,15 @@ public class OrderUseCase implements IOrderServicePort {
     private final ITokenPort tokenPort;
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
-    private final IUserGatewayPort userGatewayPort;
+    private final IExternalServicesPort externalServicesPort;
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IUserGatewayPort userGatewayPort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ITokenPort tokenPort, IPlatePersistencePort platePersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IExternalServicesPort externalServicesPort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.tokenPort = tokenPort;
         this.platePersistencePort = platePersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
-        this.userGatewayPort = userGatewayPort;
+        this.externalServicesPort = externalServicesPort;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class OrderUseCase implements IOrderServicePort {
         restaurant.validatePlateList(order.getPlates(), platePersistencePort.getPlatesIdsByRestaurant(restaurant.getId()));
         order.initializeNewOrder(userId, LocalDateTime.now());
         Order saveOrder = orderPersistencePort.saveOrder(order);
-        User client = userGatewayPort.getUserById(order.getIdClient());
+        User client = externalServicesPort.getUserById(order.getIdClient());
         saveOrderTrace(saveOrder, client, null, "NONE", OrderStatus.PENDING.getDbValue());
     }
 
@@ -94,7 +94,7 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = orderPersistencePort.getOrderById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         order.isOwner(getUserIdFromToken());
-        return userGatewayPort.getTracesByOrderId(orderId);
+        return externalServicesPort.getTracesByOrderId(orderId);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class OrderUseCase implements IOrderServicePort {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
         restaurant.validateOwner(getUserIdFromToken());
-        return userGatewayPort.getEmployeePerformance(restaurantId);
+        return externalServicesPort.getEmployeePerformance(restaurantId);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class OrderUseCase implements IOrderServicePort {
         Restaurant restaurant = restaurantPersistencePort.getRestaurantById(restaurantId).
                 orElseThrow(RestaurantNotExistException::new);
         restaurant.validateOwner(getUserIdFromToken());
-        return userGatewayPort.getOrderEfficiency(restaurantId);
+        return externalServicesPort.getOrderEfficiency(restaurantId);
     }
 
     private Long getUserIdFromToken() {
@@ -122,8 +122,8 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     private void sendNotification(Long clientId, String message) {
-        User client = userGatewayPort.getUserById(clientId);
-        userGatewayPort.sendSms(client.getPhoneNumber(), message);
+        User client = externalServicesPort.getUserById(clientId);
+        externalServicesPort.sendSms(client.getPhoneNumber(), message);
     }
 
     private Restaurant validateRestaurant(Long idRestaurant) {
@@ -149,8 +149,8 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     private void registerStatusChangeTrace(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
-        User client = userGatewayPort.getUserById(order.getIdClient());
-        User employee = userGatewayPort.getUserById(getUserIdFromToken());
+        User client = externalServicesPort.getUserById(order.getIdClient());
+        User employee = externalServicesPort.getUserById(getUserIdFromToken());
         saveOrderTrace(order, client, employee, oldStatus.getDbValue(), newStatus.getDbValue());
     }
 
@@ -169,6 +169,6 @@ public class OrderUseCase implements IOrderServicePort {
                 .employeeId(employeeId)
                 .employeeEmail(employeeEmail)
                 .build();
-        userGatewayPort.saveOrderTrace(traceModel);
+        externalServicesPort.saveOrderTrace(traceModel);
     }
 }

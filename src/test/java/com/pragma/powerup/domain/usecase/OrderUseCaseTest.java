@@ -40,7 +40,7 @@ class OrderUseCaseTest {
     private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
 
     @Mock
-    private IUserGatewayPort userGatewayPort;
+    private IExternalServicesPort externalServicesPort;
 
     @InjectMocks
     private OrderUseCase orderUseCase;
@@ -110,7 +110,7 @@ class OrderUseCaseTest {
         when(platePersistencePort.getPlatesIdsByRestaurant(RESTAURANT_ID))
                 .thenReturn(List.of(PLATE_ID_1, PLATE_ID_2));
 
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
         Order savedMockOrder = Order.builder().id(1L).build();
         when(orderPersistencePort.saveOrder(any(Order.class))).thenReturn(savedMockOrder);
@@ -232,8 +232,8 @@ class OrderUseCaseTest {
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
-        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
 
         assertDoesNotThrow(() -> orderUseCase.transitionToPreparation(ORDER_ID));
 
@@ -244,7 +244,7 @@ class OrderUseCaseTest {
         assertEquals(OrderStatus.IN_PREPARATION, savedOrder.getStatus());
         assertEquals(EMPLOYEE_ID, savedOrder.getIdChef());
 
-        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+        verify(externalServicesPort, times(1)).saveOrderTrace(any(Traceability.class));
     }
 
     @Test
@@ -281,8 +281,8 @@ class OrderUseCaseTest {
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
-        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
 
         assertDoesNotThrow(() -> orderUseCase.transitionToReady(ORDER_ID));
 
@@ -293,8 +293,8 @@ class OrderUseCaseTest {
         assertEquals(OrderStatus.READY, savedOrder.getStatus());
         assertNotNull(savedOrder.getSecurityPin());
 
-        verify(userGatewayPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Tu pedido está listo. Reclámalo con el PIN: "));
-        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+        verify(externalServicesPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Tu pedido está listo. Reclámalo con el PIN: "));
+        verify(externalServicesPort, times(1)).saveOrderTrace(any(Traceability.class));
     }
 
     @Test
@@ -308,7 +308,7 @@ class OrderUseCaseTest {
 
         assertThrows(OrderNotInPreparationStatusException.class, () -> orderUseCase.transitionToReady(ORDER_ID));
 
-        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+        verify(externalServicesPort, never()).sendSms(anyString(), anyString());
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
     }
 
@@ -322,8 +322,8 @@ class OrderUseCaseTest {
         when(tokenPort.getUserId()).thenReturn(EMPLOYEE_ID);
         when(restaurantEmployeePersistencePort.getEmployee(EMPLOYEE_ID)).thenReturn(Optional.of(testEmployee));
 
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
-        when(userGatewayPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(EMPLOYEE_ID)).thenReturn(testEmployeeUser);
 
         assertDoesNotThrow(() -> orderUseCase.transitionToDelivered(ORDER_ID, SECURITY_PIN));
 
@@ -332,7 +332,7 @@ class OrderUseCaseTest {
 
         Order savedOrder = orderCaptor.getValue();
         assertEquals(OrderStatus.DELIVERED, savedOrder.getStatus());
-        verify(userGatewayPort, times(1)).saveOrderTrace(any(Traceability.class));
+        verify(externalServicesPort, times(1)).saveOrderTrace(any(Traceability.class));
     }
 
     @Test
@@ -349,7 +349,7 @@ class OrderUseCaseTest {
         assertThrows(OrderHasIncorrectPinException.class, () -> orderUseCase.transitionToDelivered(ORDER_ID, incorrectPin));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
-        verify(userGatewayPort, never()).saveOrderTrace(any(Traceability.class));
+        verify(externalServicesPort, never()).saveOrderTrace(any(Traceability.class));
     }
 
     @Test
@@ -376,9 +376,9 @@ class OrderUseCaseTest {
 
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
         assertDoesNotThrow(() -> orderUseCase.transitionToCanceled(ORDER_ID));
 
@@ -398,7 +398,7 @@ class OrderUseCaseTest {
         assertThrows(ClientIsNotOrderOwnerException.class, () -> orderUseCase.transitionToCanceled(ORDER_ID));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
-        verify(userGatewayPort, never()).sendSms(anyString(), anyString());
+        verify(externalServicesPort, never()).sendSms(anyString(), anyString());
     }
 
     @Test
@@ -409,13 +409,13 @@ class OrderUseCaseTest {
 
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(userGatewayPort.getUserById(CLIENT_ID)).thenReturn(testClient);
+        when(externalServicesPort.getUserById(CLIENT_ID)).thenReturn(testClient);
 
         assertThrows(OrderNotInPendingStatusException.class,
                 () -> orderUseCase.transitionToCanceled(ORDER_ID));
 
         verify(orderPersistencePort, never()).saveOrder(any(Order.class));
-        verify(userGatewayPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Lo sentimos, su pedido ya está en preparación y no puede cancelarse"));
+        verify(externalServicesPort, times(1)).sendSms(eq(testClient.getPhoneNumber()), contains("Lo sentimos, su pedido ya está en preparación y no puede cancelarse"));
     }
 
     @Test
@@ -434,12 +434,12 @@ class OrderUseCaseTest {
 
         when(orderPersistencePort.getOrderById(ORDER_ID)).thenReturn(Optional.of(testOrder));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(userGatewayPort.getTracesByOrderId(ORDER_ID)).thenReturn(expectedTraces);
+        when(externalServicesPort.getTracesByOrderId(ORDER_ID)).thenReturn(expectedTraces);
 
         List<Traceability> actualTraces = assertDoesNotThrow(() -> orderUseCase.getTracesByOrderId(ORDER_ID));
 
         assertFalse(actualTraces.isEmpty());
-        verify(userGatewayPort, times(1)).getTracesByOrderId(ORDER_ID);
+        verify(externalServicesPort, times(1)).getTracesByOrderId(ORDER_ID);
     }
 
     @Test
@@ -453,7 +453,7 @@ class OrderUseCaseTest {
 
         assertThrows(ClientIsNotOrderOwnerException.class, () -> orderUseCase.getTracesByOrderId(ORDER_ID));
 
-        verify(userGatewayPort, never()).getTracesByOrderId(anyLong());
+        verify(externalServicesPort, never()).getTracesByOrderId(anyLong());
     }
 
     @Test
@@ -464,12 +464,12 @@ class OrderUseCaseTest {
 
         when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(userGatewayPort.getEmployeePerformance(RESTAURANT_ID)).thenReturn(expectedRanking);
+        when(externalServicesPort.getEmployeePerformance(RESTAURANT_ID)).thenReturn(expectedRanking);
 
         List<EmployeePerformance> actualRanking = assertDoesNotThrow(() -> orderUseCase.getEmployeePerformances(RESTAURANT_ID));
 
         assertFalse(actualRanking.isEmpty());
-        verify(userGatewayPort, times(1)).getEmployeePerformance(RESTAURANT_ID);
+        verify(externalServicesPort, times(1)).getEmployeePerformance(RESTAURANT_ID);
     }
 
     @Test
@@ -483,7 +483,7 @@ class OrderUseCaseTest {
 
         assertThrows(UserIsNotOwnerRestaurantException.class, () -> orderUseCase.getEmployeePerformances(RESTAURANT_ID));
 
-        verify(userGatewayPort, never()).getEmployeePerformance(anyLong());
+        verify(externalServicesPort, never()).getEmployeePerformance(anyLong());
     }
 
     @Test
@@ -494,12 +494,12 @@ class OrderUseCaseTest {
 
         when(restaurantPersistencePort.getRestaurantById(RESTAURANT_ID)).thenReturn(Optional.of(testRestaurant));
         when(tokenPort.getUserId()).thenReturn(CLIENT_ID);
-        when(userGatewayPort.getOrderEfficiency(RESTAURANT_ID)).thenReturn(expectedMetrics);
+        when(externalServicesPort.getOrderEfficiency(RESTAURANT_ID)).thenReturn(expectedMetrics);
 
         List<OrderEfficiency> actualMetrics = assertDoesNotThrow(() -> orderUseCase.getOrderMetrics(RESTAURANT_ID));
 
         assertFalse(actualMetrics.isEmpty());
-        verify(userGatewayPort, times(1)).getOrderEfficiency(RESTAURANT_ID);
+        verify(externalServicesPort, times(1)).getOrderEfficiency(RESTAURANT_ID);
     }
 
 }

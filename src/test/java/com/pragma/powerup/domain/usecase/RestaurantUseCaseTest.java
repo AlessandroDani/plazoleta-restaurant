@@ -3,7 +3,7 @@ package com.pragma.powerup.domain.usecase;
 import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.domain.spi.IExternalServicesPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class RestaurantUseCaseTest {
     private IRestaurantPersistencePort restaurantPersistence;
 
     @Mock
-    private IUserGatewayPort userGateway;
+    private IExternalServicesPort externalServicesPort;
 
     @InjectMocks
     private RestaurantUseCase restaurantUseCase;
@@ -51,11 +51,11 @@ class RestaurantUseCaseTest {
     @DisplayName("Debería guardar el restaurante si el NIT no existe y el usuario tiene rol de Propietario")
     void saveRestaurant_Success() {
         when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(false);
-        when(userGateway.isUserOwner(validRestaurant.getIdOwner())).thenReturn(true);
+        when(externalServicesPort.isUserOwner(validRestaurant.getIdOwner())).thenReturn(true);
         assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(validRestaurant));
 
         verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
-        verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
+        verify(externalServicesPort).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence).saveRestaurant(validRestaurant);
     }
 
@@ -68,22 +68,22 @@ class RestaurantUseCaseTest {
                 () -> restaurantUseCase.saveRestaurant(validRestaurant));
 
         verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
-        verify(userGateway, never()).isUserOwner(anyLong());
+        verify(externalServicesPort, never()).isUserOwner(anyLong());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
     }
 
     @Test
-    @DisplayName("Debería propagar la excepción si el UserGateway falla al validar el rol de Propietario")
+    @DisplayName("Debería propagar la excepción si el externalServices falla al validar el rol de Propietario")
     void saveRestaurant_ThrowsExceptionIfOwnerRoleIsInvalid() {
         when(restaurantPersistence.existsRestaurantByNit(validRestaurant.getNit())).thenReturn(false);
 
-        doThrow(new RuntimeException("El usuario no tiene el rol de propietario requerido")).when(userGateway).isUserOwner(validRestaurant.getIdOwner());
+        doThrow(new RuntimeException("El usuario no tiene el rol de propietario requerido")).when(externalServicesPort).isUserOwner(validRestaurant.getIdOwner());
 
         assertThrows(RuntimeException.class,
                 () -> restaurantUseCase.saveRestaurant(validRestaurant));
 
         verify(restaurantPersistence).existsRestaurantByNit(validRestaurant.getNit());
-        verify(userGateway).isUserOwner(validRestaurant.getIdOwner());
+        verify(externalServicesPort).isUserOwner(validRestaurant.getIdOwner());
         verify(restaurantPersistence, never()).saveRestaurant(any(Restaurant.class));
     }
 

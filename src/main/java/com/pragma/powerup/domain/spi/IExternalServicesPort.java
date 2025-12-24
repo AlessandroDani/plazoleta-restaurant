@@ -7,7 +7,7 @@ import com.pragma.powerup.domain.model.User;
 
 import java.util.List;
 
-public interface IUserGatewayPort {
+public interface IExternalServicesPort {
     Boolean isUserOwner(Long userId);
     Boolean isUserEmployee(Long userId);
     void sendSms(String phoneNumber, String message);

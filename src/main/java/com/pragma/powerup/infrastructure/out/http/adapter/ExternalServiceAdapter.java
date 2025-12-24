@@ -4,7 +4,7 @@ import com.pragma.powerup.domain.model.EmployeePerformance;
 import com.pragma.powerup.domain.model.OrderEfficiency;
 import com.pragma.powerup.domain.model.Traceability;
 import com.pragma.powerup.domain.model.User;
-import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.domain.spi.IExternalServicesPort;
 import com.pragma.powerup.infrastructure.exception.*;
 import com.pragma.powerup.infrastructure.out.http.feign.ISmsFeignClient;
 import com.pragma.powerup.infrastructure.out.http.feign.ITraceabilityFeignClient;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
-public class UserHttpAdapter implements IUserGatewayPort {
+public class ExternalServiceAdapter implements IExternalServicesPort {
 
     private final IUserFeignClient userFeignClient;
     private final ISmsFeignClient smsFeignClient;

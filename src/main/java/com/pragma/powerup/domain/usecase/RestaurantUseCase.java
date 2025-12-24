@@ -5,18 +5,18 @@ import com.pragma.powerup.domain.exception.RestaurantAlreadyExistException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerRestaurantException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.IUserGatewayPort;
+import com.pragma.powerup.domain.spi.IExternalServicesPort;
 
 import java.util.List;
 
 
 public class RestaurantUseCase implements IRestaurantServicePort {
     private final IRestaurantPersistencePort restaurantPersistence;
-    private final IUserGatewayPort  userGateway;
+    private final IExternalServicesPort externalServicesPort;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence, IUserGatewayPort userGateway) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistence, IExternalServicesPort externalServicesPort) {
         this.restaurantPersistence = restaurantPersistence;
-        this.userGateway = userGateway;
+        this.externalServicesPort = externalServicesPort;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         if (restaurantPersistence.existsRestaurantByNit(restaurant.getNit())) {
             throw new RestaurantAlreadyExistException();
         }
-        if(Boolean.FALSE.equals(userGateway.isUserOwner(restaurant.getIdOwner()))){
+        if(Boolean.FALSE.equals(externalServicesPort.isUserOwner(restaurant.getIdOwner()))){
             throw new UserIsNotOwnerRestaurantException();
         }
         restaurantPersistence.saveRestaurant(restaurant);
